@@ -1,0 +1,53 @@
+/* ============================================================
+   COMPONENTE · Botones — Pintura Dump
+   Botones reutilizables. El diseño es mayormente editorial
+   (links con línea, ver _links.css); estos se reservan para
+   acciones que sí requieran un botón sólido.
+   ============================================================ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2xs);
+  padding: var(--space-2xs) var(--space-sm);
+  font-family: var(--font-body);
+  font-size: var(--fs-small);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.02em;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  cursor: pointer;
+  transition:
+    background-color var(--duration-base) var(--ease-out),
+    color var(--duration-base) var(--ease-out),
+    border-color var(--duration-base) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+/* Primario: relleno tinta → acento en hover */
+.btn--primary {
+  background-color: var(--color-ink);
+  color: var(--color-cream);
+}
+
+.btn--primary:hover {
+  background-color: var(--color-accent);
+}
+
+/* Secundario: contorno → se rellena en hover */
+.btn--ghost {
+  background-color: transparent;
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+.btn--ghost:hover {
+  background-color: var(--color-ink);
+  border-color: var(--color-ink);
+  color: var(--color-cream);
+}

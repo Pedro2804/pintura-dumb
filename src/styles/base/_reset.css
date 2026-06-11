@@ -1,0 +1,143 @@
+/* ============================================================
+   RESET + BASE — Pintura Dump
+   Reset moderno mínimo (no normalize completo) + defaults
+   base del documento usando los tokens. Mobile-first.
+   ============================================================ */
+
+/* ---------- Box model ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* ---------- Reset de márgenes ---------- */
+* {
+  margin: 0;
+}
+
+/* ---------- Documento ---------- */
+html {
+  font-size: 100%;               /* respeta la preferencia del usuario (16px base) */
+  -webkit-text-size-adjust: 100%; /* evita el reescalado de texto en iOS landscape */
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;            /* viewport dinámico en móviles */
+  background-color: var(--surface-light);
+  color: var(--color-text);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+}
+
+/* ---------- Medios responsivos ---------- */
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* ---------- Formularios / controles ---------- */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* ---------- Enlaces (estilo por contexto en componentes) ---------- */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ---------- Tipografía: balance de saltos ---------- */
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+/* ---------- Listas con clase: sin viñetas (nav, galerías) ----------
+   Las listas SIN clase conservan su semántica/viñetas por defecto. */
+ul[class],
+ol[class] {
+  list-style: none;
+  padding-left: 0;
+}
+
+/* ---------- Foco accesible base (se refina en 2.5) ---------- */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+/* ============================================================
+   Accesibilidad base
+   ============================================================ */
+
+/* Texto solo para lectores de pantalla */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Skip link: oculto hasta recibir foco por teclado */
+.skip-link {
+  position: absolute;
+  top: var(--space-2xs);
+  left: var(--space-2xs);
+  z-index: var(--z-top);
+  padding: var(--space-2xs) var(--space-xs);
+  background-color: var(--color-ink);
+  color: var(--color-cream);
+  border-radius: 2px;
+  transform: translateY(-150%);
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+/* ============================================================
+   Movimiento reducido (WCAG 2.3.3 / RNF-3)
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,48 @@
+/* ============================================================
+   LAYOUT BASE — Pintura Dump
+   Utilidades estructurales mínimas (sin caer en Tailwind-style):
+   container, grid, ritmo vertical. Mobile-first.
+   Se aplican a las secciones en FASE 3-5.
+   ============================================================ */
+
+/* ---------- Container ---------- */
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.container--wide {
+  max-width: var(--container-wide);
+}
+
+.container--narrow {
+  max-width: 62rem;
+}
+
+/* ---------- Grid utilitario mínimo ---------- */
+.grid {
+  display: grid;
+  gap: var(--gutter);
+}
+
+@media (min-width: 768px) {
+  .grid--2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .grid--3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ---------- Flujo vertical (ritmo entre hermanos) ---------- */
+.flow > * + * {
+  margin-top: var(--flow-space, var(--space-sm));
+}
+
+/* ---------- Ritmo vertical entre secciones ---------- */
+.section {
+  padding-block: var(--section-y);
+}

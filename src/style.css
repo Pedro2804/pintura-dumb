@@ -1,1 +1,6 @@
+@import './styles/base/_tokens.css';
+@import './styles/base/_reset.css';
 @import './styles/base/_typography.css';
+@import './styles/base/_layout.css';
+@import './styles/components/_buttons.css';
+@import './styles/components/_links.css';

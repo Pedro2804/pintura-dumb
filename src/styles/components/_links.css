@@ -1,0 +1,49 @@
+/* ============================================================
+   COMPONENTE · Links — Pintura Dump
+   Estilos de enlace editoriales. El CTA dominante del diseño
+   es texto en mayúsculas + línea horizontal que crece en hover.
+   ============================================================ */
+
+/* ---------- Link CTA editorial (texto + línea) ---------- */
+.link-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-family: var(--font-body);
+  font-size: var(--fs-small);
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-eyebrow);
+  color: var(--color-text);
+  transition: color var(--duration-base) var(--ease-out);
+}
+
+.link-cta::after {
+  content: "";
+  width: var(--space-xl);
+  height: 1px;
+  background-color: currentColor;
+  transition: width var(--duration-base) var(--ease-out);
+}
+
+.link-cta:hover {
+  color: var(--color-accent);
+}
+
+.link-cta:hover::after {
+  width: var(--space-2xl);
+}
+
+/* ---------- Link inline (subrayado sutil) ---------- */
+.link-underline {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--color-border);
+  transition: text-decoration-color var(--duration-base) var(--ease-out);
+}
+
+.link-underline:hover {
+  text-decoration-color: currentColor;
+}

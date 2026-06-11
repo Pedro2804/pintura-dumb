@@ -1,12 +1,77 @@
+/* ============================================================
+   TIPOGRAFÍA EDITORIAL — Pintura Dump
+   El diseño es 100% sans-serif: títulos en Inter pesado
+   (grotesque) y body en Inter regular. Playfair queda sin uso.
+   ============================================================ */
+
 :root {
-  --font-display: 'Playfair Display Variable', 'Playfair Display', Georgia, 'Times New Roman', serif;
+  /* Display e interfaz comparten Inter (el diseño no usa serifas).
+     Si se adopta una fuente display propia, basta cambiar
+     --font-display aquí — el resto del sistema no se entera. */
+  --font-display: 'Inter Variable', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   --font-body: 'Inter Variable', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+
+  /* Pesos */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-display: 800; /* títulos editoriales: grotesque pesado */
 }
 
 body {
   font-family: var(--font-body);
+  font-weight: var(--weight-regular);
   font-feature-settings: 'kern', 'liga', 'calt';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+}
+
+/* ---------- Títulos display (Inter pesado, denso) ---------- */
+h1,
+h2 {
+  font-family: var(--font-display);
+  font-weight: var(--weight-display);
+  line-height: var(--lh-display);
+  letter-spacing: var(--tracking-display);
+  color: var(--color-text);
+}
+
+h1 {
+  font-size: var(--fs-h1);
+}
+
+h2 {
+  font-size: var(--fs-h2);
+}
+
+h3 {
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
+  font-weight: var(--weight-bold);
+  line-height: var(--lh-heading);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-text);
+}
+
+/* El statement del manifiesto es el título más grande del sitio */
+.manifiesto__quote {
+  font-size: var(--fs-display);
+}
+
+/* ---------- Eyebrow (label en mayúsculas con tracking) ---------- */
+.section-eyebrow {
+  font-family: var(--font-body);
+  font-size: var(--fs-eyebrow);
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-eyebrow);
+  color: var(--color-muted);
+}
+
+/* ---------- Énfasis ---------- */
+strong,
+b {
+  font-weight: var(--weight-bold);
 }

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Placeholder de obra">
+  <rect width="800" height="1000" fill="#1a1a1a"/>
+  <line x1="40" y1="40" x2="120" y2="40" stroke="#3a3a3a" stroke-width="1"/>
+  <text x="40" y="80" fill="#5a5a5a" font-family="Georgia, 'Times New Roman', serif" font-style="italic" font-size="18">obra · placeholder</text>
+  <text x="40" y="960" fill="#3a3a3a" font-family="Georgia, 'Times New Roman', serif" font-size="14">pendiente material del cliente</text>
+</svg>

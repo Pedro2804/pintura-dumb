@@ -3,11 +3,544 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0a0a0a" />
+
+    <title>Pintura Dump | Exposición de Jarett Aramis</title>
+    <meta name="description" content="Pintura Dump es la exposición de Jarett Aramis: una experiencia editorial que reúne manifiesto, obra y archivo en una sola conversación contemporánea." />
+    <meta name="author" content="Jarett Aramis" />
+    <meta name="robots" content="index, follow" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Pintura Dump" />
+    <meta property="og:title" content="Pintura Dump | Exposición de Jarett Aramis" />
+    <meta property="og:description" content="Pintura Dump es la exposición de Jarett Aramis: una experiencia editorial que reúne manifiesto, obra y archivo en una sola conversación contemporánea." />
+    <meta property="og:locale" content="es_MX" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Pintura Dump | Exposición de Jarett Aramis" />
+    <meta name="twitter:description" content="Pintura Dump es la exposición de Jarett Aramis: una experiencia editorial que reúne manifiesto, obra y archivo en una sola conversación contemporánea." />
+
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>Pintura Dump</title>
   </head>
   <body>
-    <div id="app"></div>
+    <a class="skip-link" href="#contenido-principal">Saltar al contenido</a>
+
+    <header class="site-header" data-site-header>
+      <nav class="site-nav" aria-label="Navegación principal">
+        <button
+          type="button"
+          class="site-nav__toggle"
+          aria-expanded="false"
+          aria-controls="site-nav-menu"
+          data-mobile-menu-toggle
+        >
+          <span class="visually-hidden">Abrir menú</span>
+          <span class="site-nav__toggle-icon" aria-hidden="true"></span>
+        </button>
+
+        <ul id="site-nav-menu" class="site-nav__menu">
+          <li><a class="site-nav__link" href="#manifiesto">Fenómeno</a></li>
+          <li><a class="site-nav__link" href="#concepto">Qué es Pintura Dump</a></li>
+          <li><a class="site-nav__link" href="#artista">Jarett</a></li>
+          <li><a class="site-nav__link" href="#exposicion">Exposición</a></li>
+          <li><a class="site-nav__link" href="#obras">Obras</a></li>
+          <li><a class="site-nav__link" href="#archivo">Archivo</a></li>
+          <li>
+            <a class="site-nav__cta" href="#contacto">Formar parte</a>
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <main id="contenido-principal">
+      <section id="hero" class="hero" aria-labelledby="hero-title">
+        <div class="hero__intro">
+          <p class="section-eyebrow hero__eyebrow">Aparición pública</p>
+
+          <h1 id="hero-title" class="hero__title">Pintura Dump.</h1>
+
+          <p class="hero__subtitle">Una tendencia del arte contemporáneo.</p>
+
+          <p class="hero__byline">Por <strong>Jarett Aramis</strong>.</p>
+
+          <p class="hero__event">
+            <span class="hero__venue">Museo Internacional del Barroco.</span>
+            <time class="hero__date" datetime="2026-11-13T18:33:00-06:00">13 noviembre 2026 · 6:33 p.m.</time>
+          </p>
+
+          <div class="hero__countdown">
+            <p class="hero__lede">Cuenta regresiva hacia la aparición pública de Pintura Dump.</p>
+
+            <div class="countdown" data-countdown aria-hidden="true">
+              <span class="countdown__unit">
+                <span class="countdown__value" data-countdown-months>00</span>
+                <span class="countdown__label">meses</span>
+              </span>
+              <span class="countdown__separator">:</span>
+              <span class="countdown__unit">
+                <span class="countdown__value" data-countdown-days>00</span>
+                <span class="countdown__label">días</span>
+              </span>
+              <span class="countdown__separator">:</span>
+              <span class="countdown__unit">
+                <span class="countdown__value" data-countdown-hours>00</span>
+                <span class="countdown__label">horas</span>
+              </span>
+              <span class="countdown__separator">:</span>
+              <span class="countdown__unit">
+                <span class="countdown__value" data-countdown-minutes>00</span>
+                <span class="countdown__label">minutos</span>
+              </span>
+              <span class="countdown__separator">:</span>
+              <span class="countdown__unit">
+                <span class="countdown__value" data-countdown-seconds>00</span>
+                <span class="countdown__label">segundos</span>
+              </span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            class="hero__video-trigger"
+            data-video-intro-trigger
+          >
+            Repetir video
+          </button>
+        </div>
+
+        <figure class="hero__media">
+          <picture>
+            <img
+              class="hero__image"
+              src="/assets/hero-placeholder.svg"
+              alt="Obra principal de la exposición Pintura Dump"
+              width="800"
+              height="1000"
+              fetchpriority="high"
+            />
+          </picture>
+        </figure>
+      </section>
+
+      <section id="manifiesto" class="manifiesto" aria-labelledby="manifiesto-title">
+        <p class="section-eyebrow">Manifiesto</p>
+
+        <blockquote class="manifiesto__statement">
+          <h2 id="manifiesto-title" class="manifiesto__quote">
+            El exceso no es basura.
+            <span class="manifiesto__quote-break">Es una era tomando forma.</span>
+          </h2>
+        </blockquote>
+
+        <p class="manifiesto__body">
+          Pintura Dump no se ofrece como decoración: se ofrece como pregunta. Cada pieza es residuo de un gesto, archivo de una decisión y rastro de la materia que sobrevive cuando todo lo demás ya fue consumido. Lo que aquí se exhibe es lo que el descarte no pudo silenciar.
+        </p>
+
+        <ul class="manifiesto__gallery" aria-label="Selección visual del manifiesto">
+          <li>
+            <figure class="manifiesto__piece">
+              <picture>
+                <img
+                  src="/assets/obra-placeholder.svg"
+                  alt="Obra del manifiesto — pieza 1"
+                  width="800"
+                  height="800"
+                  loading="lazy"
+                />
+              </picture>
+            </figure>
+          </li>
+          <li>
+            <figure class="manifiesto__piece">
+              <picture>
+                <img
+                  src="/assets/obra-placeholder.svg"
+                  alt="Obra del manifiesto — pieza 2"
+                  width="800"
+                  height="800"
+                  loading="lazy"
+                />
+              </picture>
+            </figure>
+          </li>
+          <li>
+            <figure class="manifiesto__piece">
+              <picture>
+                <img
+                  src="/assets/obra-placeholder.svg"
+                  alt="Obra del manifiesto — pieza 3"
+                  width="800"
+                  height="800"
+                  loading="lazy"
+                />
+              </picture>
+            </figure>
+          </li>
+        </ul>
+      </section>
+
+      <section id="concepto" class="concepto" aria-labelledby="concepto-title">
+        <p class="section-eyebrow concepto__eyebrow">Qué es Pintura Dump</p>
+
+        <h2 id="concepto-title" class="concepto__title">
+          La traducción pictórica del exceso visual contemporáneo.
+        </h2>
+
+        <div class="concepto__body">
+          <p>
+            No limpia el caos: lo observa hasta encontrarle forma. No busca escapar de la saturación. La convierte en permanencia.
+          </p>
+
+          <p>La imagen digital pasa. La pintura conserva.</p>
+
+          <a class="concepto__cta" href="#artista">Ver quién lo nombra</a>
+        </div>
+      </section>
+
+      <section id="artista" class="artista" aria-labelledby="artista-title">
+        <p class="section-eyebrow artista__eyebrow">Autoría</p>
+
+        <h2 id="artista-title" class="artista__title">Jarett Aramis.</h2>
+
+        <p class="artista__lede">Jarett Aramis nombra esta era y la traduce en pintura.</p>
+
+        <p class="artista__bio">
+          Donde otros ven saturación, Jarett encuentra lenguaje. Su obra no reproduce imágenes: las atraviesa.
+        </p>
+
+        <div class="artista__media">
+          <figure class="artista__portrait">
+            <picture>
+              <img
+                src="/assets/hero-placeholder.svg"
+                alt="Retrato de Jarett Aramis junto a su obra"
+                width="800"
+                height="1000"
+                loading="lazy"
+              />
+            </picture>
+          </figure>
+
+          <figure class="artista__presence">
+            <picture>
+              <img
+                src="/assets/obra-placeholder.svg"
+                alt="Jarett Aramis en el espacio de exhibición"
+                width="800"
+                height="800"
+                loading="lazy"
+              />
+            </picture>
+            <figcaption>Presencia autoral</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section id="exposicion" class="exposicion" aria-labelledby="exposicion-title">
+        <p class="section-eyebrow exposicion__eyebrow">Exposición / Primera sede</p>
+
+        <h2 id="exposicion-title" class="exposicion__title">
+          El museo no decora el fenómeno: lo pone frente al mundo.
+        </h2>
+
+        <p class="exposicion__description">
+          Pintura Dump tiene su primer contacto público en el Museo Internacional del Barroco. 6 dibujos. 42 pinturas. Una era puesta frente a sí misma.
+        </p>
+
+        <dl class="exposicion__data">
+          <div class="exposicion__row">
+            <dt>Sede</dt>
+            <dd>Museo Internacional del Barroco</dd>
+          </div>
+          <div class="exposicion__row">
+            <dt>Apertura</dt>
+            <dd>
+              <time datetime="2026-11-13T18:33:00-06:00">13 noviembre 2026 · 6:33 p.m.</time>
+            </dd>
+          </div>
+          <div class="exposicion__row">
+            <dt>Cuerpo de obra</dt>
+            <dd>6 dibujos y 42 pinturas · 48 obras</dd>
+          </div>
+          <div class="exposicion__row">
+            <dt>Cierre</dt>
+            <dd><time datetime="2027-03-07">07 de marzo de 2027</time></dd>
+          </div>
+        </dl>
+
+        <a class="exposicion__cta" href="#obras">Ver obras</a>
+
+        <figure class="exposicion__media">
+          <picture>
+            <img
+              src="/assets/obra-placeholder.svg"
+              alt="Fachada del Museo Internacional del Barroco"
+              width="800"
+              height="800"
+              loading="lazy"
+            />
+          </picture>
+          <figcaption>Museo Internacional del Barroco</figcaption>
+        </figure>
+
+        <p class="exposicion__tags">Arquitectura · autoridad · escala</p>
+      </section>
+
+      <section id="obras" class="obras" aria-labelledby="obras-title">
+        <p class="section-eyebrow obras__eyebrow">Selección</p>
+
+        <h2 id="obras-title" class="obras__title">Obras.</h2>
+
+        <p class="obras__lede">
+          Una selección breve instala el peso de la obra sin convertirla en inventario. Del vertedero a la permanencia.
+        </p>
+
+        <figure class="obra obra--featured">
+          <picture>
+            <img
+              src="/assets/obra-placeholder.svg"
+              alt="Obra: Inundación Informática II"
+              width="800"
+              height="800"
+              loading="lazy"
+            />
+          </picture>
+          <figcaption class="obra__caption">
+            <span class="obra__name">Inundación Informática II</span>
+            <span class="obra__note">La acumulación visual toma cuerpo pictórico</span>
+          </figcaption>
+        </figure>
+
+        <p class="obras__bridge">
+          El recorrido avanza por tensión: una imagen saturada, una pausa vertical, una rareza, un díptico que insiste.
+        </p>
+
+        <ul class="obras__gallery">
+          <li>
+            <figure class="obra">
+              <picture>
+                <img
+                  src="/assets/obra-placeholder.svg"
+                  alt="Obra: Frames de un usuario I"
+                  width="800"
+                  height="800"
+                  loading="lazy"
+                />
+              </picture>
+              <figcaption class="obra__caption">
+                <span class="obra__name">Frames de un usuario I</span>
+              </figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure class="obra">
+              <picture>
+                <img
+                  src="/assets/obra-placeholder.svg"
+                  alt="Obra: Frames de un usuario II"
+                  width="800"
+                  height="800"
+                  loading="lazy"
+                />
+              </picture>
+              <figcaption class="obra__caption">
+                <span class="obra__name">Frames de un usuario II</span>
+              </figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure class="obra">
+              <picture>
+                <img
+                  src="/assets/obra-placeholder.svg"
+                  alt="Obra: San Jerónimo penitente y los ángeles"
+                  width="800"
+                  height="800"
+                  loading="lazy"
+                />
+              </picture>
+              <figcaption class="obra__caption">
+                <span class="obra__name">San Jerónimo penitente y los ángeles</span>
+              </figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure class="obra obra--diptico">
+              <picture>
+                <img
+                  src="/assets/obra-placeholder.svg"
+                  alt="Obra: Pescadores de hombres, panel izquierdo del díptico"
+                  width="800"
+                  height="800"
+                  loading="lazy"
+                />
+              </picture>
+              <picture>
+                <img
+                  src="/assets/obra-placeholder.svg"
+                  alt="Obra: Pescadores de hombres, panel derecho del díptico"
+                  width="800"
+                  height="800"
+                  loading="lazy"
+                />
+              </picture>
+              <figcaption class="obra__caption">
+                <span class="obra__name">Pescadores de hombres</span>
+                <span class="obra__note">Díptico</span>
+              </figcaption>
+            </figure>
+          </li>
+        </ul>
+      </section>
+
+      <section id="archivo" class="archivo" aria-labelledby="archivo-title">
+        <div class="archivo__catalogo">
+          <p class="archivo__catalogo-text">
+            Para conocer obra disponible de Jarett Aramis, solicite el catálogo oficial.
+          </p>
+          <a
+            class="archivo__catalogo-cta"
+            href="mailto:contacto@pinturadump.com?subject=Solicitud%20de%20cat%C3%A1logo%20oficial"
+          >
+            Solicitar catálogo
+          </a>
+        </div>
+
+        <p class="section-eyebrow archivo__eyebrow">Archivo / Continuidad</p>
+
+        <h2 id="archivo-title" class="archivo__title">Archivo.</h2>
+
+        <p class="archivo__description">
+          El archivo no cierra el fenómeno. Registra cómo se construye, circula y vuelve a aparecer.
+        </p>
+
+        <a class="archivo__cta" href="#manifiesto">Seguir el fenómeno</a>
+
+        <ul class="archivo__gallery">
+          <li>
+            <figure class="archivo__item">
+              <picture>
+                <img
+                  src="/assets/obra-placeholder.svg"
+                  alt="Registro de archivo: continuidad abierta"
+                  width="800"
+                  height="800"
+                  loading="lazy"
+                />
+              </picture>
+              <figcaption>Continuidad abierta</figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure class="archivo__item">
+              <picture>
+                <img
+                  src="/assets/obra-placeholder.svg"
+                  alt="Registro de archivo: archivo vivo"
+                  width="800"
+                  height="800"
+                  loading="lazy"
+                />
+              </picture>
+              <figcaption>Archivo vivo</figcaption>
+            </figure>
+          </li>
+          <li>
+            <figure class="archivo__item">
+              <picture>
+                <img
+                  src="/assets/obra-placeholder.svg"
+                  alt="Registro de archivo: aparición en construcción"
+                  width="800"
+                  height="800"
+                  loading="lazy"
+                />
+              </picture>
+              <figcaption>Aparición en construcción</figcaption>
+            </figure>
+          </li>
+        </ul>
+      </section>
+
+      <section id="contacto" class="contacto" aria-labelledby="contacto-title">
+        <p class="section-eyebrow contacto__eyebrow">Formar parte</p>
+
+        <h2 id="contacto-title" class="contacto__title">Formar parte.</h2>
+
+        <p class="contacto__statement">
+          Formar parte de Pintura Dump. es entrar antes de que el fenómeno sea obvio.
+        </p>
+
+        <p class="contacto__text">
+          No se trata de patrocinar una exposición. Se trata de un lugar en una aparición cultural.
+        </p>
+
+        <p class="contacto__text">Quien entienda temprano, entra distinto.</p>
+
+        <a class="contacto__email" href="mailto:contacto@pinturadump.com">contacto@pinturadump.com</a>
+
+        <a
+          class="contacto__cta"
+          href="mailto:contacto@pinturadump.com?subject=Formar%20parte%20de%20Pintura%20Dump"
+        >
+          Abrir conversación
+        </a>
+
+        <ul class="contacto__benefits">
+          <li>Lectura pública del fenómeno.</li>
+          <li>Vinculación cultural y museográfica.</li>
+          <li>Relación directa con el equipo.</li>
+        </ul>
+
+        <p class="contacto__note">
+          La aparición pública comienza el
+          <time datetime="2026-11-13">13 de noviembre de 2026</time>. La conversación puede empezar antes.
+        </p>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p class="site-footer__brand">Pintura Dump.</p>
+      <p class="site-footer__credits">
+        © 2026 Pintura Dump · Jarett Aramis. Todos los derechos reservados.
+      </p>
+    </footer>
+
+    <dialog
+      class="video-intro"
+      aria-label="Presentación del artista"
+      data-video-intro
+    >
+      <video
+        class="video-intro__video"
+        playsinline
+        muted
+        preload="metadata"
+        data-video-intro-video
+      ></video>
+
+      <div class="video-intro__controls">
+        <button
+          type="button"
+          class="video-intro__btn video-intro__btn--unmute"
+          aria-pressed="true"
+          data-video-intro-unmute
+        >
+          <span class="visually-hidden">Activar audio</span>
+          <span aria-hidden="true">Audio</span>
+        </button>
+
+        <button
+          type="button"
+          class="video-intro__btn video-intro__btn--close"
+          data-video-intro-close
+        >
+          <span class="visually-hidden">Cerrar presentación</span>
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    </dialog>
+
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
