@@ -1,0 +1,140 @@
+/* ============================================================
+   SECCIÓN · Obras / "Selección" — Pintura Dump
+   Fondo claro (paper). Encabezado + obra destacada (grande, caption
+   offset) + texto puente con regla + galería editorial (Frames I/II,
+   San Jerónimo y díptico Pescadores). Mobile-first. Altura libre
+   (sección larga, NO .section-fill).
+   El font-size del título lo gobierna _typography.css.
+   ============================================================ */
+
+.obras {
+  padding-block: var(--space-xl) calc(var(--section-y) * 0.5);
+  padding-inline: var(--gutter);
+  background-color: var(--surface-light);
+  color: var(--on-light);
+}
+
+.obras__title {
+  margin-top: var(--space-sm);
+  color: var(--color-ink);
+}
+
+.obras__lede {
+  margin-top: var(--space-md);
+  max-width: 48ch;
+  font-size: 0.9375rem;
+  color: var(--color-muted);
+}
+
+/* ---------- Pieza (base, reutilizable) ---------- */
+.obras picture {
+  display: block;
+  overflow: hidden;
+  background-color: var(--color-paper-dim);
+}
+
+.obra img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+.obra__caption {
+  margin-top: var(--space-2xs);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3xs);
+}
+
+.obra__name {
+  font-weight: var(--weight-bold);
+  color: var(--color-ink);
+}
+
+.obra__note {
+  font-size: var(--fs-small);
+  color: var(--color-muted);
+}
+
+/* ---------- Obra destacada ---------- */
+.obra--featured {
+  margin-top: var(--space-2xl);
+}
+
+.obra--featured img {
+  aspect-ratio: 4 / 5; /* retrato como el diseño */
+}
+
+.obra--featured .obra__name {
+  font-size: var(--fs-h3);
+}
+
+/* ---------- Texto puente (con regla) ---------- */
+.obras__bridge {
+  margin-top: var(--space-2xl);
+  max-width: 54ch;
+  font-size: 1.0625rem;
+  line-height: var(--lh-heading);
+  color: var(--color-ink);
+}
+
+.obras__bridge::before {
+  content: "";
+  display: block;
+  width: clamp(4rem, 12vw, 8rem);
+  height: 2px;
+  margin-bottom: var(--space-md);
+  background-color: var(--color-ink);
+}
+
+/* ---------- Galería ---------- */
+.obras__gallery {
+  margin-top: var(--space-xl);
+  display: grid;
+  gap: var(--space-lg) var(--space-md);
+}
+
+/* Díptico: dos paneles lado a lado + caption abajo */
+.obra--diptico {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2xs);
+}
+
+.obra--diptico .obra__caption {
+  grid-column: 1 / -1;
+}
+
+/* ---------- Tablet / desktop ---------- */
+@media (min-width: 768px) {
+  /* Destacada: imagen dominante + caption anclado al pie a la derecha */
+  .obra--featured {
+    display: grid;
+    grid-template-columns: 1.5fr 0.5fr;
+    align-items: end;
+    column-gap: var(--space-lg);
+  }
+
+  .obra--featured picture {
+    grid-column: 1;
+    height: clamp(360px, 56vh, 640px);
+  }
+
+  .obra--featured img {
+    height: 100%;
+    aspect-ratio: auto;
+  }
+
+  .obra--featured .obra__caption {
+    grid-column: 2;
+    align-self: end;
+    margin-top: 0;
+  }
+
+  /* Galería: 2 columnas (Frames I/II · San Jerónimo/Pescadores) */
+  .obras__gallery {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-xl) var(--space-lg);
+  }
+}

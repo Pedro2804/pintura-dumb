@@ -1,0 +1,111 @@
+/* ============================================================
+   SECCIÓN · Formar parte / Contacto — Pintura Dump
+   Fondo oscuro (ink). El protagonista visual es el STATEMENT (grande)
+   y el EMAIL (display). 2 columnas en desktop: texto izquierda,
+   beneficios derecha. Mobile-first.
+   ============================================================ */
+
+.contacto {
+  padding-block: var(--space-2xl);
+  padding-inline: var(--gutter);
+  background-color: var(--surface-dark);
+  color: var(--on-dark);
+}
+
+.contacto__eyebrow {
+  color: var(--color-muted-invert);
+}
+
+/* Título pequeño (el statement es el hero, no el título) */
+.contacto__title {
+  margin-top: var(--space-2xs);
+  font-size: var(--fs-h3);
+  color: var(--color-text-invert);
+}
+
+.contacto__statement {
+  margin-top: var(--space-lg);
+  max-width: 22ch;
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 1.1rem + 3vw, 2.75rem);
+  font-weight: var(--weight-display);
+  line-height: var(--lh-heading);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-text-invert);
+}
+
+.contacto__text {
+  margin-top: var(--space-md);
+  max-width: 50ch;
+  font-size: 0.9375rem;
+  color: var(--color-muted-invert);
+}
+
+/* Email como elemento display prominente */
+.contacto__email {
+  display: block;
+  width: fit-content;
+  margin-top: var(--space-lg);
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 1rem + 2.5vw, 2.75rem);
+  font-weight: var(--weight-display);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-text-invert);
+  transition: color var(--duration-base) var(--ease-out);
+}
+
+.contacto__email:hover,
+.contacto__email:focus-visible {
+  color: var(--color-accent-strong);
+}
+
+.contacto__cta {
+  display: inline-flex;
+  margin-top: var(--space-md);
+}
+
+/* ---------- Beneficios ---------- */
+.contacto__benefits {
+  margin-top: var(--space-2xl);
+  display: grid;
+  gap: var(--space-md);
+}
+
+.contacto__benefits li {
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-border-invert);
+  font-size: 1.125rem;
+  font-weight: var(--weight-semibold);
+  color: var(--on-dark);
+}
+
+.contacto__note {
+  margin-top: var(--space-2xl);
+  max-width: 42ch;
+  font-size: var(--fs-small);
+  color: var(--color-muted-invert);
+}
+
+/* ---------- Tablet / desktop: 2 columnas ----------
+   Todo el bloque de texto va a la izquierda; los beneficios a la
+   derecha, centrados verticalmente. Colocación en grid sin wrappers:
+   los beneficios son el único hijo que se manda a la columna 2. */
+@media (min-width: 768px) {
+  .contacto {
+    display: grid;
+    grid-template-columns: 1.25fr 0.75fr;
+    column-gap: var(--space-2xl);
+    align-items: start;
+  }
+
+  .contacto > *:not(.contacto__benefits) {
+    grid-column: 1;
+  }
+
+  .contacto__benefits {
+    grid-column: 2;
+    grid-row: 1 / -1;
+    align-self: center;
+    margin-top: 0;
+  }
+}

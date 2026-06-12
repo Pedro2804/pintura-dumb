@@ -5,5 +5,16 @@
 @import './styles/components/_buttons.css';
 @import './styles/components/_links.css';
 @import './styles/components/_header.css';
+@import './styles/components/_footer.css';
 @import './styles/sections/_hero.css';
+@import './styles/sections/_manifiesto.css';
+@import './styles/sections/_concepto.css';
+@import './styles/sections/_artista.css';
+@import './styles/sections/_exposicion.css';
+@import './styles/sections/_obras.css';
+@import './styles/sections/_archivo.css';
+@import './styles/sections/_contacto.css';
 @import './styles/sections/_video-intro.css';
+
+/* ⚠️ TEMPORAL — bordes de sección para depurar espaciado. Quitar. */
+@import './styles/base/_debug.css';

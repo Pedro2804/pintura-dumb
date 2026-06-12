@@ -1,0 +1,118 @@
+/* ============================================================
+   SECCIÓN · Archivo / "Continuidad" — Pintura Dump
+   Fondo claro (paper). Bloque de catálogo arriba (texto + CTA),
+   encabezado editorial (eyebrow, título, descripción, CTA) y galería
+   asimétrica con captions. Mobile-first.
+   El font-size del título lo gobierna _typography.css.
+   ============================================================ */
+
+.archivo {
+  padding-block: var(--space-xl) calc(var(--section-y) * 0.5);
+  padding-inline: var(--gutter);
+  background-color: var(--surface-light);
+  color: var(--on-light);
+}
+
+/* ---------- Catálogo: franja superior ---------- */
+.archivo__catalogo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-sm) var(--space-lg);
+  padding-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.archivo__catalogo-text {
+  max-width: 42ch;
+  font-size: 0.9375rem;
+  color: var(--color-muted);
+}
+
+.archivo__catalogo-cta {
+  flex-shrink: 0;
+}
+
+/* ---------- Encabezado ---------- */
+.archivo__eyebrow {
+  margin-top: var(--space-2xl);
+  color: var(--color-accent);
+}
+
+.archivo__title {
+  margin-top: var(--space-sm);
+  color: var(--color-ink);
+}
+
+.archivo__description {
+  margin-top: var(--space-md);
+  max-width: 48ch;
+  font-size: 0.9375rem;
+  color: var(--color-muted);
+}
+
+.archivo__cta {
+  display: inline-flex;
+  margin-top: var(--space-md);
+}
+
+/* ---------- Galería con captions ----------
+   Móvil: pieza dominante a sangre + 2 menores en fila. */
+.archivo__gallery {
+  margin-top: var(--space-xl);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+.archivo__gallery > li:first-child {
+  grid-column: 1 / -1;
+}
+
+.archivo picture {
+  display: block;
+  overflow: hidden;
+  background-color: var(--color-paper-dim);
+}
+
+.archivo__item img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+.archivo__item figcaption {
+  margin-top: var(--space-2xs);
+  font-size: var(--fs-small);
+  color: var(--color-muted);
+}
+
+/* ---------- Tablet / desktop: galería asimétrica acotada ----------
+   Alturas fijas por pieza (la imagen recorta); captions debajo; piezas
+   alineadas al pie → escalón editorial. */
+@media (min-width: 768px) {
+  .archivo__gallery {
+    grid-template-columns: 1.6fr 1fr 1fr;
+    align-items: end;
+  }
+
+  .archivo__gallery > li:first-child {
+    grid-column: auto;
+  }
+
+  .archivo__item picture {
+    height: clamp(280px, 40vh, 460px);
+  }
+
+  .archivo__gallery > li:nth-child(2) .archivo__item picture,
+  .archivo__gallery > li:nth-child(3) .archivo__item picture {
+    height: clamp(200px, 28vh, 320px);
+  }
+
+  .archivo__item img {
+    height: 100%;
+    aspect-ratio: auto;
+  }
+}

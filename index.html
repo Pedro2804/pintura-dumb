@@ -124,7 +124,7 @@
         </figure>
       </section>
 
-      <section id="manifiesto" class="manifiesto" aria-labelledby="manifiesto-title">
+      <section id="manifiesto" class="manifiesto section-fill" aria-labelledby="manifiesto-title">
         <p class="section-eyebrow">Manifiesto</p>
 
         <blockquote class="manifiesto__statement">
@@ -181,7 +181,7 @@
         </ul>
       </section>
 
-      <section id="concepto" class="concepto" aria-labelledby="concepto-title">
+      <section id="concepto" class="concepto section-fill" aria-labelledby="concepto-title">
         <p class="section-eyebrow concepto__eyebrow">Qué es Pintura Dump</p>
 
         <h2 id="concepto-title" class="concepto__title">
@@ -195,11 +195,11 @@
 
           <p>La imagen digital pasa. La pintura conserva.</p>
 
-          <a class="concepto__cta" href="#artista">Ver quién lo nombra</a>
+          <a class="concepto__cta link-cta" href="#artista">Ver quién lo nombra</a>
         </div>
       </section>
 
-      <section id="artista" class="artista" aria-labelledby="artista-title">
+      <section id="artista" class="artista section-fill" aria-labelledby="artista-title">
         <p class="section-eyebrow artista__eyebrow">Autoría</p>
 
         <h2 id="artista-title" class="artista__title">Jarett Aramis.</h2>
@@ -238,54 +238,58 @@
         </div>
       </section>
 
-      <section id="exposicion" class="exposicion" aria-labelledby="exposicion-title">
-        <p class="section-eyebrow exposicion__eyebrow">Exposición / Primera sede</p>
+      <section id="exposicion" class="exposicion section-fill" aria-labelledby="exposicion-title">
+        <div class="exposicion__main">
+          <p class="section-eyebrow exposicion__eyebrow">Exposición / Primera sede</p>
 
-        <h2 id="exposicion-title" class="exposicion__title">
-          El museo no decora el fenómeno: lo pone frente al mundo.
-        </h2>
+          <h2 id="exposicion-title" class="exposicion__title">
+            El museo no decora el fenómeno: lo pone frente al mundo.
+          </h2>
 
-        <p class="exposicion__description">
-          Pintura Dump tiene su primer contacto público en el Museo Internacional del Barroco. 6 dibujos. 42 pinturas. Una era puesta frente a sí misma.
-        </p>
+          <p class="exposicion__description">
+            Pintura Dump tiene su primer contacto público en el Museo Internacional del Barroco. 6 dibujos. 42 pinturas. Una era puesta frente a sí misma.
+          </p>
 
-        <dl class="exposicion__data">
-          <div class="exposicion__row">
-            <dt>Sede</dt>
-            <dd>Museo Internacional del Barroco</dd>
-          </div>
-          <div class="exposicion__row">
-            <dt>Apertura</dt>
-            <dd>
-              <time datetime="2026-11-13T18:33:00-06:00">13 noviembre 2026 · 6:33 p.m.</time>
-            </dd>
-          </div>
-          <div class="exposicion__row">
-            <dt>Cuerpo de obra</dt>
-            <dd>6 dibujos y 42 pinturas · 48 obras</dd>
-          </div>
-          <div class="exposicion__row">
-            <dt>Cierre</dt>
-            <dd><time datetime="2027-03-07">07 de marzo de 2027</time></dd>
-          </div>
-        </dl>
+          <dl class="exposicion__data">
+            <div class="exposicion__row">
+              <dt>Sede</dt>
+              <dd>Museo Internacional del Barroco</dd>
+            </div>
+            <div class="exposicion__row">
+              <dt>Apertura</dt>
+              <dd>
+                <time datetime="2026-11-13T18:33:00-06:00">13 noviembre 2026 · 6:33 p.m.</time>
+              </dd>
+            </div>
+            <div class="exposicion__row">
+              <dt>Cuerpo de obra</dt>
+              <dd>6 dibujos y 42 pinturas · 48 obras</dd>
+            </div>
+            <div class="exposicion__row">
+              <dt>Cierre</dt>
+              <dd><time datetime="2027-03-07">07 de marzo de 2027</time></dd>
+            </div>
+          </dl>
 
-        <a class="exposicion__cta" href="#obras">Ver obras</a>
+          <a class="exposicion__cta link-cta" href="#obras">Ver obras</a>
+        </div>
 
-        <figure class="exposicion__media">
-          <picture>
-            <img
-              src="/assets/obra-placeholder.svg"
-              alt="Fachada del Museo Internacional del Barroco"
-              width="800"
-              height="800"
-              loading="lazy"
-            />
-          </picture>
-          <figcaption>Museo Internacional del Barroco</figcaption>
-        </figure>
+        <div class="exposicion__aside">
+          <figure class="exposicion__media">
+            <picture>
+              <img
+                src="/assets/obra-placeholder.svg"
+                alt="Fachada del Museo Internacional del Barroco"
+                width="800"
+                height="800"
+                loading="lazy"
+              />
+            </picture>
+            <figcaption>Museo Internacional del Barroco</figcaption>
+          </figure>
 
-        <p class="exposicion__tags">Arquitectura · autoridad · escala</p>
+          <p class="exposicion__tags">Arquitectura · autoridad · escala</p>
+        </div>
       </section>
 
       <section id="obras" class="obras" aria-labelledby="obras-title">
@@ -401,7 +405,7 @@
             Para conocer obra disponible de Jarett Aramis, solicite el catálogo oficial.
           </p>
           <a
-            class="archivo__catalogo-cta"
+            class="archivo__catalogo-cta link-cta"
             href="mailto:contacto@pinturadump.com?subject=Solicitud%20de%20cat%C3%A1logo%20oficial"
           >
             Solicitar catálogo
@@ -416,7 +420,7 @@
           El archivo no cierra el fenómeno. Registra cómo se construye, circula y vuelve a aparecer.
         </p>
 
-        <a class="archivo__cta" href="#manifiesto">Seguir el fenómeno</a>
+        <a class="archivo__cta link-cta" href="#manifiesto">Seguir el fenómeno</a>
 
         <ul class="archivo__gallery">
           <li>
@@ -482,7 +486,7 @@
         <a class="contacto__email" href="mailto:contacto@pinturadump.com">contacto@pinturadump.com</a>
 
         <a
-          class="contacto__cta"
+          class="contacto__cta link-cta"
           href="mailto:contacto@pinturadump.com?subject=Formar%20parte%20de%20Pintura%20Dump"
         >
           Abrir conversación

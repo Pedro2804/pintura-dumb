@@ -26,25 +26,29 @@
   -webkit-backdrop-filter: blur(12px);
 }
 
-/* Offset para que los anchors no queden ocultos bajo la nav fija. */
+/* Offset del aterrizaje de anclas: debe ser ≤ alto de la nav (al
+   navegar, la nav está en estado scrolled, ~3rem). Si fuera mayor,
+   entre el borde de la nav y el inicio de la sección se asomaría una
+   franja de la sección anterior. Con 3rem la siguiente sección inicia
+   justo bajo la nav, sin franja. */
 html {
-  scroll-padding-top: 5rem;
+  scroll-padding-top: 3rem;
 }
 
 .site-nav {
   display: flex;
-  align-items: flex-start;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: center;
   color: var(--on-dark);
 }
 
 /* ---------- Menú (desktop) ---------- */
 .site-nav__menu {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
-  justify-content: flex-end;
-  gap: var(--space-xs) var(--space-md);
+  justify-content: center;
+  gap: var(--space-md);
 }
 
 .site-nav__link,
@@ -69,13 +73,6 @@ html {
 .site-nav__link:focus-visible,
 .site-nav__link[aria-current="true"] {
   opacity: 1;
-}
-
-/* CTA "Formar parte" → forzado a una segunda línea, alineado a la derecha (como el diseño) */
-.site-nav__menu > li:last-child {
-  flex-basis: 100%;
-  display: flex;
-  justify-content: flex-end;
 }
 
 .site-nav__cta {
@@ -172,9 +169,5 @@ body.has-menu-open {
   /* Abierto: el JS pone aria-expanded="true" en el toggle */
   .site-nav__toggle[aria-expanded="true"] ~ .site-nav__menu {
     display: flex;
-  }
-
-  .site-nav__menu > li:last-child {
-    flex-basis: auto;
   }
 }

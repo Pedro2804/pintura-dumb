@@ -1,0 +1,96 @@
+/* ============================================================
+   SECCIÓN · Artista / "Jarett" — Pintura Dump
+   Fondo claro (paper). Bloque de texto arriba-izquierda (eyebrow,
+   título, lede, bio) + media editorial: retrato dominante a la
+   izquierda e imagen menor con caption al pie a la derecha.
+   Cubre el viewport vía .section-fill. Mobile-first.
+   El font-size del título lo gobierna _typography.css (.artista__title).
+   ============================================================ */
+
+.artista {
+  padding-block: var(--space-xl) calc(var(--section-y) * 0.4);
+  padding-inline: var(--gutter);
+  background-color: var(--surface-light);
+  color: var(--on-light);
+}
+
+.artista__title {
+  margin-top: var(--space-sm);
+  color: var(--color-ink);
+}
+
+.artista__lede {
+  margin-top: var(--space-md);
+  max-width: 42ch;
+  font-size: var(--fs-h3);
+  font-weight: var(--weight-regular);
+  line-height: var(--lh-heading);
+  color: var(--color-ink);
+}
+
+.artista__bio {
+  margin-top: var(--space-sm);
+  max-width: 56ch;
+  font-size: 0.9375rem;
+  color: var(--color-muted);
+}
+
+/* ---------- Media ----------
+   Móvil: apila (retrato, luego presencia). */
+.artista__media {
+  margin-top: var(--space-xl);
+  display: grid;
+  gap: var(--space-md);
+}
+
+.artista picture {
+  display: block;
+  overflow: hidden;
+  background-color: var(--color-paper-dim); /* fondo placeholder mientras carga */
+}
+
+.artista__media img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.artista__presence figcaption {
+  margin-top: var(--space-2xs);
+  font-size: var(--fs-small);
+  color: var(--color-muted);
+}
+
+/* ---------- Tablet / desktop: media asimétrica acotada ----------
+   Retrato dominante (alto, columna izq.) + presencia menor al pie
+   derecho. La altura la fija la fila (clamp con vh). */
+@media (min-width: 768px) {
+  .artista__media {
+    grid-template-columns: 1.5fr 1fr;
+    grid-template-rows: clamp(360px, 52vh, 600px);
+    align-items: end;
+    column-gap: var(--space-lg);
+  }
+
+  .artista__portrait {
+    grid-column: 1;
+    grid-row: 1;
+    height: 100%;
+  }
+
+  .artista__portrait picture,
+  .artista__portrait img {
+    height: 100%;
+  }
+
+  /* presencia: menor, anclada al pie de la fila */
+  .artista__presence {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: end;
+  }
+
+  .artista__presence img {
+    height: clamp(200px, 26vh, 320px);
+  }
+}

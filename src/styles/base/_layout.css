@@ -46,3 +46,16 @@
 .section {
   padding-block: var(--section-y);
 }
+
+/* ---------- Sección que cubre el viewport ----------
+   min-height (NO height): la sección cubre la pantalla pero CRECE si el
+   contenido es más alto, sin cortarlo nunca (clave para pantallas chicas).
+   flex column: cada sección distribuye su contenido a su manera —
+   `justify-content: center` para centrar, o `margin-top: auto` en un hijo
+   para anclarlo al pie. Se aplica con la clase en el <section>. */
+.section-fill {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}

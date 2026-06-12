@@ -55,9 +55,16 @@ h3 {
   color: var(--color-text);
 }
 
-/* El statement del manifiesto es el título más grande del sitio */
-.manifiesto__quote {
-  font-size: var(--fs-display);
+/* Títulos de sección (editoriales, contenidos): más chicos que
+   --fs-display (reservado al Hero). Tamaño compartido para mantener
+   ritmo visual consistente entre secciones. */
+.manifiesto__quote,
+.concepto__title,
+.artista__title,
+.exposicion__title,
+.archivo__title,
+.obras__title {
+  font-size: clamp(2rem, 1.1rem + 4vw, 2.5rem);
 }
 
 /* ---------- Eyebrow (label en mayúsculas con tracking) ---------- */

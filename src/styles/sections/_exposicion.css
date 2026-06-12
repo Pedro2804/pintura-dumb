@@ -1,0 +1,111 @@
+/* ============================================================
+   SECCIÓN · Exposición / "Primera sede" — Pintura Dump
+   Fondo claro (paper). 2 columnas: izquierda el bloque informativo
+   (eyebrow, título, regla, descripción, datos <dl>, CTA); derecha la
+   imagen de la sede + tags. Cubre el viewport vía .section-fill.
+   Mobile-first: apila (main arriba, aside debajo).
+   El font-size del título lo gobierna _typography.css.
+   ============================================================ */
+
+.exposicion {
+  padding-block: var(--space-xl);
+  padding-inline: var(--gutter);
+  background-color: var(--surface-light);
+  color: var(--on-light);
+}
+
+/* Eyebrow en acento (óxido), como el diseño */
+.exposicion__eyebrow {
+  color: var(--color-accent);
+}
+
+.exposicion__title {
+  margin-top: var(--space-sm);
+  max-width: 18ch;
+  color: var(--color-ink);
+}
+
+/* Regla editorial corta bajo el título */
+.exposicion__title::after {
+  content: "";
+  display: block;
+  width: clamp(5rem, 14vw, 10rem);
+  height: 2px;
+  margin-top: var(--space-md);
+  background-color: var(--color-ink);
+}
+
+.exposicion__description {
+  margin-top: var(--space-md);
+  max-width: 46ch;
+  font-size: 0.9375rem;
+  color: var(--color-muted);
+}
+
+/* ---------- Datos (dl): label en acento + valor en negrita ---------- */
+.exposicion__data {
+  margin-top: var(--space-lg);
+  display: grid;
+  gap: var(--space-md);
+}
+
+.exposicion__row {
+  display: grid;
+  gap: var(--space-3xs);
+}
+
+.exposicion__data dt {
+  font-size: var(--fs-eyebrow);
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-eyebrow);
+  color: var(--color-accent);
+}
+
+.exposicion__data dd {
+  font-size: 1.125rem;
+  font-weight: var(--weight-bold);
+  color: var(--color-ink);
+}
+
+.exposicion__cta {
+  margin-top: var(--space-lg);
+}
+
+/* ---------- Aside: imagen de la sede + tags ---------- */
+.exposicion picture {
+  display: block;
+  overflow: hidden;
+  background-color: var(--color-paper-dim); /* fondo placeholder mientras carga */
+}
+
+.exposicion__media img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.exposicion__media figcaption {
+  margin-top: var(--space-2xs);
+  font-size: var(--fs-small);
+  color: var(--color-muted);
+}
+
+.exposicion__tags {
+  margin-top: var(--space-md);
+  font-size: var(--fs-small);
+  letter-spacing: 0.04em;
+  color: var(--color-muted);
+}
+
+/* ---------- Tablet / desktop: 2 columnas ---------- */
+@media (min-width: 768px) {
+  .exposicion {
+    display: grid;
+    grid-template-columns: 0.85fr 1.15fr; /* texto / imagen (imagen más ancha) */
+    column-gap: var(--space-2xl);
+    align-items: start;
+    align-content: center; /* centra el bloque en el viewport (.section-fill) */
+  }
+}
