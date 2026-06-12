@@ -4,3 +4,6 @@
 @import './styles/base/_layout.css';
 @import './styles/components/_buttons.css';
 @import './styles/components/_links.css';
+@import './styles/components/_header.css';
+@import './styles/sections/_hero.css';
+@import './styles/sections/_video-intro.css';

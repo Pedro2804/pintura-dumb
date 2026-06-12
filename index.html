@@ -25,6 +25,8 @@
   <body>
     <a class="skip-link" href="#contenido-principal">Saltar al contenido</a>
 
+    <div class="app-alert" data-alert role="alert" hidden></div>
+
     <header class="site-header" data-site-header>
       <nav class="site-nav" aria-label="Navegación principal">
         <button
@@ -101,7 +103,7 @@
 
           <button
             type="button"
-            class="hero__video-trigger"
+            class="hero__video-trigger link-cta"
             data-video-intro-trigger
           >
             Repetir video
@@ -523,7 +525,7 @@
         <button
           type="button"
           class="video-intro__btn video-intro__btn--unmute"
-          aria-pressed="true"
+          aria-pressed="false"
           data-video-intro-unmute
         >
           <span class="visually-hidden">Activar audio</span>

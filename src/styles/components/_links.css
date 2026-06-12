@@ -14,7 +14,7 @@
   font-weight: var(--weight-semibold);
   text-transform: uppercase;
   letter-spacing: var(--tracking-eyebrow);
-  color: var(--color-text);
+  color: inherit; /* toma el color del contexto: ink en claro, cream en oscuro */
   transition: color var(--duration-base) var(--ease-out);
 }
 

@@ -1,0 +1,171 @@
+/* ============================================================
+   SECCIÓN · Hero — Pintura Dump
+   Cabe en el viewport (el countdown se ve sin scroll).
+   Móvil: imagen de fondo + scrim. Desktop: split 2 columnas.
+   ============================================================ */
+
+.hero {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: var(--surface-dark);
+  color: var(--on-dark);
+}
+
+/* ---------- Media: fondo a sangre en móvil ---------- */
+.hero__media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+/* Scrim para que el texto cream sea legible sobre la imagen (móvil) */
+.hero__media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    color-mix(in srgb, var(--color-ink) 92%, transparent),
+    color-mix(in srgb, var(--color-ink) 55%, transparent)
+  );
+}
+
+.hero__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---------- Contenido ---------- */
+.hero__intro {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  /* top: librar la nav fija (~5rem) + aire; sin excesos que provoquen scroll */
+  padding: calc(5rem + var(--space-md)) var(--gutter) var(--space-lg);
+}
+
+.hero__eyebrow {
+  margin-bottom: var(--space-sm);
+  color: var(--color-muted-invert);
+}
+
+.hero__title {
+  color: var(--color-text-invert);
+}
+
+.hero__subtitle {
+  margin-top: var(--space-sm);
+  max-width: 26ch;
+  font-size: var(--fs-h3);
+  font-weight: var(--weight-regular);
+  line-height: var(--lh-heading);
+  color: var(--on-dark);
+}
+
+.hero__byline {
+  margin-top: var(--space-xs);
+  color: var(--color-muted-invert);
+}
+
+.hero__byline strong {
+  color: var(--on-dark);
+}
+
+/* ---------- Bloque inferior: evento + countdown + trigger ----------
+   margin-top:auto lo manda al fondo del viewport (sin padding extra que desborde). */
+.hero__event {
+  margin-top: auto;
+  padding-top: var(--space-lg);
+  font-size: var(--fs-small);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-muted-invert);
+}
+
+.hero__venue {
+  color: var(--on-dark);
+}
+
+.hero__lede {
+  margin-top: var(--space-sm);
+  max-width: 34ch;
+  color: var(--on-dark);
+}
+
+.hero__video-trigger {
+  margin-top: var(--space-md);
+  align-self: flex-start;
+}
+
+/* ---------- Countdown ---------- */
+.countdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm) var(--space-md);
+  margin-top: var(--space-sm);
+}
+
+.countdown__separator {
+  display: none; /* el diseño separa por espacio, no por ":" */
+}
+
+.countdown__unit {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3xs);
+}
+
+.countdown__value {
+  font-family: var(--font-display);
+  font-weight: var(--weight-display);
+  font-size: clamp(1.75rem, 1.1rem + 2.6vw, 3rem);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-invert);
+}
+
+.countdown__label {
+  font-size: var(--fs-eyebrow);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-eyebrow);
+  color: var(--color-muted-invert);
+}
+
+/* ---------- Desktop: split en 2 columnas ---------- */
+@media (min-width: 1024px) {
+  .hero {
+    display: grid;
+    grid-template-columns: 5fr 7fr; /* texto más estrecho, imagen amplia */
+    /* La fila ocupa el viewport; crece solo si el contenido lo excede.
+       Evita que la imagen dicte una altura mayor a la pantalla. */
+    grid-template-rows: minmax(100dvh, auto);
+  }
+
+  /* La imagen ocupa su columna sin dictar la altura del Hero. */
+  .hero__media {
+    position: relative;
+    inset: auto;
+    z-index: auto;
+    overflow: hidden;
+  }
+
+  .hero__media::after {
+    display: none; /* sin scrim en desktop: imagen limpia a la derecha */
+  }
+
+  .hero__image {
+    position: absolute;
+    inset: 0;
+  }
+
+  .hero__intro {
+    z-index: auto;
+  }
+}
