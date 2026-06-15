@@ -1,4 +1,129 @@
 /* ============================================================
-   SECCIÓN · ¿Qué es pintura dump? (#fenomeno) — OSCURA
-   Pendiente FASE 4-BIS. Validar contra .ai/img_page/que-es.png
+   SECCIÓN · ¿Qué es pintura dump? (#fenomeno)
+   Imagen (rostro pintado) full-bleed de FONDO + contenido
+   superpuesto a la DERECHA. La pintura ya trae su propio fondo
+   (lienzo gris claro a la derecha), así que el texto va OSCURO
+   (azul noche) sobre él — SIN velo/scrim.
+   Encuadre: anclado ARRIBA (la cabeza) → baja hasta donde alcance
+   la pantalla, mostrando hasta ~media altura del pecho.
+   Anula el grid del componente _section-split para esta sección.
+   Referencia: .ai/img_page/que-es.png
    ============================================================ */
+
+.fenomeno {
+  position: relative;
+  isolation: isolate; /* raíz de apilamiento: imagen detrás, texto delante */
+  display: flex; /* anula el grid de .section-split */
+  /* Altura ajustada a la pantalla (no forzada: es min-height, crece con el
+     contenido). 100dvh = viewport dinámico (descuenta el chrome móvil). */
+  min-height: 100vh; /* fallback navegadores sin dvh */
+  min-height: 100dvh;
+  /* Aterrizaje de ancla a SANGRE: cancela el scroll-padding-top global (3rem)
+     para que, al navegar a #fenomeno, la sección quede a tope arriba y el
+     menú fijo se SOBREPONGA a la imagen (no que empiece debajo de la nav). */
+  scroll-margin-top: -3rem;
+  overflow: hidden;
+  /* Texto oscuro: reasigno los tokens en el subárbol → título, frase
+     madre y cuerpo voltean a azul noche automáticamente. */
+  --color-text: var(--color-ink);
+  --color-text-muted: var(--color-text-muted-on-light);
+  color: var(--color-text);
+  background-color: var(--surface-light); /* fallback claro si la imagen no carga */
+}
+
+/* ---------- Imagen de fondo a sangre ---------- */
+.fenomeno__media {
+  position: absolute; /* anula el position:relative del componente */
+  inset: 0;
+  z-index: 0; /* detrás del contenido (que va a z-index 1) */
+  aspect-ratio: auto; /* anula el 4/5 móvil del componente */
+}
+
+.fenomeno__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Anclado ARRIBA: el borde superior (la cabeza) queda fijo y el
+     recorte de cover se come el cuerpo por ABAJO. Sin zoom (transform)
+     → es el encuadre más "alejado" posible con full-bleed. */
+  object-position: center top;
+}
+
+/* ---------- Contenido superpuesto (transparente, texto oscuro) ---------- */
+.fenomeno__content {
+  position: relative;
+  z-index: 1; /* sobre la imagen */
+  margin-left: auto; /* empuja el bloque a la derecha (sobre el lienzo claro) */
+  background: transparent;
+  /* Padding PROPIO de Fenómeno (la primera sección respira menos): la mitad
+     del padding del componente compartido. Override local → no afecta a las
+     demás secciones split ni al Hero. */
+  padding: calc(var(--section-y) / 2) calc(var(--gutter) / 2);
+}
+
+/* Tablet+: el bloque de texto ocupa la MITAD derecha de la pantalla. */
+@media (min-width: 768px) {
+  .fenomeno__content {
+    width: 50%;
+  }
+}
+
+/* CTA "Formar parte" sobre la imagen: oscuro como en la captura. */
+.fenomeno .media-cta {
+  color: var(--color-ink);
+  text-shadow: none;
+}
+
+/* Título CENTRADO sobre el ancho del bloque de texto (align-self:stretch
+   hace que ocupe todo el ancho del contenido y text-align:center lo centra
+   respecto a ese ancho), como en la captura. */
+.fenomeno__title {
+  align-self: stretch;
+  text-align: center;
+  font-size: clamp(2.25rem, 1.4rem + 3.2vw, 3.25rem);
+}
+
+/* Subtítulo (frase madre) JUSTIFICADO, sin partir palabras. */
+.fenomeno__lead {
+  text-align: justify;
+}
+
+/* Cuerpo: los 3 párrafos (sin clase) atenuados y JUSTIFICADOS.
+   Sin hyphens: no se cortan palabras con guion al final de línea. */
+.fenomeno__content > p:not([class]) {
+  color: var(--color-text-muted);
+  text-align: justify;
+}
+
+/* Cierre: intensidad plena (hereda --color-text) + Semibold (<strong>). */
+.fenomeno__closing {
+  text-align: justify;
+}
+
+/* ============================================================
+   Móvil (< 768px): la imagen llena la pantalla y la figura crece,
+   así que el texto oscuro se pierde sobre la obra. Solución:
+   texto CLARO + velo azul MÍNIMO (para no tapar la obra) + sombra
+   de texto que da el contraste LOCAL (halo), no oscureciendo todo.
+   ============================================================ */
+@media (max-width: 767px) {
+  /* Texto a blanco (reasigno tokens → título, frase madre y cuerpo voltean). */
+  .fenomeno {
+    --color-text: var(--color-white);
+    --color-text-muted: rgba(255, 255, 255, 0.85);
+  }
+
+  /* CTA "Formar parte" también claro. */
+  .fenomeno .media-cta {
+    color: var(--color-white);
+    text-shadow: 0 1px 10px rgba(0, 0, 51, 0.85);
+  }
+
+  /* Sin velo azul: el contraste lo da SOLO la sombra del texto, para no
+     tapar la obra (es la pieza a mostrar). Doble capa: halo amplio + filo. */
+  .fenomeno__content {
+    text-shadow:
+      0 1px 12px rgba(0, 0, 51, 0.9),
+      0 0 2px rgba(0, 0, 51, 0.7);
+  }
+}

@@ -46,12 +46,21 @@
   font-weight: var(--weight-black);
   font-size: var(--fs-small);
   letter-spacing: var(--tracking-tight);
-  color: inherit; /* hereda el color que conmuta el header (blanco/azul noche) */
+  /* Color DESACOPLADO del nav: la marca cae arriba-izq y a veces sobre un
+     fondo distinto al de los links. nav.js conmuta [data-brand-on]; por
+     defecto la marca es BLANCA (fondo oscuro), y pasa a azul noche cuando
+     su fondo es claro (data-brand-on="light"). */
+  color: var(--color-white);
   opacity: 0;
   visibility: hidden;
   transition:
     opacity var(--duration-base) var(--ease-out),
     visibility var(--duration-base) var(--ease-out);
+}
+
+/* Marca sobre fondo CLARO → azul noche. */
+.site-header[data-brand-on="light"] .site-header__brand {
+  color: var(--color-ink);
 }
 
 .site-header[data-scrolled="true"] .site-header__brand {

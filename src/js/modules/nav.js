@@ -25,17 +25,23 @@ export function initNav() {
 
     // Color de la nav según el fondo de la sección que queda BAJO la barra:
     // fondo claro (data-nav-theme="light") → letras oscuras; oscuro (default) → blancas.
+    // La MARCA ("Pintura dump.", arriba-izq) puede caer sobre un fondo distinto al
+    // de los links (arriba-der). data-brand-theme la controla por separado; si no
+    // se declara, la marca sigue al tema del nav.
     const updateNavTheme = () => {
       const line = header.offsetHeight / 2; // punto de referencia dentro de la barra fija
-      let theme = 'dark';
+      let navTheme = 'dark';
+      let brandTheme = 'dark';
       for (const section of themeSections) {
         const rect = section.getBoundingClientRect();
         if (rect.top <= line && rect.bottom > line) {
-          theme = section.dataset.navTheme === 'light' ? 'light' : 'dark';
+          navTheme = section.dataset.navTheme === 'light' ? 'light' : 'dark';
+          brandTheme = section.dataset.brandTheme || navTheme; // override por sección
           break;
         }
       }
-      header.dataset.navOn = theme;
+      header.dataset.navOn = navTheme;
+      header.dataset.brandOn = brandTheme;
     };
 
     const onScroll = () => {

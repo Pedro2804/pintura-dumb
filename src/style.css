@@ -15,6 +15,7 @@
 @import './styles/components/_links.css';
 @import './styles/components/_header.css';
 @import './styles/components/_footer.css';
+@import './styles/components/_section-split.css';
 
 /* ---------- Secciones (orden de aparición) ---------- */
 @import './styles/sections/_hero.css';
