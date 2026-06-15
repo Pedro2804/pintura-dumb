@@ -6,32 +6,36 @@
    ============================================================ */
 
 :root {
-  /* ---------- Color · base ---------- */
-  --color-ink: #171412;        /* near-black cálido: texto sobre claro y fondos oscuros */
-  --color-ink-soft: #221e1a;   /* superficie oscura alterna (capas sutiles) */
-  --color-paper: #f7f3ec;      /* crema cálido: fondo de secciones claras */
-  --color-paper-dim: #eee8dd;  /* crema secundario: cajas / superficies sutiles */
-  --color-cream: #dddad6;      /* off-white: texto sobre oscuro */
+  /* ---------- Color · paleta oficial MASSIMO (primitivas) ----------
+     ÚNICA fuente de color autorizada. NO crear colores nuevos.
+     Las neutras (texto secundario, bordes) se derivan por OPACIDAD
+     del blanco / azul noche — no son colores nuevos, son la misma
+     paleta con alfa. */
+  --color-ink:     #000033;  /* "negro" oficial: azul noche — fondo oscuro principal */
+  --color-ink-alt: #11234D;  /* azul: superficies secundarias oscuras */
+  --color-white:   #FFFFFF;  /* texto sobre oscuro / fondo claro */
+  --color-accent:  #660F0A;  /* rojo: acento FUNCIONAL únicamente (subrayado activo, hover line, segundos) */
 
-  /* ---------- Color · texto ---------- */
-  --color-text: var(--color-ink);          /* texto principal sobre claro */
-  --color-text-invert: var(--color-cream); /* texto principal sobre oscuro */
-  --color-muted: #635d55;                  /* gris cálido: texto secundario sobre claro (AA) */
-  --color-muted-invert: #8a857d;           /* gris: texto secundario sobre oscuro */
+  /* ---------- Color · texto sobre oscuro (modo dominante) ---------- */
+  --color-text:       var(--color-white);        /* texto principal sobre oscuro */
+  --color-text-muted: rgba(255, 255, 255, 0.66); /* secundario (deriva del blanco) */
+  --color-text-faint: rgba(255, 255, 255, 0.45); /* datos / labels atenuados */
 
-  /* ---------- Color · acento ---------- */
-  --color-accent: #7b2925;        /* rust / óxido: eyebrows, labels, detalles */
-  --color-accent-strong: #9c3a2e; /* variante más viva (acento sobre oscuro / hover) */
+  /* ---------- Color · texto sobre claro (secciones en blanco) ---------- */
+  --color-text-on-light:       var(--color-ink);        /* texto principal sobre claro */
+  --color-text-muted-on-light: rgba(0, 0, 51, 0.66);    /* secundario sobre claro */
 
   /* ---------- Color · semánticos de superficie ---------- */
-  --surface-light: var(--color-paper);
-  --surface-dark: var(--color-ink);
-  --on-light: var(--color-ink);
-  --on-dark: var(--color-cream);
+  --surface-dark:     var(--color-ink);      /* fondo principal */
+  --surface-dark-alt: var(--color-ink-alt);  /* capa secundaria oscura */
+  --surface-light:    var(--color-white);    /* fondo claro */
+  --on-dark:          var(--color-white);
+  --on-light:         var(--color-ink);
 
   /* ---------- Color · bordes / líneas ---------- */
-  --color-border: rgba(23, 20, 18, 0.18);         /* línea sutil sobre claro */
-  --color-border-invert: rgba(247, 243, 236, 0.2); /* línea sutil sobre oscuro */
+  --color-border:        rgba(255, 255, 255, 0.16); /* línea sutil sobre oscuro */
+  --color-border-light:  rgba(0, 0, 51, 0.14);      /* línea sutil sobre claro */
+  --color-line-accent:   var(--color-accent);       /* subrayado / hover activo (rojo) */
 
   /* ---------- Tipografía · familias (definidas en _typography.css) ----------
      --font-display y --font-body viven en _typography.css */

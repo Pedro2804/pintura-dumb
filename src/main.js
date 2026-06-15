@@ -1,5 +1,10 @@
-import '@fontsource-variable/playfair-display';
-import '@fontsource-variable/inter';
+// Poppins — única tipografía del sistema (guía MASSIMO).
+// Subset latin: suficiente para es-MX (acentos, ñ, ¿¡). Evita cargar
+// cirílico/devanagari/latin-ext que no se usan. Pesos: 400/500/600/900.
+import '@fontsource/poppins/latin-400.css';
+import '@fontsource/poppins/latin-500.css';
+import '@fontsource/poppins/latin-600.css';
+import '@fontsource/poppins/latin-900.css';
 import './style.css';
 
 import { initCountdown } from './js/modules/countdown.js';

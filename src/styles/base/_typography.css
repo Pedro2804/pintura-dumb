@@ -1,22 +1,24 @@
 /* ============================================================
-   TIPOGRAFÍA EDITORIAL — Pintura Dump
-   El diseño es 100% sans-serif: títulos en Inter pesado
-   (grotesque) y body en Inter regular. Playfair queda sin uso.
+   TIPOGRAFÍA — Pintura dump.
+   Sistema 100% Poppins (única fuente autorizada por MASSIMO).
+   Títulos en Black (900), cuerpo en Regular (400), labels en
+   Semibold (600), navegación en Medium (500).
+   Solo se cargan esos 4 pesos: NO usar 700/800 (provocaría
+   faux-bold sintético y se vería deformado).
    ============================================================ */
 
 :root {
-  /* Display e interfaz comparten Inter (el diseño no usa serifas).
-     Si se adopta una fuente display propia, basta cambiar
-     --font-display aquí — el resto del sistema no se entera. */
-  --font-display: 'Inter Variable', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-  --font-body: 'Inter Variable', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  /* Display e interfaz comparten Poppins (el diseño no usa serifas).
+     El stack de respaldo es sistema sans-serif por si la web font
+     no carga (evita FOIT prolongado). */
+  --font-display: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-body: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
 
-  /* Pesos */
+  /* Pesos — solo los 4 cargados (@fontsource/poppins) */
   --weight-regular: 400;
-  --weight-medium: 500;
-  --weight-semibold: 600;
-  --weight-bold: 700;
-  --weight-display: 800; /* títulos editoriales: grotesque pesado */
+  --weight-medium: 500;   /* navegación */
+  --weight-semibold: 600; /* labels / datos */
+  --weight-black: 900;    /* títulos editoriales y frases madre */
 }
 
 body {
@@ -28,11 +30,11 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* ---------- Títulos display (Inter pesado, denso) ---------- */
+/* ---------- Títulos display (Poppins Black, denso) ---------- */
 h1,
 h2 {
   font-family: var(--font-display);
-  font-weight: var(--weight-display);
+  font-weight: var(--weight-black);
   line-height: var(--lh-display);
   letter-spacing: var(--tracking-display);
   color: var(--color-text);
@@ -49,7 +51,7 @@ h2 {
 h3 {
   font-family: var(--font-display);
   font-size: var(--fs-h3);
-  font-weight: var(--weight-bold);
+  font-weight: var(--weight-semibold);
   line-height: var(--lh-heading);
   letter-spacing: var(--tracking-tight);
   color: var(--color-text);
@@ -74,11 +76,11 @@ h3 {
   font-weight: var(--weight-semibold);
   text-transform: uppercase;
   letter-spacing: var(--tracking-eyebrow);
-  color: var(--color-muted);
+  color: var(--color-text-muted);
 }
 
 /* ---------- Énfasis ---------- */
 strong,
 b {
-  font-weight: var(--weight-bold);
+  font-weight: var(--weight-semibold);
 }
