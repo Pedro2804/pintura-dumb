@@ -1,5 +1,70 @@
 /* ============================================================
    SECCIÓN · Del vertedero a la trascendencia. (#dump) — CLARA
-   Selector de obra (grid 2×2). Pendiente FASE 4-BIS.
-   Validar contra .ai/img_page/Dump.png
+   Selector de obra con miniaturas en GRID 2×2 (izquierda) y
+   obra principal con flechas (derecha). El layout base vive en
+   el componente compartido _section-works. Aquí solo lo
+   ESPECÍFICO de Dump: tamaño/alineación del título y acotado
+   de la rejilla de miniaturas.
+   Referencia: .ai/img_page/Dump.png
    ============================================================ */
+
+/* Padding vertical un poco más corto que el del componente (--section-y),
+   manteniendo el horizontal (--gutter) que viene del componente. */
+.dump {
+  padding-block: calc(var(--section-y) * 0.65);
+}
+
+/* Título display, alineado a la izquierda, en Poppins Black. */
+.dump__title {
+  font-family: var(--font-display);
+  font-weight: var(--weight-black);
+  font-size: clamp(2.5rem, 1.5rem + 3.5vw, 4rem);
+  line-height: var(--lh-heading);
+  letter-spacing: var(--tracking-display);
+}
+
+/* En desktop la rejilla 2×2 no necesita ocupar todo el ancho de la
+   columna: se acota para conservar miniaturas compactas (como en la
+   captura, donde forman un bloque cuadrado bajo el título). */
+@media (min-width: 768px) {
+  /* Dos columnas EXACTAMENTE a la mitad (50/50): texto izq. / obra der.
+     Anula el 44%/56% del componente. minmax(0,…) evita overflow. */
+  .dump {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    /* La fila se queda a la altura de su CONTENIDO (no se estira al viewport):
+       el sobrante del min-height:100dvh queda DEBAJO de la fila. Así la altura
+       la dicta la columna izquierda (título + grid de miniaturas). */
+    align-content: start;
+    /* Las columnas se igualan a la altura de la fila (= columna izq.) → la obra
+       se acota a esa altura y su base queda A LA PAR de las 2 miniaturas de
+       abajo (como en la referencia). */
+    align-items: stretch;
+  }
+
+  /* Los 2 pares verticales SEPARADOS: una columna pegada a la IZQUIERDA y la
+     otra a la DERECHA del contenedor, con el hueco en medio. El grid ocupa todo
+     el ancho de la columna; las pistas son de tamaño fijo (no 1fr, que llenaría
+     todo sin dejar hueco) y space-between empuja el sobrante al centro. */
+  .dump .works-selector__thumbs {
+    grid-template-columns: repeat(2, minmax(0, 15rem));
+    justify-content: space-between;
+  }
+
+  /* La obra rellena el alto de su celda (= alto de la columna izquierda) sin
+     imponer su altura natural (flex-basis 0). object-fit: contain (base) la
+     muestra completa al escalar. */
+  .dump .section-works__stage {
+    align-items: stretch; /* la figura llena el alto de la celda */
+    min-height: 0;
+  }
+
+  .dump .works-selector__nav {
+    align-self: center; /* las flechas no se estiran con la celda */
+  }
+
+  .dump .works-selector__image {
+    flex: 1 1 0;
+    min-height: 0;
+    max-height: none; /* anula el 70vh base: ahora manda la columna izquierda */
+  }
+}

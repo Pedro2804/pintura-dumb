@@ -1,0 +1,236 @@
+/* ============================================================
+   COMPONENTE · Section Works (selector de obras)
+   Patrón editorial COMPARTIDO por Dump y Trayectoria:
+     · Columna IZQ.: intro (título + miniaturas)
+     · Columna DER.: obra principal con flechas prev/next + ficha
+   Sección CLARA (fondo blanco, texto azul noche).
+   Variantes de miniaturas:
+     · grid 2×2  → Dump (default)
+     · --carousel → Trayectoria (fila horizontal scrolleable)
+   Lo ESPECÍFICO (tamaño/alineación del título, texto de intro,
+   acotado de la rejilla) vive en _dump.css / _trayectoria.css.
+   Mobile-first: apilado → 2 columnas en tablet (≥768px).
+   ============================================================ */
+
+/* ---------- Base: sección clara ----------
+   Reasigna los tokens de texto a oscuro en el subárbol (igual que
+   .section-split--light) → título y cuerpo voltean a azul noche. */
+.section-works {
+  --color-text: var(--color-ink);
+  --color-text-muted: var(--color-text-muted-on-light);
+  color: var(--color-text);
+  background-color: var(--surface-light);
+  display: grid;
+  grid-template-columns: 1fr; /* móvil: apilado */
+  gap: var(--space-lg);
+  padding: var(--section-y) var(--gutter);
+  /* Aterrizaje de ancla a SANGRE: cancela el scroll-padding-top global (3rem)
+     para que, al navegar, la sección llegue a tope arriba y el menú fijo se
+     SOBREPONGA sobre ella (mismo patrón que Fenómeno / Artista / Exposición).
+     Compartido por Dump y Trayectoria (ambas .section-works). */
+  scroll-margin-top: -3rem;
+}
+
+@media (min-width: 768px) {
+  .section-works {
+    /* intro ~44% / obra ~56%. minmax(0, …) evita que el contenido
+       (imágenes anchas) reviente la columna. */
+    grid-template-columns: minmax(0, 44%) minmax(0, 1fr);
+    gap: var(--space-xl);
+    /* Top-align: título e imagen arrancan ARRIBA (como en la captura).
+       Con center, la obra de 70vh empujaba el título al centro vertical. */
+    align-items: start;
+    /* Acople al viewport: la sección mide al menos un viewport, así su borde
+       inferior cae al fondo de la pantalla (mismo patrón EXACTO que
+       Hero / Fenómeno / los splits). Es min-height → crece si el contenido lo
+       pide, nunca recorta. Funciona porque el contenido (obra ≤70vh + padding
+       reducido) cabe en un viewport: el min-height solo rellena el sobrante. */
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+}
+
+/* ---------- Columna izquierda: intro (título + miniaturas) ---------- */
+.section-works__intro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* ============================================================
+   Miniaturas
+   ============================================================ */
+.works-selector__thumbs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2×2 (Dump) */
+  gap: var(--space-2xs);
+}
+
+/* Variante CARRUSEL (Trayectoria): fila horizontal scrolleable. */
+.works-selector__thumbs--carousel {
+  display: flex;
+  gap: var(--space-2xs);
+  overflow-x: auto;
+  padding-bottom: var(--space-2xs); /* aire bajo el scrollbar */
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.works-selector__thumbs--carousel > li {
+  flex: 0 0 auto;
+  width: clamp(5.5rem, 18vw, 8rem);
+  scroll-snap-align: start;
+}
+
+/* ---------- Miniatura (botón) ---------- */
+.works-thumb {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1; /* cuadradas, como en la captura */
+  padding: 0;
+  border: 2px solid transparent; /* el activo lo vuelve rojo */
+  background: none;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color var(--duration-base) var(--ease-out);
+}
+
+.works-thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* llena el cuadro recortando, sin deformar */
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+/* Obra seleccionada: borde ROJO (acento funcional permitido). */
+.works-thumb[aria-current="true"] {
+  border-color: var(--color-accent);
+}
+
+.works-thumb:hover img,
+.works-thumb:focus-visible img {
+  transform: scale(1.05); /* microinteracción sutil */
+}
+
+/* ============================================================
+   Escenario de la obra (columna derecha)
+   Fila: [prev] · figura (obra + ficha) · [next]
+   ============================================================ */
+.section-works__stage {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+/* ---------- Flechas circulares prev/next ---------- */
+/* ----- VERSIÓN A · círculo azul sólido (RESPALDO, por si MASSIMO la pide) -----
+.works-selector__nav {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background-color: var(--color-ink);
+  color: var(--color-white);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background-color var(--duration-base) var(--ease-out),
+    transform var(--duration-base) var(--ease-out);
+}
+.works-selector__nav:hover,
+.works-selector__nav:focus-visible {
+  background-color: var(--color-accent);
+  transform: scale(1.06);
+}
+-------------------------------------------------------------------------------- */
+
+/* ----- VERSIÓN B · contorno hairline (ACTIVA) -----
+   Contorno fino tomando el azul noche DEFINIDO y solo desvaneciendo su tono
+   (color-mix con transparent — misma técnica que el scrim del Hero). Fondo
+   transparente, chevron en el muted ink ya definido. Sin colores nuevos. */
+.works-selector__nav {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--color-ink) 28%, transparent);
+  border-radius: 50%;
+  background-color: transparent;
+  color: var(--color-text-muted-on-light); /* chevron: ink atenuado (token) */
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    border-color var(--duration-base) var(--ease-out),
+    background-color var(--duration-base) var(--ease-out),
+    color var(--duration-base) var(--ease-out);
+}
+
+/* Hover/focus: el contorno y el chevron se intensifican (mismo azul, menos
+   desvanecido) + un relleno apenas perceptible. Sin saltar a rojo ni escalar. */
+.works-selector__nav:hover,
+.works-selector__nav:focus-visible {
+  border-color: color-mix(in srgb, var(--color-ink) 55%, transparent);
+  background-color: color-mix(in srgb, var(--color-ink) 6%, transparent);
+  color: var(--color-ink);
+}
+
+/* ---------- Figura: obra principal + ficha ---------- */
+.works-selector__figure {
+  flex: 1;
+  min-width: 0; /* permite que la imagen se reduzca dentro del flex */
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.works-selector__image {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  max-height: 70vh; /* la obra completa cabe en el viewport */
+  object-fit: contain; /* obra COMPLETA, sin recorte */
+}
+
+/* ---------- Ficha (nombre · técnica · año) ---------- */
+.works-selector__caption {
+  font-size: var(--fs-small);
+  line-height: var(--lh-heading);
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+/* Título de la obra en cursiva (convención museográfica). */
+.works-selector__name {
+  font-style: italic;
+}
+
+/* ============================================================
+   Respeto a prefers-reduced-motion: sin transformaciones.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .works-thumb img,
+  .works-selector__nav {
+    transition: none;
+  }
+
+  .works-thumb:hover img,
+  .works-thumb:focus-visible img,
+  .works-selector__nav:hover,
+  .works-selector__nav:focus-visible {
+    transform: none;
+  }
+}
