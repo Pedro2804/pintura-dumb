@@ -68,11 +68,9 @@
   }
 }
 
-/* CTA "Formar parte" sobre la imagen: oscuro como en la captura. */
-.fenomeno .media-cta {
-  color: var(--color-ink);
-  text-shadow: none;
-}
+/* El CTA "Formar parte" cae abajo-izq sobre el cuerpo oscuro de la figura →
+   se queda BLANCO con sombra (el default del componente .media-cta). No se
+   sobreescribe aquí. */
 
 /* Título CENTRADO sobre el ancho del bloque de texto (align-self:stretch
    hace que ocupe todo el ancho del contenido y text-align:center lo centra
@@ -113,11 +111,7 @@
     --color-text-muted: rgba(255, 255, 255, 0.85);
   }
 
-  /* CTA "Formar parte" también claro. */
-  .fenomeno .media-cta {
-    color: var(--color-white);
-    text-shadow: 0 1px 10px rgba(0, 0, 51, 0.85);
-  }
+  /* (El CTA ya es blanco por el componente .media-cta — no se repite aquí.) */
 
   /* Sin velo azul: el contraste lo da SOLO la sombra del texto, para no
      tapar la obra (es la pieza a mostrar). Doble capa: halo amplio + filo. */

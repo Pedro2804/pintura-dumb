@@ -91,8 +91,8 @@
   bottom: var(--space-md);
   left: var(--space-md);
   z-index: 1;
-  font-size: var(--fs-small);
-  font-weight: var(--weight-medium);
+  font-size: var(--fs-body); /* un paso arriba de --fs-small */
+  font-weight: var(--weight-semibold); /* Medium(500) → Semibold(600), siguiente peso cargado */
   letter-spacing: var(--tracking-tight);
   color: var(--color-white);
   text-shadow: 0 1px 12px rgba(0, 0, 51, 0.5); /* legibilidad sobre imagen variable */
