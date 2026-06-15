@@ -1,111 +1,112 @@
 /* ============================================================
-   SECCIÓN · Exposición / "Primera sede" — Pintura Dump
-   Fondo claro (paper). 2 columnas: izquierda el bloque informativo
-   (eyebrow, título, regla, descripción, datos <dl>, CTA); derecha la
-   imagen de la sede + tags. Cubre el viewport vía .section-fill.
-   Mobile-first: apila (main arriba, aside debajo).
-   El font-size del título lo gobierna _typography.css.
+   SECCIÓN · Museo Internacional del Barroco (#exposicion) — CLARA
+   Split con imagen-CARD (contenida, NO a sangre) IZQUIERDA /
+   contenido DERECHA sobre blanco. Al pie, fila de datos con
+   divisores ROJOS. Layout base en _section-split (variante --light).
+   Referencia: .ai/img_page/Exposicion.png
    ============================================================ */
 
+/* Aterrizaje de ancla a SANGRE bajo el nav fijo (igual que Fenómeno/Artista). */
 .exposicion {
-  padding-block: var(--space-xl);
-  padding-inline: var(--gutter);
-  background-color: var(--surface-light);
-  color: var(--on-light);
+  scroll-margin-top: -3rem;
 }
 
-/* Eyebrow en acento (óxido), como el diseño */
-.exposicion__eyebrow {
-  color: var(--color-accent);
+/* Desktop: 2 filas → contenido (imagen + texto) arriba, fila de datos a TODO
+   el ancho al pie. La fila 1fr absorbe el alto sobrante y ancla los datos abajo. */
+@media (min-width: 768px) {
+  .exposicion {
+    grid-template-rows: 1fr auto;
+  }
+
+  /* Fila de datos a la MITAD del ancho de la pantalla (alineada a la izq.,
+     bajo la imagen). En móvil queda full-width. */
+  .exposicion__data {
+    width: 50%;
+  }
+}
+
+/* ---------- Imagen como CARD contenida ----------
+   La foto del museo se muestra COMPLETA (pequeña), centrada en su columna y
+   con margen — como en la referencia. Anula el full-bleed del componente. */
+.exposicion__media {
+  aspect-ratio: auto; /* anula el 4/5 móvil del componente */
+  display: grid;
+  place-items: end center; /* card al FONDO de su columna → pegada a la fecha */
+  padding: var(--space-lg) var(--space-lg) 0; /* sin padding inferior (sin hueco) */
+}
+
+.exposicion__media img {
+  position: static; /* anula el position:absolute (desktop) del componente */
+  width: 100%;
+  height: auto; /* imagen completa, sin recorte */
 }
 
 .exposicion__title {
+  font-size: clamp(2.25rem, 1.4rem + 3.2vw, 3.25rem);
+}
+
+.exposicion__content > p:not([class]) {
+  color: var(--color-text-muted);
+  text-align: justify;
+}
+
+/* Cierre con línea delimitadora roja arriba (3px), como en Artista / la captura. */
+.exposicion__closing {
   margin-top: var(--space-sm);
-  max-width: 18ch;
-  color: var(--color-ink);
+  padding-top: var(--space-sm);
+  border-top: 3px solid var(--color-accent);
+  text-align: justify;
 }
 
-/* Regla editorial corta bajo el título */
-.exposicion__title::after {
-  content: "";
-  display: block;
-  width: clamp(5rem, 14vw, 10rem);
-  height: 2px;
-  margin-top: var(--space-md);
-  background-color: var(--color-ink);
-}
-
-.exposicion__description {
-  margin-top: var(--space-md);
-  max-width: 46ch;
-  font-size: 0.9375rem;
-  color: var(--color-muted);
-}
-
-/* ---------- Datos (dl): label en acento + valor en negrita ---------- */
+/* ---------- Fila de datos: a TODO el ancho, al pie (bajo imagen + texto) ---------- */
 .exposicion__data {
-  margin-top: var(--space-lg);
-  display: grid;
-  gap: var(--space-md);
+  grid-column: 1 / -1; /* abarca las dos columnas del split (ancho completo) */
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: var(--space-md);
+  /* Padding-top mínimo: pega los datos a la imagen (sin hueco). */
+  padding: var(--space-2xs) var(--gutter) var(--space-lg);
 }
 
-.exposicion__row {
-  display: grid;
-  gap: var(--space-3xs);
+.exposicion__datum {
+  flex: 1 1 0; /* reparten el ancho COMPLETO en partes iguales (no a la mitad) */
+  padding-inline: var(--space-lg);
 }
 
-.exposicion__data dt {
+.exposicion__datum:first-child {
+  padding-left: 0;
+}
+
+/* Divisor vertical ROJO entre datos (acento funcional permitido). */
+.exposicion__datum + .exposicion__datum {
+  border-left: 3px solid var(--color-accent);
+}
+
+.exposicion__datum dt {
   font-size: var(--fs-eyebrow);
   font-weight: var(--weight-semibold);
   text-transform: uppercase;
   letter-spacing: var(--tracking-eyebrow);
-  color: var(--color-accent);
+  color: var(--color-text-muted);
 }
 
-.exposicion__data dd {
-  font-size: 1.125rem;
-  font-weight: var(--weight-bold);
-  color: var(--color-ink);
-}
-
-.exposicion__cta {
-  margin-top: var(--space-lg);
-}
-
-/* ---------- Aside: imagen de la sede + tags ---------- */
-.exposicion picture {
-  display: block;
-  overflow: hidden;
-  background-color: var(--color-paper-dim); /* fondo placeholder mientras carga */
-}
-
-.exposicion__media img {
-  width: 100%;
-  height: auto;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-}
-
-.exposicion__media figcaption {
+.exposicion__datum dd {
   margin-top: var(--space-2xs);
-  font-size: var(--fs-small);
-  color: var(--color-muted);
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2xs);
 }
 
-.exposicion__tags {
-  margin-top: var(--space-md);
-  font-size: var(--fs-small);
-  letter-spacing: 0.04em;
-  color: var(--color-muted);
+/* Número grande (día / hora) en Black; el resto chico y atenuado. */
+.exposicion__num {
+  font-family: var(--font-display);
+  font-weight: var(--weight-black);
+  font-size: clamp(1.75rem, 1.2rem + 1.6vw, 2.5rem);
+  line-height: 1;
 }
 
-/* ---------- Tablet / desktop: 2 columnas ---------- */
-@media (min-width: 768px) {
-  .exposicion {
-    display: grid;
-    grid-template-columns: 0.85fr 1.15fr; /* texto / imagen (imagen más ancha) */
-    column-gap: var(--space-2xl);
-    align-items: start;
-    align-content: center; /* centra el bloque en el viewport (.section-fill) */
-  }
+.exposicion__detail {
+  font-size: var(--fs-small);
+  color: var(--color-text-muted);
+  line-height: var(--lh-heading);
 }
