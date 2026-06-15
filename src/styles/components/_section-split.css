@@ -27,6 +27,16 @@
   }
 }
 
+/* ---------- Variante CLARA (Artista, Exposición) ----------
+   Fondo blanco + texto azul noche. Reasigna los tokens en el subárbol →
+   título, frase madre y cuerpo voltean a oscuro automáticamente. */
+.section-split--light {
+  --color-text: var(--color-ink);
+  --color-text-muted: var(--color-text-muted-on-light);
+  color: var(--color-text);
+  background-color: var(--surface-light);
+}
+
 /* ---------- Columna de imagen ---------- */
 .section-split__media {
   position: relative; /* ancla .media-cta superpuesto */
@@ -40,6 +50,15 @@
 @media (min-width: 768px) {
   .section-split__media {
     aspect-ratio: auto; /* desktop: la altura la da el stretch del grid */
+  }
+
+  /* La imagen se posiciona ABSOLUTA para NO dictar la altura de la columna:
+     si quedara en flujo, su alto natural (es vertical) podía estirar la
+     sección más allá del viewport y empujar el CTA fuera de pantalla.
+     Así la altura la manda el grid (min-height:100dvh) y la imagen rellena. */
+  .section-split__media img {
+    position: absolute;
+    inset: 0;
   }
 }
 
@@ -77,7 +96,7 @@
    Acento FUNCIONAL — única forma autorizada del rojo aquí. */
 .frase-madre--accent {
   padding-left: var(--space-sm);
-  border-left: 3px solid var(--color-accent);
+  border-left: 5px solid var(--color-accent);
 }
 
 /* ============================================================
@@ -91,6 +110,7 @@
   bottom: var(--space-md);
   left: var(--space-md);
   z-index: 1;
+  padding-left: calc(1.5rem + var(--space-2xs)); /* lugar para la línea lead-in */
   font-size: var(--fs-body); /* un paso arriba de --fs-small */
   font-weight: var(--weight-semibold); /* Medium(500) → Semibold(600), siguiente peso cargado */
   letter-spacing: var(--tracking-tight);
@@ -98,18 +118,21 @@
   text-shadow: 0 1px 12px rgba(0, 0, 51, 0.5); /* legibilidad sobre imagen variable */
 }
 
-.media-cta::after {
+/* Línea roja lead-in (estática) a la izquierda del texto: 3px, igual de
+   gruesa que los divisores. Crece en hover/focus (microinteracción). */
+.media-cta::before {
   content: "";
-  display: block;
-  margin-top: var(--space-3xs);
-  height: 2px;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1.5rem;
+  height: 3px;
   background-color: var(--color-accent);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform var(--duration-base) var(--ease-out);
+  transition: width var(--duration-base) var(--ease-out);
 }
 
-.media-cta:hover::after,
-.media-cta:focus-visible::after {
-  transform: scaleX(1);
+.media-cta:hover::before,
+.media-cta:focus-visible::before {
+  width: 2.25rem;
 }

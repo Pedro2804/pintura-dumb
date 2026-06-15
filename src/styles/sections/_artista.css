@@ -1,108 +1,50 @@
 /* ============================================================
-   SECCIÓN · Artista / "Jarett" — Pintura Dump
-   Fondo claro (paper). Bloque de texto arriba-izquierda (eyebrow,
-   título, lede, bio) + media editorial: retrato dominante a la
-   izquierda e imagen menor con caption al pie a la derecha.
-   Cubre el viewport vía .section-fill. Mobile-first.
-   El font-size del título lo gobierna _typography.css (.artista__title).
+   SECCIÓN · Jarett Aramis (#artista) — CLARA
+   Split: imagen full-height IZQUIERDA (retrato en penumbra) /
+   contenido DERECHA sobre blanco. El layout vive en
+   components/_section-split.css (variante --light). Aquí solo lo
+   propio: encuadre de imagen, tamaño del título, tratamiento del
+   cuerpo y la cita de cierre.
+   Referencia: .ai/img_page/artista.png
    ============================================================ */
 
+/* Aterrizaje de ancla a SANGRE: la imagen llega al tope, así que el menú
+   fijo se sobrepone (cancela el scroll-padding-top global de 3rem). */
 .artista {
-  padding-block: var(--space-md) calc(var(--section-y) * 0.4);
-  padding-inline: var(--gutter);
-  background-color: var(--surface-light);
-  color: var(--on-light);
+  scroll-margin-top: -3rem;
 }
 
-/* Título compuesto: nombre en display pesado + complemento ligero.
-   Sin max-width → fluye en una sola línea en desktop (envuelve solo
-   si el viewport es angosto). line-height holgado para el mix. */
-.artista__title {
-  margin-top: var(--space-xs);
-  line-height: var(--lh-heading);
-  color: var(--color-ink);
-}
-
-/* Complemento del título: peso regular + muted → contrasta con el
-   nombre y elimina la redundancia (antes se repetía "Jarett Aramis").
-   Fluye en línea, al lado del nombre. */
-.artista__title-rest {
-  font-size: 0.7em; /* más chica que el nombre → el nombre resalta */
-  font-weight: var(--weight-regular);
-  color: var(--color-muted);
-}
-
-.artista__bio {
-  margin-top: var(--space-xs);
-  max-width: 56ch;
-  font-size: 0.9375rem;
-  color: var(--color-muted);
-}
-
-/* ---------- Media ----------
-   Móvil: apila (retrato, luego presencia). */
-.artista__media {
-  margin-top: var(--space-md);
-  display: grid;
-  gap: var(--space-md);
-}
-
-.artista picture {
-  display: block;
-  overflow: hidden;
-  background-color: var(--color-paper-dim); /* fondo placeholder mientras carga */
-}
-
+/* Encuadre del retrato (fuente vertical 4289×6434): sujeto centrado. */
 .artista__media img {
-  width: 100%;
-  height: auto;
-  object-fit: cover;
+  object-position: center;
 }
 
-.artista__presence {
-  display: flex;
-  flex-direction: column;
+/* Mitad del padding-top del contenedor de texto (override local; el resto
+   del padding del componente se conserva). */
+.artista__content {
+  padding-top: calc(var(--section-y) / 2);
 }
 
-/* Caption arriba del placeholder (order:-1) → la imagen de presencia
-   alinea su base con la del retrato (ambas al pie de la fila). */
-.artista__presence figcaption {
-  order: -1;
-  margin-bottom: var(--space-2xs);
-  font-size: var(--fs-small);
-  color: var(--color-muted);
+/* Título grande, azul noche (hereda --color-text del modificador --light),
+   alineado a la izquierda como en la captura. */
+.artista__title {
+  font-size: clamp(2.25rem, 1.4rem + 3.2vw, 3.25rem);
 }
 
-/* ---------- Tablet / desktop: media asimétrica acotada ----------
-   Retrato dominante (alto, columna izq.) + presencia menor al pie
-   derecho. La altura la fija la fila (clamp con vh). */
-@media (min-width: 768px) {
-  .artista__media {
-    grid-template-columns: 1.5fr 1fr;
-    grid-template-rows: clamp(450px, 71.5vh, 835px);
-    align-items: end;
-    column-gap: var(--space-lg);
-  }
+/* Cuerpo: párrafos atenuados y justificados (sin partir palabras). */
+.artista__content > p:not([class]) {
+  color: var(--color-text-muted);
+  text-align: justify;
+}
 
-  .artista__portrait {
-    grid-column: 1;
-    grid-row: 1;
-    height: 100%;
-  }
-
-  .artista__portrait picture,
-  .artista__portrait img {
-    height: 100%;
-  }
-
-  /* presencia: menor, anclada al pie de la fila */
-  .artista__presence {
-    grid-column: 2;
-    grid-row: 1;
-    align-self: end;
-  }
-
-  .artista__presence img {
-    height: clamp(290px, 39vh, 450px);
-  }
+/* Cita de cierre: énfasis en Semibold, intensidad plena (hereda
+   --color-text), justificada. Línea delimitadora arriba (separa el cierre
+   del cuerpo): 3px en rojo de acento, igual de gruesa que el divisor del
+   Hero. El rojo como divisor es un uso funcional permitido del acento. */
+.artista__quote {
+  margin-top: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: 3px solid var(--color-accent);
+  font-weight: var(--weight-semibold);
+  text-align: justify;
 }
