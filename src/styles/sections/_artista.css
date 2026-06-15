@@ -8,28 +8,32 @@
    ============================================================ */
 
 .artista {
-  padding-block: var(--space-xl) calc(var(--section-y) * 0.4);
+  padding-block: var(--space-md) calc(var(--section-y) * 0.4);
   padding-inline: var(--gutter);
   background-color: var(--surface-light);
   color: var(--on-light);
 }
 
+/* Título compuesto: nombre en display pesado + complemento ligero.
+   Sin max-width → fluye en una sola línea en desktop (envuelve solo
+   si el viewport es angosto). line-height holgado para el mix. */
 .artista__title {
-  margin-top: var(--space-sm);
-  color: var(--color-ink);
-}
-
-.artista__lede {
-  margin-top: var(--space-md);
-  max-width: 42ch;
-  font-size: var(--fs-h3);
-  font-weight: var(--weight-regular);
+  margin-top: var(--space-xs);
   line-height: var(--lh-heading);
   color: var(--color-ink);
 }
 
+/* Complemento del título: peso regular + muted → contrasta con el
+   nombre y elimina la redundancia (antes se repetía "Jarett Aramis").
+   Fluye en línea, al lado del nombre. */
+.artista__title-rest {
+  font-size: 0.7em; /* más chica que el nombre → el nombre resalta */
+  font-weight: var(--weight-regular);
+  color: var(--color-muted);
+}
+
 .artista__bio {
-  margin-top: var(--space-sm);
+  margin-top: var(--space-xs);
   max-width: 56ch;
   font-size: 0.9375rem;
   color: var(--color-muted);
@@ -38,7 +42,7 @@
 /* ---------- Media ----------
    Móvil: apila (retrato, luego presencia). */
 .artista__media {
-  margin-top: var(--space-xl);
+  margin-top: var(--space-md);
   display: grid;
   gap: var(--space-md);
 }
@@ -55,8 +59,16 @@
   object-fit: cover;
 }
 
+.artista__presence {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Caption arriba del placeholder (order:-1) → la imagen de presencia
+   alinea su base con la del retrato (ambas al pie de la fila). */
 .artista__presence figcaption {
-  margin-top: var(--space-2xs);
+  order: -1;
+  margin-bottom: var(--space-2xs);
   font-size: var(--fs-small);
   color: var(--color-muted);
 }
@@ -67,7 +79,7 @@
 @media (min-width: 768px) {
   .artista__media {
     grid-template-columns: 1.5fr 1fr;
-    grid-template-rows: clamp(360px, 52vh, 600px);
+    grid-template-rows: clamp(450px, 71.5vh, 835px);
     align-items: end;
     column-gap: var(--space-lg);
   }
@@ -91,6 +103,6 @@
   }
 
   .artista__presence img {
-    height: clamp(200px, 26vh, 320px);
+    height: clamp(290px, 39vh, 450px);
   }
 }

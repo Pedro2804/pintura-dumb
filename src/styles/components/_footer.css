@@ -1,27 +1,36 @@
 /* ============================================================
    COMPONENTE · Footer — Pintura Dump
-   Pie minimalista sobre fondo oscuro: marca + créditos.
-   Continúa visualmente la sección Contacto (mismo fondo ink).
+   Pie en flujo normal al final del documento (NO fijo): aparece al
+   llegar al final de la página. Slim y centrado, sobre fondo oscuro —
+   continúa visualmente la sección Contacto.
    ============================================================ */
 
 .site-footer {
-  padding-block: var(--space-xl);
-  padding-inline: var(--gutter);
-  background-color: var(--surface-dark);
-  color: var(--color-muted-invert);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3xs) var(--space-sm);
+  padding: var(--space-2xs) var(--gutter);
+
+  /* Mismo fondo que la nav fija al hacer scroll: tinta translúcida +
+     blur, para que header y footer combinen y el pie se distinga. */
+  background-color: color-mix(in srgb, var(--color-ink) 82%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-top: 1px solid var(--color-border-invert);
+  color: var(--color-muted-invert);
 }
 
 .site-footer__brand {
   font-family: var(--font-display);
   font-weight: var(--weight-display);
-  font-size: var(--fs-h3);
+  font-size: var(--fs-small);
   letter-spacing: var(--tracking-tight);
   color: var(--color-text-invert);
 }
 
 .site-footer__credits {
-  margin-top: var(--space-sm);
-  font-size: var(--fs-small);
+  font-size: var(--fs-eyebrow);
   color: var(--color-muted-invert);
 }

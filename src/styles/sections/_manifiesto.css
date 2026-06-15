@@ -21,7 +21,7 @@
 
 /* ---------- Statement (cita display) ---------- */
 .manifiesto__statement {
-  margin-top: var(--space-md);
+  margin-top: var(--space-xs);
 }
 
 .manifiesto__quote {
@@ -38,13 +38,13 @@
   display: block;
   width: clamp(6rem, 18vw, 12rem);
   height: 2px;
-  margin-top: var(--space-md);
+  margin-top: var(--space-xs);
   background-color: var(--color-ink);
 }
 
 /* ---------- Cuerpo ---------- */
 .manifiesto__body {
-  margin-top: var(--space-md);
+  margin-top: var(--space-xs);
   max-width: 64ch;
   font-size: 0.9375rem;
   color: var(--color-muted);
@@ -83,10 +83,10 @@
 @media (min-width: 768px) {
   .manifiesto__gallery {
     grid-template-columns: 1.7fr 1fr 1fr;
-    grid-template-rows: clamp(340px, 48vh, 560px);
+    grid-template-rows: clamp(380px, 60vh, 700px);
     align-items: end;
     gap: var(--space-md);
-    margin-top: var(--space-xl); /* separación del bloque de texto */
+    margin-top: var(--space-md); /* separación del bloque de texto */
   }
 
   /* anula el span a sangre del layout móvil */
