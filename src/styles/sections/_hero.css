@@ -1,171 +1,193 @@
 /* ============================================================
-   SECCIÓN · Hero — Pintura Dump
-   Cabe en el viewport (el countdown se ve sin scroll).
-   Móvil: imagen de fondo + scrim. Desktop: split 2 columnas.
+   SECCIÓN · Hero (#hero) — Pintura dump.
+   Imagen full-bleed + contenido superpuesto. Cabe en el viewport
+   (el countdown se ve sin scroll). Texto blanco sobre scrim oscuro.
+   Referencia: .ai/img_page/pintura-dump.png
    ============================================================ */
 
 .hero {
   position: relative;
+  isolation: isolate; /* contiene el z-index del fondo/scrim */
   min-height: 100vh;
   min-height: 100dvh;
   display: flex;
-  flex-direction: column;
   overflow: hidden;
+  color: var(--color-white);
   background-color: var(--surface-dark);
-  color: var(--on-dark);
 }
 
-/* ---------- Media: fondo a sangre en móvil ---------- */
-.hero__media {
+/* ---------- Fondo a sangre (LCP) ---------- */
+.hero__bg {
   position: absolute;
   inset: 0;
-  z-index: 0;
-}
-
-/* Scrim para que el texto cream sea legible sobre la imagen (móvil) */
-.hero__media::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    100deg,
-    color-mix(in srgb, var(--color-ink) 92%, transparent),
-    color-mix(in srgb, var(--color-ink) 55%, transparent)
-  );
-}
-
-.hero__image {
+  z-index: -2;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center; /* base: sujeto centrado, recorte vertical al centro */
+  /* En la foto fuente (3:2) Jarett + la obra están AL CENTRO y alejados; la captura
+     los quiere ACERCADOS y a la DERECHA (~70% del ancho), un poco más arriba.
+     object-position X no tiene rango aquí: la imagen es más angosta que el viewport,
+     así que el ancho llena exacto. El encuadre se controla con este transform.
+     PERILLAS (el translate va en espacio de pantalla; el scale debe ser ≥ que el
+     paneo para que no se descubran los bordes):
+       · zoom:   scale()        → más alto = sujeto más grande/acercado
+       · pan X:  translateX(+%) → empuja al sujeto a la DERECHA (recorta la izq.)
+       · pan Y:  translateY(−%) → sube el sujeto (recorta abajo) */
+  transform: translate(19%, -18%) scale(1.4);
+  transform-origin: center center;
+}
+
+/* Scrim difuminado: el azul noche se concentra a la IZQUIERDA y se desvanece
+   suavemente hacia la derecha, dejando respirar la imagen de fondo (como en la
+   captura). Varias paradas = transición gradual, no un corte duro. Usa el azul
+   oficial con alfa (no es color nuevo). */
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--color-ink) 35%, transparent) 0%,
+      color-mix(in srgb, var(--color-ink) 24%, transparent) 22%,
+      color-mix(in srgb, var(--color-ink) 13%, transparent) 45%,
+      color-mix(in srgb, var(--color-ink) 5%, transparent) 68%,
+      transparent 88%
+    ),
+    linear-gradient(
+      0deg,
+      color-mix(in srgb, var(--color-ink) 21%, transparent) 0%,
+      transparent 42%
+    );
 }
 
 /* ---------- Contenido ---------- */
-.hero__intro {
-  position: relative;
-  z-index: 1;
+.hero__content {
   display: flex;
-  flex: 1;
   flex-direction: column;
-  /* top: librar la nav fija (~5rem) + aire; sin excesos que provoquen scroll */
-  padding: calc(5rem + var(--space-md)) var(--gutter) var(--space-lg);
-}
-
-.hero__eyebrow {
-  margin-bottom: var(--space-sm);
-  color: var(--color-muted-invert);
+  width: 100%;
+  /* top: librar la nav fija (~5rem) + aire; pie: respiro inferior */
+  padding: calc(5rem + var(--space-lg)) var(--gutter) var(--space-lg);
 }
 
 .hero__title {
-  color: var(--color-text-invert);
+  font-size: var(--fs-h1); /* un paso abajo del display, solo en esta sección (ref, no token) */
+  line-height: var(--lh-display);
+  letter-spacing: var(--tracking-display);
 }
 
 .hero__subtitle {
-  margin-top: var(--space-sm);
-  max-width: 26ch;
-  font-size: var(--fs-h3);
-  font-weight: var(--weight-regular);
+  margin-top: var(--space-2xs);
+  font-size: clamp(1rem, 0.85rem + 1vw, 1.5rem);
+  font-weight: var(--weight-medium);
   line-height: var(--lh-heading);
-  color: var(--on-dark);
 }
 
 .hero__byline {
-  margin-top: var(--space-xs);
-  color: var(--color-muted-invert);
-}
-
-.hero__byline strong {
-  color: var(--on-dark);
+  margin-top: var(--space-2xs);
+  font-size: var(--fs-small);
+  color: var(--color-text-muted);
 }
 
 /* ---------- Bloque inferior: evento + countdown + trigger ----------
-   margin-top:auto lo manda al fondo del viewport (sin padding extra que desborde). */
+   margin-top:auto lo ancla al pie del viewport. */
 .hero__event {
   margin-top: auto;
   padding-top: var(--space-lg);
-  font-size: var(--fs-small);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--color-muted-invert);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3xs);
 }
 
 .hero__venue {
-  color: var(--on-dark);
+  font-weight: var(--weight-black); /* Semibold(600) → Black(900): único paso cargado arriba (a revisión visual) */
+  font-size: var(--fs-h3);
 }
 
-.hero__lede {
-  margin-top: var(--space-sm);
-  max-width: 34ch;
-  color: var(--on-dark);
-}
-
-.hero__video-trigger {
-  margin-top: var(--space-md);
-  align-self: flex-start;
+.hero__date {
+  font-size: var(--fs-small);
+  font-weight: var(--weight-medium); /* Regular(400) → Medium(500), un paso arriba */
+  color: var(--color-text-muted);
 }
 
 /* ---------- Countdown ---------- */
 .countdown {
+  position: relative; /* ancla la pseudo-línea divisora */
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-sm) var(--space-md);
+  align-items: flex-start; /* alinea ":" con los números, no con los labels */
+  gap: var(--space-xs) var(--space-sm);
   margin-top: var(--space-sm);
+  padding-top: var(--space-sm);
 }
 
-.countdown__separator {
-  display: none; /* el diseño separa por espacio, no por ":" */
+/* Línea divisora sobre el countdown: a la MITAD del ancho y 2px de grosor
+   (antes era un border-top de 1px a todo lo ancho). Como es ::before
+   absoluto no entra en el flujo flex de las unidades. */
+.countdown::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%; /* mitad del contenedor (responsivo) */
+  height: 3px; /* grosor fijo */
+  background-color: var(--color-white);
 }
 
 .countdown__unit {
   display: flex;
   flex-direction: column;
   gap: var(--space-3xs);
+  align-items: flex-start;
 }
 
 .countdown__value {
   font-family: var(--font-display);
-  font-weight: var(--weight-display);
-  font-size: clamp(1.75rem, 1.1rem + 2.6vw, 3rem);
+  font-weight: var(--weight-black); /* timer → Black (900), siguiente peso cargado arriba de Semibold */
+  font-size: var(--fs-h3); /* alineado a la escala (antes era un clamp propio fuera de token) */
   line-height: 1;
   font-variant-numeric: tabular-nums;
-  color: var(--color-text-invert);
 }
 
 .countdown__label {
   font-size: var(--fs-eyebrow);
-  text-transform: uppercase;
   letter-spacing: var(--tracking-eyebrow);
-  color: var(--color-muted-invert);
+  color: var(--color-text-muted);
 }
 
-/* ---------- Desktop: split en 2 columnas ---------- */
-@media (min-width: 1024px) {
-  .hero {
-    display: grid;
-    grid-template-columns: 5fr 7fr; /* texto más estrecho, imagen amplia */
-    /* La fila ocupa el viewport; crece solo si el contenido lo excede.
-       Evita que la imagen dicte una altura mayor a la pantalla. */
-    grid-template-rows: minmax(100dvh, auto);
-  }
+/* Segundos en ROJO — acento funcional (PLAN). */
+.countdown__unit--seconds .countdown__value {
+  color: var(--color-accent);
+}
 
-  /* La imagen ocupa su columna sin dictar la altura del Hero. */
-  .hero__media {
-    position: relative;
-    inset: auto;
-    z-index: auto;
-    overflow: hidden;
-  }
+.countdown__separator {
+  font-family: var(--font-display);
+  font-weight: var(--weight-black); /* mismo peso que el número (en sync) */
+  font-size: var(--fs-h3); /* mismo tamaño que el número (en sync) */
+  line-height: 1;
+  color: var(--color-text-faint);
+}
 
-  .hero__media::after {
-    display: none; /* sin scrim en desktop: imagen limpia a la derecha */
-  }
+.hero__video-trigger {
+  align-self: flex-end;
+  margin-top: var(--space-md);
+  /* 2º margen auto del grupo: junto con `margin-top:auto` de .hero__event,
+     flexbox reparte el espacio libre en partes iguales → el grupo (museo +
+     fecha + temporizador + este botón) sube a la MITAD del hueco. Responsive. */
+  margin-bottom: auto;
+}
 
-  .hero__image {
-    position: absolute;
-    inset: 0;
+/* ============================================================
+   Desktop: limitar el ancho del texto para que respire sobre la
+   imagen (Jarett + obra quedan visibles a la derecha).
+   ============================================================ */
+@media (min-width: 768px) {
+  .hero__title,
+  .hero__byline {
+    max-width: 18ch;
   }
-
-  .hero__intro {
-    z-index: auto;
-  }
+  /* El subtítulo se queda SIN max-width para no partirse: "Una tendencia del
+     arte contemporáneo" cabe en una sola línea con el ancho libre. */
 }

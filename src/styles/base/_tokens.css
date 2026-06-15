@@ -41,7 +41,7 @@
      --font-display y --font-body viven en _typography.css */
 
   /* ---------- Tipografía · escala fluida (clamp: min, preferido, max) ---------- */
-  --fs-display: clamp(3.5rem, 1.5rem + 8.5vw, 9rem);   /* títulos editoriales gigantes */
+  --fs-display: clamp(3.5rem, 1.5rem + 8vw, 7.25rem);   /* títulos editoriales gigantes */
   --fs-h1: clamp(2.75rem, 1.4rem + 6vw, 6.5rem);
   --fs-h2: clamp(2rem, 1.2rem + 4vw, 4.5rem);
   --fs-h3: clamp(1.4rem, 1.15rem + 1.1vw, 2rem);

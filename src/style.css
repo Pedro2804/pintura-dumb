@@ -1,20 +1,31 @@
+/* ============================================================
+   PINTURA DUMP — hoja de estilos raíz
+   Orden: tokens → reset → tipografía → layout → componentes → secciones.
+   El orden importa (cascada). Mobile-first en cada archivo.
+   ============================================================ */
+
+/* ---------- Base ---------- */
 @import './styles/base/_tokens.css';
 @import './styles/base/_reset.css';
 @import './styles/base/_typography.css';
 @import './styles/base/_layout.css';
+
+/* ---------- Componentes ---------- */
 @import './styles/components/_buttons.css';
 @import './styles/components/_links.css';
 @import './styles/components/_header.css';
 @import './styles/components/_footer.css';
+
+/* ---------- Secciones (orden de aparición) ---------- */
 @import './styles/sections/_hero.css';
-@import './styles/sections/_manifiesto.css';
-@import './styles/sections/_concepto.css';
+@import './styles/sections/_fenomeno.css';
 @import './styles/sections/_artista.css';
 @import './styles/sections/_exposicion.css';
-@import './styles/sections/_obras.css';
+@import './styles/sections/_dump.css';
+@import './styles/sections/_trayectoria.css';
 @import './styles/sections/_archivo.css';
 @import './styles/sections/_contacto.css';
 @import './styles/sections/_video-intro.css';
 
-/* ⚠️ TEMPORAL — bordes de sección para depurar espaciado. Quitar. */
+/* ⚠️ TEMPORAL — bordes de sección para depurar espaciado. Quitar antes de deploy. */
 @import './styles/base/_debug.css';

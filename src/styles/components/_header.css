@@ -16,18 +16,25 @@
   justify-content: space-between;
   gap: var(--space-sm);
   padding: var(--space-sm) var(--gutter);
+  /* Color por defecto: BLANCO (sobre secciones oscuras). nav.js conmuta
+     [data-nav-on="light"] cuando la barra pasa sobre una sección clara. */
+  color: var(--color-white);
   transition:
-    background-color var(--duration-base) var(--ease-out),
+    color var(--duration-base) var(--ease-out),
     padding var(--duration-base) var(--ease-out);
 }
 
-/* Al pasar el umbral de scroll (lo marca nav.js): fondo translúcido +
-   blur para que los links blancos sigan legibles sobre cualquier sección. */
+/* Sobre secciones de fondo CLARO: letras en azul noche (#000033). El brand y
+   los links heredan este color; el subrayado activo sigue en rojo (acento). */
+.site-header[data-nav-on="light"] {
+  color: var(--color-ink);
+}
+
+/* Al pasar el umbral de scroll (lo marca nav.js): solo compacta el padding.
+   El fondo se mantiene SIEMPRE transparente (a pedido del dev): sin relleno
+   ni blur. */
 .site-header[data-scrolled="true"] {
   padding-block: var(--space-xs);
-  background-color: color-mix(in srgb, var(--color-ink) 82%, transparent);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
 }
 
 /* ---------- Marca (revelable) ----------
@@ -39,7 +46,7 @@
   font-weight: var(--weight-black);
   font-size: var(--fs-small);
   letter-spacing: var(--tracking-tight);
-  color: var(--color-white);
+  color: inherit; /* hereda el color que conmuta el header (blanco/azul noche) */
   opacity: 0;
   visibility: hidden;
   transition:
@@ -65,7 +72,7 @@ html {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--on-dark);
+  color: inherit; /* hereda del header (conmuta blanco/azul noche según sección) */
 }
 
 /* ---------- Menú (desktop) ---------- */

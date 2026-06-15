@@ -16,13 +16,37 @@ export function initNav() {
     const header = $('[data-site-header]');
     if (!header) return;
 
-    // --- 1) Estado scrolled (fondo translúcido + blur) ---
+    // --- 1) Estado scrolled (compacta el padding) + color de la nav según fondo ---
+    const themeSections = $$('main section[id]');
+
     const updateScrolled = () => {
       header.dataset.scrolled = String(window.scrollY > SCROLL_THRESHOLD);
     };
 
+    // Color de la nav según el fondo de la sección que queda BAJO la barra:
+    // fondo claro (data-nav-theme="light") → letras oscuras; oscuro (default) → blancas.
+    const updateNavTheme = () => {
+      const line = header.offsetHeight / 2; // punto de referencia dentro de la barra fija
+      let theme = 'dark';
+      for (const section of themeSections) {
+        const rect = section.getBoundingClientRect();
+        if (rect.top <= line && rect.bottom > line) {
+          theme = section.dataset.navTheme === 'light' ? 'light' : 'dark';
+          break;
+        }
+      }
+      header.dataset.navOn = theme;
+    };
+
+    const onScroll = () => {
+      updateScrolled();
+      updateNavTheme();
+    };
+
     updateScrolled();
-    window.addEventListener('scroll', updateScrolled, { passive: true });
+    updateNavTheme();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', updateNavTheme, { passive: true });
 
     // --- 2) Scrollspy: enlace activo según la sección visible ---
     const links = $$('.site-nav__link', header);
