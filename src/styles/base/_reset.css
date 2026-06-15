@@ -26,7 +26,9 @@ html {
 body {
   min-height: 100vh;
   min-height: 100dvh;            /* viewport dinámico en móviles */
-  background-color: var(--surface-light);
+  /* Default dark-dominant (#000033 + texto blanco). Las secciones CLARAS
+     (Artista, Exposición, Dump, Trayectoria) invierten esto en FASE 4-BIS. */
+  background-color: var(--surface-dark);
   color: var(--color-text);
   font-size: var(--fs-body);
   line-height: var(--lh-body);
@@ -83,9 +85,12 @@ ol[class] {
   padding-left: 0;
 }
 
-/* ---------- Foco accesible base (se refina en 2.5) ---------- */
+/* ---------- Foco accesible base ----------
+   currentColor se adapta al contexto (blanco sobre oscuro, azul noche
+   sobre claro): garantiza contraste del foco en CUALQUIER sección, cosa
+   que el rojo #660F0A no logra sobre #000033. */
 :focus-visible {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid currentColor;
   outline-offset: 3px;
 }
 
@@ -114,7 +119,7 @@ ol[class] {
   z-index: var(--z-top);
   padding: var(--space-2xs) var(--space-xs);
   background-color: var(--color-ink);
-  color: var(--color-cream);
+  color: var(--color-white);
   border-radius: 2px;
   transform: translateY(-150%);
   transition: transform var(--duration-fast) var(--ease-out);

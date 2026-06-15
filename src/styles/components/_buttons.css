@@ -32,7 +32,7 @@
 /* Primario: relleno tinta → acento en hover */
 .btn--primary {
   background-color: var(--color-ink);
-  color: var(--color-cream);
+  color: var(--color-white);
 }
 
 .btn--primary:hover {
@@ -49,5 +49,5 @@
 .btn--ghost:hover {
   background-color: var(--color-ink);
   border-color: var(--color-ink);
-  color: var(--color-cream);
+  color: var(--color-white);
 }

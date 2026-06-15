@@ -11,6 +11,10 @@
   left: 0;
   width: 100%;
   z-index: var(--z-header);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
   padding: var(--space-sm) var(--gutter);
   transition:
     background-color var(--duration-base) var(--ease-out),
@@ -18,12 +22,34 @@
 }
 
 /* Al pasar el umbral de scroll (lo marca nav.js): fondo translúcido +
-   blur para que los links cream sigan legibles sobre cualquier sección. */
+   blur para que los links blancos sigan legibles sobre cualquier sección. */
 .site-header[data-scrolled="true"] {
   padding-block: var(--space-xs);
   background-color: color-mix(in srgb, var(--color-ink) 82%, transparent);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+}
+
+/* ---------- Marca (revelable) ----------
+   En el Hero la marca NO se ve (la captura solo muestra la nav). Aparece
+   al hacer scroll, cuando nav.js marca [data-scrolled="true"] en el header.
+   Se mantiene en el DOM (no display:none) para no romper el flex ni el foco. */
+.site-header__brand {
+  font-family: var(--font-display);
+  font-weight: var(--weight-black);
+  font-size: var(--fs-small);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-white);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity var(--duration-base) var(--ease-out),
+    visibility var(--duration-base) var(--ease-out);
+}
+
+.site-header[data-scrolled="true"] .site-header__brand {
+  opacity: 1;
+  visibility: visible;
 }
 
 /* Offset del aterrizaje de anclas: debe ser ≤ alto de la nav (al
@@ -66,6 +92,7 @@ html {
 
 /* Links atenuados; el activo (scrollspy) y el hover quedan a plena opacidad. */
 .site-nav__link {
+  position: relative;
   opacity: 0.65;
 }
 
@@ -73,6 +100,28 @@ html {
 .site-nav__link:focus-visible,
 .site-nav__link[aria-current="true"] {
   opacity: 1;
+}
+
+/* Indicador activo: subrayado ROJO (acento funcional) bajo el item de la
+   sección visible; crece en hover. No aplica al CTA, que tiene su propia
+   línea (evita doble ::after sobre el mismo elemento). */
+.site-nav__link:not(.site-nav__cta)::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: calc(-1 * var(--space-3xs));
+  width: 100%;
+  height: 2px;
+  background-color: var(--color-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+.site-nav__link:not(.site-nav__cta):hover::after,
+.site-nav__link:not(.site-nav__cta):focus-visible::after,
+.site-nav__link[aria-current="true"]:not(.site-nav__cta)::after {
+  transform: scaleX(1);
 }
 
 .site-nav__cta {
@@ -92,7 +141,7 @@ html {
 }
 
 .site-nav__cta:hover {
-  color: var(--color-accent-strong);
+  color: var(--color-accent);
 }
 
 /* Bloquea el scroll del body cuando el menú móvil está abierto (lo conmuta el JS) */
@@ -161,7 +210,7 @@ body.has-menu-open {
     gap: var(--space-sm);
     padding: var(--space-md);
     background-color: var(--surface-dark);
-    border: 1px solid var(--color-border-invert);
+    border: 1px solid var(--color-border);
     border-radius: 2px;
     display: none;
   }
