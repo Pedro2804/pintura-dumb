@@ -7,7 +7,7 @@ const FILE = 'videoIntro.js';
 /**
  * ¿Se debe autoreproducir en la primera visita?
  * NO si: movimiento reducido, móvil (<768px) o conexión lenta (2g/slow-2g).
- * (ver nota para el cliente en PLAN.md — RNF-3)
+ * En esos casos el ritual queda disponible bajo demanda vía "Repetir video".
  */
 function shouldAutoplay() {
   if (prefersReducedMotion()) return false;
@@ -19,14 +19,22 @@ function shouldAutoplay() {
   return true;
 }
 
-/** ¿El <video> tiene una fuente reproducible? (hoy aún no: bloqueado por material del cliente) */
+/** ¿El <video> tiene una fuente reproducible? */
 function hasPlayableSource(video) {
-  return Boolean(video && (video.currentSrc || video.querySelector('source')));
+  return Boolean(video && (video.currentSrc || video.getAttribute('src') || video.querySelector('source')));
 }
 
 /**
- * Video intro del artista.
+ * Ritual de video de Pintura dump.
  * Usa <dialog> nativo: showModal() aporta focus-trap y cierre con Escape.
+ *
+ * Flujo (PLAN — COMPORTAMIENTO DEL RITUAL DE VIDEO):
+ *  - Overlay previo al Hero. En desktop capaz autoplay MUTED en la 1ª visita.
+ *  - "Ver fenómeno"  → activa el audio (opt-in por gesto del usuario) y reproduce.
+ *  - "Saltar"        → cierra el overlay y revela la página.
+ *  - El video termina → cierra. El video falla → cierra en silencio.
+ *  - "Repetir video" (Hero) → reabre y reproduce desde 0.
+ *  - Persistencia: flag en localStorage (se ve una vez por dispositivo).
  */
 export function initVideoIntro() {
   try {
@@ -34,22 +42,28 @@ export function initVideoIntro() {
     if (!dialog || typeof dialog.showModal !== 'function') return;
 
     const video = $('[data-video-intro-video]', dialog);
-    const closeBtn = $('[data-video-intro-close]', dialog);
-    const unmuteBtn = $('[data-video-intro-unmute]', dialog);
+    const startBtn = $('[data-video-intro-start]', dialog);
+    const skipBtn = $('[data-video-intro-skip]', dialog);
     const trigger = $('[data-video-intro-trigger]');
 
+    // play() devuelve una promesa que el navegador puede rechazar (autoplay
+    // bloqueado): la atrapamos para no romper nada ni molestar al usuario.
+    const safePlay = () => {
+      if (!video) return;
+      const playback = video.play();
+      if (playback && typeof playback.catch === 'function') {
+        playback.catch((error) => logError(FILE, 'safePlay', error));
+      }
+    };
+
+    // Abre el overlay y arranca el video MUTED desde el inicio.
     const open = () => {
       if (dialog.open) return;
       dialog.showModal();
-
-      if (hasPlayableSource(video)) {
-        video.currentTime = 0;
-        const playback = video.play();
-        if (playback && typeof playback.catch === 'function') {
-          // Si el navegador bloquea el play, no rompemos nada.
-          playback.catch((error) => logError(FILE, 'open/play', error));
-        }
-      }
+      if (!hasPlayableSource(video)) return;
+      video.currentTime = 0;
+      video.muted = true;
+      safePlay();
     };
 
     // Todas las rutas de cierre pasan por dialog.close() → este handler limpia.
@@ -58,29 +72,31 @@ export function initVideoIntro() {
       setFlag(STORAGE_KEYS.INTRO_SEEN, true);
     });
 
+    // "Ver fenómeno": el audio es opt-in y este click es el gesto que lo permite.
+    if (startBtn) {
+      startBtn.addEventListener('click', () => {
+        if (!video) return;
+        video.muted = false;
+        safePlay();
+      });
+    }
+
+    // "Saltar": cierra sin más.
+    if (skipBtn) {
+      skipBtn.addEventListener('click', () => dialog.close());
+    }
+
+    // "Repetir video" (Hero): reabre desde 0 a demanda, ignora el flag.
     if (trigger) {
       trigger.addEventListener('click', open);
     }
 
-    if (closeBtn) {
-      closeBtn.addEventListener('click', () => dialog.close());
-    }
-
     if (video) {
+      // Al terminar → revela la página. Sin loop (debe terminar).
       video.addEventListener('ended', () => dialog.close());
-    }
-
-    // Toggle de audio (aria-pressed = "audio activo")
-    if (unmuteBtn && video) {
-      const unmuteLabel = $('.visually-hidden', unmuteBtn);
-
-      unmuteBtn.addEventListener('click', () => {
-        video.muted = !video.muted;
-        const audioOn = !video.muted;
-        unmuteBtn.setAttribute('aria-pressed', String(audioOn));
-        if (unmuteLabel) {
-          unmuteLabel.textContent = audioOn ? 'Silenciar audio' : 'Activar audio';
-        }
+      // Si el video falla con el overlay abierto → cierra en silencio.
+      video.addEventListener('error', () => {
+        if (dialog.open) dialog.close();
       });
     }
 
