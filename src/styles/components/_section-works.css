@@ -69,14 +69,22 @@
   gap: var(--space-2xs);
 }
 
-/* Variante CARRUSEL (Trayectoria): fila horizontal scrolleable. */
+/* Variante CARRUSEL (Trayectoria): fila horizontal. La navegación es por
+   BOTONES (y swipe en móvil) → la barra de scroll se OCULTA. El scroll sigue
+   disponible programáticamente para el JS (FASE 5-BIS). */
 .works-selector__thumbs--carousel {
   display: flex;
   gap: var(--space-2xs);
   overflow-x: auto;
-  padding-bottom: var(--space-2xs); /* aire bajo el scrollbar */
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Edge antiguo */
+}
+
+/* Oculta la barra de scroll en Chrome/Safari/Edge. */
+.works-selector__thumbs--carousel::-webkit-scrollbar {
+  display: none;
 }
 
 .works-selector__thumbs--carousel > li {

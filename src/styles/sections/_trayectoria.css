@@ -1,5 +1,82 @@
 /* ============================================================
    SECCIÓN · La trayectoria que antecede el fenómeno. (#trayectoria) — CLARA
-   Selector de obra (carrusel horizontal). Pendiente FASE 4-BIS.
+   Selector COVERFLOW: carrusel de miniaturas (3 visibles, la del CENTRO más
+   grande y con contorno rojo = la obra grande del contenedor derecho). Las
+   flechas viven SOLO en el carrusel (la obra grande sin flechas, más énfasis).
+   En móvil la obra grande se oculta y el carrusel muestra una sola imagen
+   grande. El layout base vive en el componente compartido _section-works.
+   ⚠ MAQUETADO (FASE 4-BIS). El centrado del activo, el loop infinito, el clic
+   y la sincronía con la obra grande son JS (FASE 5-BIS).
    Validar contra .ai/img_page/Trayectoria.png
    ============================================================ */
+
+/* Padding vertical un poco más corto que el del componente (--section-y),
+   manteniendo el horizontal (--gutter). Afecta a los dos contenedores. */
+.trayectoria {
+  padding-block: calc(var(--section-y) * 0.65);
+}
+
+/* Cuerpo JUSTIFICADO (mismo criterio que Fenómeno/Artista/Exposición). El
+   default `hyphens: manual` no parte palabras con guion. */
+.trayectoria__intro > p:not([class]) {
+  text-align: justify;
+}
+
+/* ---------- Carrusel: fila [‹] [miniaturas] [›] ---------- */
+.works-carousel {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+}
+
+/* La tira de miniaturas absorbe el ancho entre las flechas. */
+.trayectoria .works-selector__thumbs--carousel {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Móvil (base): una sola imagen grande a la vez (la miniatura "se vuelve" la
+   obra). scroll-snap al centro para que el JS la centre después. */
+.trayectoria .works-selector__thumbs--carousel > li {
+  width: 100%;
+  scroll-snap-align: center;
+}
+
+@media (min-width: 768px) {
+  /* Texto (izq.) y obra grande (der.) a la MITAD de la pantalla cada uno
+     (50/50), como Dump. Anula el 44/56 del componente. */
+  .trayectoria {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  /* La obra grande SIEMPRE centrada verticalmente en su columna (anula el
+     align-items:start del componente solo para esta celda). Se nota en
+     pantallas donde la columna izquierda (texto + carrusel) es más alta que
+     la obra: así no queda pegada arriba. */
+  .trayectoria__stage {
+    align-self: center;
+  }
+
+  /* 3 miniaturas visibles: (ancho − 2 gaps) / 3. Aire vertical para que la
+     del centro pueda crecer sin recortarse por el overflow del carrusel. */
+  .trayectoria .works-selector__thumbs--carousel {
+    padding-block: var(--space-xs);
+  }
+
+  .trayectoria .works-selector__thumbs--carousel > li {
+    width: calc((100% - 2 * var(--space-2xs)) / 3);
+  }
+
+  /* La miniatura ACTIVA (centro) un poco más grande → se nota el coverflow.
+     El contorno rojo ya lo pone el componente con [aria-current="true"]. */
+  .trayectoria .works-thumb[aria-current="true"] {
+    transform: scale(1.08);
+  }
+}
+
+/* ---------- Móvil: la obra grande se oculta; manda el carrusel ---------- */
+@media (max-width: 767px) {
+  .trayectoria__stage {
+    display: none;
+  }
+}

@@ -441,13 +441,20 @@
           <p>
             Antes de Pintura dump, la práctica de Jarett Aramis ya articulaba una relación
             singular entre tradición pictórica, iconografía histórica e imaginarios
-            contemporáneos.
+            contemporáneos. Esta selección reúne obras que permiten leer parte de ese recorrido
+            y entender la evolución de una investigación que hoy desemboca en una nueva tendencia
+            dentro de la pintura contemporánea.
           </p>
-          <p>
-            Esta selección reúne obras que permiten leer parte de ese recorrido y entender la
-            evolución de una investigación que hoy desemboca en una nueva tendencia dentro de la
-            pintura contemporánea.
-          </p>
+
+          <div class="works-carousel" data-obra-selector>
+            <button
+              type="button"
+              class="works-selector__nav works-selector__nav--prev"
+              data-obra-prev
+              aria-label="Obra anterior"
+            >
+              <span aria-hidden="true">&lsaquo;</span>
+            </button>
 
           <ul
             class="works-selector__thumbs works-selector__thumbs--carousel"
@@ -591,18 +598,19 @@
               </button>
             </li>
           </ul>
+
+            <button
+              type="button"
+              class="works-selector__nav works-selector__nav--next"
+              data-obra-next
+              aria-label="Obra siguiente"
+            >
+              <span aria-hidden="true">&rsaquo;</span>
+            </button>
+          </div>
         </div>
 
-        <div class="trayectoria__stage section-works__stage" data-obra-selector>
-          <button
-            type="button"
-            class="works-selector__nav works-selector__nav--prev"
-            data-obra-prev
-            aria-label="Obra anterior"
-          >
-            <span aria-hidden="true">&lsaquo;</span>
-          </button>
-
+        <div class="trayectoria__stage section-works__stage">
           <figure class="works-selector__figure" data-obra-stage aria-live="polite">
             <img
               class="works-selector__image"
@@ -619,15 +627,6 @@
               <span class="works-selector__year" data-obra-year>2022</span>
             </figcaption>
           </figure>
-
-          <button
-            type="button"
-            class="works-selector__nav works-selector__nav--next"
-            data-obra-next
-            aria-label="Obra siguiente"
-          >
-            <span aria-hidden="true">&rsaquo;</span>
-          </button>
         </div>
       </section>
 
