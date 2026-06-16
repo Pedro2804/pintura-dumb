@@ -1,111 +1,157 @@
 /* ============================================================
-   SECCIÓN · Formar parte / Contacto — Pintura Dump
-   Fondo oscuro (ink). El protagonista visual es el STATEMENT (grande)
-   y el EMAIL (display). 2 columnas en desktop: texto izquierda,
-   beneficios derecha. Mobile-first.
+   SECCIÓN · Forma parte del fenómeno (#contacto) — OSCURA
+   La foto cenital de Jarett es el FONDO full-bleed de la sección;
+   el contenido va sobrepuesto a la DERECHA (con scrim para
+   legibilidad) y los logos institucionales sobrepuestos en la
+   esquina INFERIOR IZQUIERDA.
+   Referencia: .ai/img_page/Forma-parte.png
    ============================================================ */
 
 .contacto {
-  padding-block: var(--space-2xl);
-  padding-inline: var(--gutter);
-  background-color: var(--surface-dark);
-  color: var(--on-dark);
+  position: relative;
+  isolation: isolate; /* contiene z-index del fondo/scrim y el blend de los logos */
+  overflow: hidden;
+  scroll-margin-top: -3rem; /* landing: el nav se sobrepone */
+  background-color: var(--surface-dark); /* fallback si la foto no carga */
+  min-height: 100vh;
+  min-height: 100dvh; /* acople al viewport */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Padding inferior extra: reserva el hueco para los logos sobrepuestos. */
+  padding: var(--section-y) var(--gutter) calc(var(--section-y) + var(--space-2xl));
 }
 
-.contacto__eyebrow {
-  color: var(--color-muted-invert);
+/* ---------- Foto cenital como FONDO full-bleed ---------- */
+.contacto__media {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  margin: 0;
 }
 
-/* Título pequeño (el statement es el hero, no el título) */
+.contacto__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Scrim NEUTRO (negro, sin tinte azul) que solo oscurece hacia la DERECHA para
+   legibilidad del texto. La IZQUIERDA queda transparente → la foto respira y los
+   logos (con blend) no muestran ningún color de fondo. */
+.contacto::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    transparent 32%,
+    rgba(0, 0, 0, 0.42) 70%,
+    rgba(0, 0, 0, 0.66) 100%
+  );
+}
+
+/* ---------- Contenido sobrepuesto a la derecha ---------- */
+.contacto__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding-inline: var(--space-sm); /* respiro horizontal */
+}
+
+@media (min-width: 768px) {
+  .contacto__content {
+    width: 50%;
+    margin-left: auto; /* empuja el bloque a la derecha */
+  }
+}
+
 .contacto__title {
-  margin-top: var(--space-2xs);
-  font-size: var(--fs-h3);
-  color: var(--color-text-invert);
-}
-
-.contacto__statement {
-  margin-top: var(--space-lg);
-  max-width: 22ch;
-  font-family: var(--font-display);
-  font-size: clamp(1.75rem, 1.1rem + 3vw, 2.75rem);
-  font-weight: var(--weight-display);
-  line-height: var(--lh-heading);
-  letter-spacing: var(--tracking-tight);
-  color: var(--color-text-invert);
+  font-size: clamp(2.5rem, 1.5rem + 3.5vw, 4rem);
 }
 
 .contacto__text {
-  margin-top: var(--space-md);
-  max-width: 50ch;
-  font-size: 0.9375rem;
-  color: var(--color-muted-invert);
+  color: var(--color-text-muted);
+  text-align: justify;
 }
 
-/* Email como elemento display prominente */
+/* Email como elemento display prominente (blanco, sin hover). */
 .contacto__email {
-  display: block;
   width: fit-content;
-  margin-top: var(--space-lg);
   font-family: var(--font-display);
-  font-size: clamp(1.5rem, 1rem + 2.5vw, 2.75rem);
-  font-weight: var(--weight-display);
+  font-weight: var(--weight-black);
+  font-size: clamp(1.125rem, 0.9rem + 1vw, 1.5rem);
   letter-spacing: var(--tracking-tight);
-  color: var(--color-text-invert);
-  transition: color var(--duration-base) var(--ease-out);
+  color: var(--color-white);
 }
 
-.contacto__email:hover,
-.contacto__email:focus-visible {
-  color: var(--color-accent-strong);
-}
-
+/* CTA "Abrir conversación.": la línea del componente link-cta baja DEBAJO del
+   texto (flex column) y se pinta en ROJO, como en la captura. */
 .contacto__cta {
-  display: inline-flex;
-  margin-top: var(--space-md);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2xs);
 }
 
-/* ---------- Beneficios ---------- */
-.contacto__benefits {
-  margin-top: var(--space-2xl);
-  display: grid;
-  gap: var(--space-md);
+.contacto__cta::after {
+  width: 25%; /* ~un cuarto del ancho del texto */
+  background-color: var(--color-accent);
 }
 
-.contacto__benefits li {
-  padding-top: var(--space-sm);
-  border-top: 1px solid var(--color-border-invert);
-  font-size: 1.125rem;
-  font-weight: var(--weight-semibold);
-  color: var(--on-dark);
-}
-
-.contacto__note {
-  margin-top: var(--space-2xl);
-  max-width: 42ch;
+/* ---------- Fila de categorías (con divisores verticales muted) ---------- */
+.contacto__categories {
+  list-style: none;
+  margin: var(--space-lg) 0 0; /* margen después del CTA (la raya) → las categorías respiran */
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   font-size: var(--fs-small);
-  color: var(--color-muted-invert);
+  color: var(--color-text-muted);
 }
 
-/* ---------- Tablet / desktop: 2 columnas ----------
-   Todo el bloque de texto va a la izquierda; los beneficios a la
-   derecha, centrados verticalmente. Colocación en grid sin wrappers:
-   los beneficios son el único hijo que se manda a la columna 2. */
+.contacto__categories li {
+  padding-inline: var(--space-sm);
+}
+
+.contacto__categories li:first-child {
+  padding-left: 0;
+}
+
+.contacto__categories li + li {
+  border-left: 1px solid var(--color-border);
+}
+
+/* ---------- Logos institucionales: SOBREPUESTOS, esquina inferior IZQUIERDA ----------
+   El asset trae logos NEGROS sobre fondo blanco. invert(1) → blancos (y el fondo
+   a negro); mix-blend-mode: screen → ese negro se vuelve transparente (deja ver
+   la foto). Sin línea superior. */
+.contacto__partners {
+  /* SIN z-index a propósito: un z-index aquí crearía un contexto de apilamiento
+     aislado y el mix-blend-mode de los logos no se mezclaría con la foto del
+     fondo (saldría un recuadro negro). Al ser absolute sin z-index, sigue
+     sobrepuesto sobre el contenido pero el blend alcanza la foto. */
+  position: absolute;
+  left: var(--gutter);
+  right: var(--gutter); /* móvil: ancho completo */
+  bottom: var(--space-lg);
+  padding-inline: var(--space-sm); /* respiro horizontal (igual que el texto) */
+}
+
 @media (min-width: 768px) {
-  .contacto {
-    display: grid;
-    grid-template-columns: 1.25fr 0.75fr;
-    column-gap: var(--space-2xl);
-    align-items: start;
+  /* Ocupa la MITAD izquierda (espejo del texto, que va en la mitad derecha);
+     la imagen de los logos llena ese ancho. */
+  .contacto__partners {
+    right: 50%;
   }
+}
 
-  .contacto > *:not(.contacto__benefits) {
-    grid-column: 1;
-  }
-
-  .contacto__benefits {
-    grid-column: 2;
-    grid-row: 1 / -1;
-    align-self: center;
-    margin-top: 0;
-  }
+.contacto__partners img {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: invert(1);
+  mix-blend-mode: screen;
 }
