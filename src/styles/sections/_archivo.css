@@ -1,118 +1,145 @@
 /* ============================================================
-   SECCIÓN · Archivo / "Continuidad" — Pintura Dump
-   Fondo claro (paper). Bloque de catálogo arriba (texto + CTA),
-   encabezado editorial (eyebrow, título, descripción, CTA) y galería
-   asimétrica con captions. Mobile-first.
-   El font-size del título lo gobierna _typography.css.
+   SECCIÓN · Archivo vivo del fenómeno (#archivo) — CLARA
+   Split: contenido IZQUIERDA sobre blanco / imagen DERECHA full-bleed
+   (oscura, cubre toda su mitad). El layout base vive en
+   components/_section-split.css (variante --light). Aquí solo lo
+   ESPECÍFICO de Archivo.
+   Referencia: .ai/img_page/Archivo.png · detalle inferior: .ai/buttom.png
    ============================================================ */
 
+/* Aterrizaje a SANGRE bajo el nav fijo (convención de inicio de sección:
+   cancela el scroll-padding-top global → el nav se sobrepone). */
 .archivo {
-  padding-block: var(--space-xl) calc(var(--section-y) * 0.5);
-  padding-inline: var(--gutter);
-  background-color: var(--surface-light);
-  color: var(--on-light);
+  scroll-margin-top: -3rem;
 }
 
-/* ---------- Catálogo: franja superior ---------- */
-.archivo__catalogo {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-sm) var(--space-lg);
-  padding-bottom: var(--space-lg);
-  border-bottom: 1px solid var(--color-border);
+@media (min-width: 768px) {
+  /* Texto (izq.) y obra (der.) a la MITAD cada uno (50/50). Anula el 40/60
+     del componente. La imagen cubre toda su mitad por el media `cover`
+     absoluto del componente (sin cambios extra). */
+  .archivo {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
 }
 
-.archivo__catalogo-text {
-  max-width: 42ch;
-  font-size: 0.9375rem;
-  color: var(--color-muted);
+/* Padding vertical un poco más corto que el del componente (--section-y): el
+   título y el texto suben y se pegan más arriba. Las categorías siguen ancladas
+   al pie (margin-top:auto). */
+.archivo__content {
+  padding-block: calc(var(--section-y) * 0.6);
 }
 
-.archivo__catalogo-cta {
-  flex-shrink: 0;
-}
-
-/* ---------- Encabezado ---------- */
-.archivo__eyebrow {
-  margin-top: var(--space-2xl);
-  color: var(--color-accent);
-}
-
+/* Título MÁS GRANDE en peso Black (el h2 ya es Black; aquí solo se sube el tope
+   de la escala compartida 2–2.5rem a un tamaño editorial mayor, como la captura). */
 .archivo__title {
-  margin-top: var(--space-sm);
-  color: var(--color-ink);
+  font-size: clamp(2.5rem, 1.5rem + 3.5vw, 4rem);
+  font-weight: var(--weight-black);
 }
 
+/* Cuerpo: descripción atenuada y justificada (misma convención que las demás
+   secciones split). */
 .archivo__description {
-  margin-top: var(--space-md);
-  max-width: 48ch;
-  font-size: 0.9375rem;
-  color: var(--color-muted);
+  color: var(--color-text-muted);
+  text-align: justify;
 }
 
-.archivo__cta {
-  display: inline-flex;
-  margin-top: var(--space-md);
+/* Línea divisora ROJA arriba del cierre (separa la descripción del cierre), 3px,
+   como en Artista/Exposición. El rojo como divisor es uso funcional permitido. */
+.archivo__closing {
+  padding-top: var(--space-sm);
+  border-top: 3px solid var(--color-accent);
 }
 
-/* ---------- Galería con captions ----------
-   Móvil: pieza dominante a sangre + 2 menores en fila. */
-.archivo__gallery {
-  margin-top: var(--space-xl);
+/* Cierre con el SIGUIENTE peso cargado (Semibold 600 → Black 900). El <strong>
+   forzaba 600; aquí se sube a Black — a prueba, para ver cómo queda. */
+.archivo__closing strong {
+  font-weight: var(--weight-black);
+}
+
+/* ---------- Fila de categorías, anclada al FONDO del contenedor ----------
+   Línea MUTED superior (más opaca que la roja) + 4 categorías (ícono · número
+   rojo con subrayado · nombre) separadas por divisores verticales muted.
+   Como en .ai/buttom.png. */
+.archivo__categories {
+  list-style: none;
+  /* margin-top: auto empuja la fila al FONDO de la columna (el contenido del
+     split es flex-column); el resto del contenido queda arriba. */
+  margin: auto 0 0;
+  padding-top: var(--space-md);
+  border-top: 3px solid color-mix(in srgb, var(--color-ink) 20%, transparent);
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, 1fr); /* móvil: 2×2 */
   gap: var(--space-md);
 }
 
-.archivo__gallery > li:first-child {
-  grid-column: 1 / -1;
+.archivo__category {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2xs);
 }
 
-.archivo picture {
-  display: block;
-  overflow: hidden;
-  background-color: var(--color-paper-dim);
+/* Ícono mínimo (outline), atenuado. */
+.archivo__category-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: color-mix(in srgb, var(--color-ink) 42%, transparent);
 }
 
-.archivo__item img {
-  width: 100%;
-  height: auto;
-  aspect-ratio: 1 / 1;
-  object-fit: cover;
-}
-
-.archivo__item figcaption {
-  margin-top: var(--space-2xs);
+/* Número en ROJO con subrayado rojo corto debajo. */
+.archivo__category-number {
+  color: var(--color-accent);
+  font-weight: var(--weight-semibold);
   font-size: var(--fs-small);
-  color: var(--color-muted);
 }
 
-/* ---------- Tablet / desktop: galería asimétrica acotada ----------
-   Alturas fijas por pieza (la imagen recorta); captions debajo; piezas
-   alineadas al pie → escalón editorial. */
+.archivo__category-number::after {
+  content: "";
+  display: block;
+  width: 1.5rem;
+  height: 2px;
+  margin-top: var(--space-3xs);
+  background-color: var(--color-accent);
+}
+
+.archivo__category-name {
+  font-size: var(--fs-body);
+  font-weight: var(--weight-semibold);
+  line-height: var(--lh-heading);
+}
+
 @media (min-width: 768px) {
-  .archivo__gallery {
-    grid-template-columns: 1.6fr 1fr 1fr;
-    align-items: end;
+  /* Desktop: 4 en fila, con divisores verticales muted entre categorías. */
+  .archivo__categories {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
   }
 
-  .archivo__gallery > li:first-child {
-    grid-column: auto;
+  .archivo__category {
+    padding-inline: var(--space-md);
   }
 
-  .archivo__item picture {
-    height: clamp(280px, 40vh, 460px);
+  .archivo__category:first-child {
+    padding-left: 0;
   }
 
-  .archivo__gallery > li:nth-child(2) .archivo__item picture,
-  .archivo__gallery > li:nth-child(3) .archivo__item picture {
-    height: clamp(200px, 28vh, 320px);
+  .archivo__category + .archivo__category {
+    border-left: 1px solid color-mix(in srgb, var(--color-ink) 20%, transparent);
   }
+}
 
-  .archivo__item img {
-    height: 100%;
-    aspect-ratio: auto;
-  }
+/* CTA "Formar parte" en la esquina inferior DERECHA sobre la imagen (anula el
+   `left` del componente, que lo coloca abajo-izquierda). */
+.archivo .media-cta {
+  left: auto;
+  right: var(--space-md);
+  /* La línea roja lead-in pasa a la DERECHA del texto (el botón está anclado a
+     la derecha): se invierte el lado del padding y del ::before. */
+  padding-left: 0;
+  padding-right: calc(1.5rem + var(--space-2xs));
+}
+
+.archivo .media-cta::before {
+  left: auto;
+  right: 0;
 }
