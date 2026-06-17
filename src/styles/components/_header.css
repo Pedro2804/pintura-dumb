@@ -86,6 +86,7 @@ html {
 
 /* ---------- Menú (desktop) ---------- */
 .site-nav__menu {
+  position: relative; /* offsetParent de los links + ancla de la magic line */
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
@@ -93,8 +94,7 @@ html {
   gap: var(--space-md);
 }
 
-.site-nav__link,
-.site-nav__cta {
+.site-nav__link {
   font-family: var(--font-body);
   font-size: var(--fs-eyebrow);
   font-weight: var(--weight-semibold);
@@ -118,10 +118,10 @@ html {
   opacity: 1;
 }
 
-/* Indicador activo: subrayado ROJO (acento funcional) bajo el item de la
-   sección visible; crece en hover. No aplica al CTA, que tiene su propia
-   línea (evita doble ::after sobre el mismo elemento). */
-.site-nav__link:not(.site-nav__cta)::after {
+/* Indicador de hover/activo: subrayado ROJO (acento funcional) que crece desde
+   el centro. En desktop, con la magic line activa, este ::after queda SOLO para
+   el hover (ver override más abajo). */
+.site-nav__link::after {
   content: "";
   position: absolute;
   left: 0;
@@ -130,34 +130,49 @@ html {
   height: 2px;
   background-color: var(--color-accent);
   transform: scaleX(0);
-  transform-origin: left;
+  transform-origin: center; /* crece desde el centro hacia afuera */
   transition: transform var(--duration-base) var(--ease-out);
 }
 
-.site-nav__link:not(.site-nav__cta):hover::after,
-.site-nav__link:not(.site-nav__cta):focus-visible::after,
-.site-nav__link[aria-current="true"]:not(.site-nav__cta)::after {
+.site-nav__link:hover::after,
+.site-nav__link:focus-visible::after,
+.site-nav__link[aria-current="true"]::after {
   transform: scaleX(1);
 }
 
-.site-nav__cta {
-  position: relative;
-  padding-bottom: var(--space-3xs);
-}
-
-.site-nav__cta::after {
-  content: "";
+/* ---------- Magic line (estado activo, desktop) ----------
+   Una sola línea compartida que VIAJA entre los items. La crea y mueve
+   navIndicator.js (GSAP) con efecto "goma". Base de 1px escalada por
+   transform (scaleX) → solo transform, sin reflow.
+   Si el JS no corre (sin JS / reduced-motion / móvil), no existe este
+   elemento y el subrayado activo lo dibuja el ::after de arriba. */
+.site-nav__indicator {
   position: absolute;
   left: 0;
-  bottom: 0;
-  width: 100%;
-  height: 1px;
-  background-color: currentColor;
-  transition: opacity var(--duration-base) var(--ease-out);
+  bottom: calc(-1 * var(--space-3xs));
+  width: 1px;
+  height: 2px;
+  background-color: var(--color-accent);
+  transform-origin: left center;
+  will-change: transform;
+  pointer-events: none;
 }
 
-.site-nav__cta:hover {
-  color: var(--color-accent);
+/* Cuando la magic line toma el control (navIndicator.js marca el header), el
+   ::after por-item queda SOLO para hover (crece desde el centro). Los estados
+   activo y focus los dibuja la magic line → se apaga el ::after en todo lo que
+   NO sea hover, evitando el doble trazo al hacer clic (focus + línea viajera).
+   Sin JS / reduced-motion / móvil → vuelve el ::after de arriba. Solo desktop. */
+@media (min-width: 768px) {
+  .site-header[data-indicator="on"] .site-nav__link:not(:hover)::after {
+    transform: scaleX(0);
+  }
+
+  /* En el item ACTIVO la magic line ya está puesta: nunca dibujar también su
+     ::after (ni en hover), para que se vea UNA sola línea, no dos encimadas. */
+  .site-header[data-indicator="on"] .site-nav__link[aria-current="true"]::after {
+    transform: scaleX(0);
+  }
 }
 
 /* Bloquea el scroll del body cuando el menú móvil está abierto (lo conmuta el JS) */
