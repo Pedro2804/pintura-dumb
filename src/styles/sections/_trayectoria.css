@@ -29,17 +29,13 @@
   gap: var(--space-2xs);
 }
 
-/* La tira de miniaturas absorbe el ancho entre las flechas. */
-.trayectoria .works-selector__thumbs--carousel {
-  flex: 1;
-  min-width: 0;
-}
+/* El ancho entre las flechas lo absorbe el `.works-viewport` (componente);
+   esta lista es la PISTA (transform), no necesita flex:1. */
 
 /* Móvil (base): una sola imagen grande a la vez (la miniatura "se vuelve" la
-   obra). scroll-snap al centro para que el JS la centre después. */
+   obra grande). El JS la centra con transform. */
 .trayectoria .works-selector__thumbs--carousel > li {
   width: 100%;
-  scroll-snap-align: center;
 }
 
 @media (min-width: 768px) {
@@ -57,12 +53,8 @@
     align-self: center;
   }
 
-  /* 3 miniaturas visibles: (ancho − 2 gaps) / 3. Aire vertical para que la
-     del centro pueda crecer sin recortarse por el overflow del carrusel. */
-  .trayectoria .works-selector__thumbs--carousel {
-    padding-block: var(--space-xs);
-  }
-
+  /* 3 miniaturas visibles: (ancho − 2 gaps) / 3. El aire vertical para la
+     central (scale) lo pone el `.works-viewport` (padding-block). */
   .trayectoria .works-selector__thumbs--carousel > li {
     width: calc((100% - 2 * var(--space-2xs)) / 3);
   }

@@ -69,28 +69,36 @@
   gap: var(--space-2xs);
 }
 
-/* Variante CARRUSEL (Trayectoria): fila horizontal. La navegación es por
-   BOTONES (y swipe en móvil) → la barra de scroll se OCULTA. El scroll sigue
-   disponible programáticamente para el JS (FASE 5-BIS). */
+/* Variante CARRUSEL (Trayectoria): coverflow por TRANSFORM (no scroll nativo).
+   El `.works-viewport` recorta la ventana visible; esta lista es la PISTA que
+   se desplaza con `transform: translateX` desde JS (obraCarousel.js) → loop
+   infinito real y miniatura central siempre con vecinos a los lados. */
+.works-viewport {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  /* Aire vertical: la miniatura central crece (scale) sin que el recorte la
+     corte por arriba/abajo. */
+  padding-block: var(--space-xs);
+  /* Gestos horizontales → carrusel; verticales → scroll de la página. */
+  touch-action: pan-y;
+}
+
+/* La PISTA. `position: relative` la vuelve el offsetParent de las miniaturas
+   (el JS centra midiendo `offsetLeft`, inmune al transform). Es un bloque que
+   llena el ancho del viewport; sus <li> (ancho fijo) lo desbordan a la derecha
+   y el viewport los recorta. */
 .works-selector__thumbs--carousel {
   display: flex;
   gap: var(--space-2xs);
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* Edge antiguo */
-}
-
-/* Oculta la barra de scroll en Chrome/Safari/Edge. */
-.works-selector__thumbs--carousel::-webkit-scrollbar {
-  display: none;
+  position: relative;
+  transition: transform var(--duration-slow) var(--ease-out);
+  will-change: transform;
 }
 
 .works-selector__thumbs--carousel > li {
   flex: 0 0 auto;
   width: clamp(5.5rem, 18vw, 8rem);
-  scroll-snap-align: start;
 }
 
 /* ---------- Miniatura (botón) ---------- */
@@ -231,7 +239,8 @@
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {
   .works-thumb img,
-  .works-selector__nav {
+  .works-selector__nav,
+  .works-selector__thumbs--carousel {
     transition: none;
   }
 

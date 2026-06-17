@@ -11,12 +11,18 @@ import { initCountdown } from './js/modules/countdown.js';
 import { initNav } from './js/modules/nav.js';
 import { initMobileMenu } from './js/modules/mobileMenu.js';
 import { initVideoIntro } from './js/modules/videoIntro.js';
+import { initObraSelector } from './js/modules/obraSelector.js';
+import { initObraCarousel } from './js/modules/obraCarousel.js';
+import { obrasDump } from './data/obras-dump.js';
+import { obrasTrayectoria } from './data/obras-trayectoria.js';
 
 function init() {
   initCountdown();
   initNav();
   initMobileMenu();
   initVideoIntro();
+  initObraSelector({ section: '#dump', obras: obrasDump });
+  initObraCarousel({ section: '#trayectoria', obras: obrasTrayectoria });
 }
 
 if (document.readyState === 'loading') {
