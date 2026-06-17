@@ -188,28 +188,46 @@ function clampInitial(index, total) {
  * Arrastre horizontal (puntero/touch). Mueve la pista con el dedo y, al
  * soltar, cambia de obra si se superó el umbral; si no, regresa al centro.
  * `touch-action: pan-y` (CSS) deja el scroll vertical de la página intacto.
+ *
+ * ⚠ El pointer capture se difiere hasta que el dedo REALMENTE arrastra
+ * (supera DRAG_START). Capturar en el `pointerdown` re-dirige el `click` de
+ * compatibilidad al viewport (spec de Pointer Events) → el handler de clic en
+ * la miniatura nunca lo recibe. Difiriéndolo, un tap nunca captura y su `click`
+ * llega limpio a la miniatura (la trae al centro); solo el swipe captura.
  */
 function bindDrag({ viewport, track, items, getPos, getBaseX, go, snapBack, reduced }) {
-  let dragging = false;
+  const DRAG_START = 4; // px que distinguen un tap (deja pasar el click) de un arrastre
+  let pointerActive = false;
+  let dragging = false; // true solo tras superar DRAG_START (ya capturó)
   let startX = 0;
   let baseX = 0;
 
   const onDown = (event) => {
     if (event.button != null && event.button !== 0) return;
-    dragging = true;
+    pointerActive = true;
+    dragging = false;
     startX = event.clientX;
     baseX = getBaseX();
-    track.style.transition = 'none';
-    viewport.setPointerCapture?.(event.pointerId);
   };
 
   const onMove = (event) => {
-    if (!dragging) return;
+    if (!pointerActive) return;
     const dx = event.clientX - startX;
+    if (!dragging) {
+      if (Math.abs(dx) < DRAG_START) return; // aún es un tap potencial
+      // Arranca el arrastre: ahora sí captura y congela la transición.
+      dragging = true;
+      track.style.transition = 'none';
+      viewport.setPointerCapture?.(event.pointerId);
+    }
     track.style.transform = `translateX(${baseX + dx}px)`;
   };
 
   const onUp = (event) => {
+    if (!pointerActive) return;
+    pointerActive = false;
+    // Tap puro: nunca arrastró ni capturó → no tocamos nada; el `click` natural
+    // sobre la miniatura dispara goTo en el handler de `track`.
     if (!dragging) return;
     dragging = false;
     if (!reduced) track.style.transition = '';
