@@ -3,6 +3,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { prefersReducedMotion } from '../utils/dom.js';
 import { logError } from '../utils/log.js';
 import { initNavIndicator } from './navIndicator.js';
+import { initScrollAnimations } from './scrollAnimations.js';
 
 const FILE = 'animations/index.js';
 
@@ -42,6 +43,7 @@ export function initAnimations() {
 
     // Submódulos (se suman por fase). FASE 6-BIS:
     initNavIndicator(); // magic line: subrayado activo que viaja entre items
+    initScrollAnimations(); // entradas por scroll declarativas (data-animate)
   } catch (error) {
     logError(FILE, 'initAnimations', error);
   }

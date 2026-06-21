@@ -23,6 +23,41 @@
   letter-spacing: var(--tracking-display);
 }
 
+/* ============================================================
+   Transición de obra con GSAP Flip (idea del dev)
+   El botón-miniatura ACTIVO viaja desde su celda al escenario y se
+   muestra en grande (obra completa). Su celda queda vacía → 3 minis.
+   ============================================================ */
+
+/* Escenario: contenedor que recibe el botón activo, centrado. */
+.dump .works-selector__media {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+}
+
+/* El botón activo, ya en el escenario: toma el ASPECTO REAL de la obra
+   (--obra-ratio, puesto por JS). La imagen sigue en `cover` (NO se override →
+   hereda el cover-fill de .works-thumb img). Al transformarse la caja de
+   cuadrado → aspecto-de-obra durante el viaje, el recorte se ABRE gradualmente
+   hasta mostrarla completa: la forma se adapta suave (y al revés al volver). */
+.dump .works-selector__media .works-thumb {
+  aspect-ratio: var(--obra-ratio, 1);
+  height: 60vh; /* móvil: tamaño base; el ancho deriva del aspecto */
+  width: auto;
+  max-width: 100%;
+  border: none;
+  cursor: default;
+}
+
+/* Celda fija del grid: reserva su cuadro aunque la obra activa esté en el
+   escenario → las otras 3 miniaturas NO se recorren (mismo lugar). */
+.dump .works-slot {
+  aspect-ratio: 1;
+}
+
 /* En desktop la rejilla 2×2 no necesita ocupar todo el ancho de la
    columna: se acota para conservar miniaturas compactas (como en la
    captura, donde forman un bloque cuadrado bajo el título). */
@@ -62,9 +97,16 @@
     align-self: center; /* las flechas no se estiran con la celda */
   }
 
-  .dump .works-selector__image {
+  /* Desktop: el escenario llena el alto de la columna izquierda (ahí manda su
+     altura, como antes lo hacía la imagen). */
+  .dump .works-selector__media {
     flex: 1 1 0;
     min-height: 0;
-    max-height: none; /* anula el 70vh base: ahora manda la columna izquierda */
+  }
+
+  /* Desktop: la obra llena el alto del escenario; el ancho deriva del aspecto.
+     (La imagen hereda el cover-fill; el aspecto lo da --obra-ratio.) */
+  .dump .works-selector__media .works-thumb {
+    height: 100%;
   }
 }
