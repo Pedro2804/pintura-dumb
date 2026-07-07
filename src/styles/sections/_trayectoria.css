@@ -29,6 +29,18 @@
   gap: var(--space-2xs);
 }
 
+/* La SELECCIÓN de la miniatura se anima suave (coverflow). Es un cambio de
+   estado (toggle de `aria-current` desde obraCarousel.js) → CSS transition es
+   la herramienta correcta: el realce "viaja" solo entre miniaturas mientras se
+   arrastra, sin crear tweens JS (mejor en móvil). El contorno rojo lo pone el
+   componente; aquí se le suma transform + opacity al mismo tempo. */
+.trayectoria .works-thumb {
+  transition:
+    transform var(--duration-base) var(--ease-out),
+    opacity var(--duration-base) var(--ease-out),
+    border-color var(--duration-base) var(--ease-out);
+}
+
 /* El ancho entre las flechas lo absorbe el `.works-viewport` (componente);
    esta lista es la PISTA (transform), no necesita flex:1. */
 
@@ -59,9 +71,18 @@
     width: calc((100% - 2 * var(--space-2xs)) / 3);
   }
 
-  /* La miniatura ACTIVA (centro) un poco más grande → se nota el coverflow.
+  /* Las miniaturas laterales se atenúan LIGERAMENTE para que la seleccionada
+     destaque, sin apagarlas: se lee cuál es la obra grande pero las otras
+     siguen legibles. */
+  .trayectoria .works-thumb {
+    opacity: 0.7;
+  }
+
+  /* La miniatura ACTIVA (centro): a tamaño completo, iluminada y más grande →
+     se nota el coverflow y queda claro que es la obra grande.
      El contorno rojo ya lo pone el componente con [aria-current="true"]. */
   .trayectoria .works-thumb[aria-current="true"] {
+    opacity: 1;
     transform: scale(1.08);
   }
 }
@@ -70,5 +91,13 @@
 @media (max-width: 767px) {
   .trayectoria__stage {
     display: none;
+  }
+}
+
+/* El realce de la seleccionada se queda (es énfasis, no movimiento); solo se
+   apaga la TRANSICIÓN para quien pide movimiento reducido. */
+@media (prefers-reduced-motion: reduce) {
+  .trayectoria .works-thumb {
+    transition: none;
   }
 }

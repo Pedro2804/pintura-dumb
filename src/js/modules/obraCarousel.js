@@ -1,3 +1,6 @@
+import gsap from 'gsap';
+import { Draggable } from 'gsap/Draggable';
+import { InertiaPlugin } from 'gsap/InertiaPlugin';
 import { $, $$, prefersReducedMotion } from '../utils/dom.js';
 import { logError } from '../utils/log.js';
 import { buildThumb, buildStageAlt, buildMeta } from '../utils/obras.js';
@@ -9,16 +12,30 @@ const FILE = 'obraCarousel.js';
 // del MEDIO; al salirnos de su rango re-centramos a la copia equivalente
 // (visualmente idéntica → sin salto).
 const COPIES = 3;
-// Fracción del paso (ancho de slot) que hay que arrastrar para cambiar de obra.
-const SWIPE_RATIO = 0.2;
+
+// Tempo del cross-fade de la obra grande (escenario). Salida rápida + entrada
+// más lenta: la disolvencia debe SENTIRSE, no parpadear. Tempo local (mismo
+// criterio que obraSelector.js de Dump → no acoplar a animations/index.js).
+const STAGE_FADE_OUT = 0.22;
+const STAGE_FADE_IN = 0.45;
+const STAGE_EASE = 'power2.out';
+
+// Tempo del viaje del carrusel por flecha/clic/teclado (el arrastre lo maneja
+// la inercia de Draggable, no esto).
+const SETTLE_DUR = 0.5;
+const SETTLE_EASE = 'power3.out';
+
+let pluginsRegistered = false;
 
 /**
  * Carrusel coverflow de obras (sección Trayectoria).
  *
- * Motor por `transform: translateX` (NO scroll nativo) → loop infinito real,
- * el activo SIEMPRE centrado con vecinos a los lados, mismo mecanismo en
- * desktop (3 visibles) y móvil (1 visible con swipe). El escenario (obra
- * grande, en desktop) queda sincronizado con la miniatura central.
+ * Motor por `transform: x` controlado con GSAP → loop infinito real, el activo
+ * SIEMPRE centrado con vecinos a los lados, mismo mecanismo en desktop (3
+ * visibles) y móvil (1 visible). El arrastre lo lleva **GSAP Draggable +
+ * InertiaPlugin**: se suelta con envión, desacelera natural y cae (snap) en la
+ * miniatura más cercana — no siempre a la de junto. El escenario (obra grande)
+ * hace cross-fade a la miniatura central al asentarse.
  *
  * Estado encapsulado por instancia → independiente de Dump.
  *
@@ -44,6 +61,11 @@ export function initObraCarousel({ section, obras, initialIndex = 0 } = {}) {
 
     if (!track || !viewport) return;
 
+    if (!pluginsRegistered) {
+      gsap.registerPlugin(Draggable, InertiaPlugin);
+      pluginsRegistered = true;
+    }
+
     // --- Render: COPIES juegos seguidos (buffer para el loop) ---
     const fragment = document.createDocumentFragment();
     for (let copy = 0; copy < COPIES; copy += 1) {
@@ -51,7 +73,7 @@ export function initObraCarousel({ section, obras, initialIndex = 0 } = {}) {
     }
     track.replaceChildren(fragment);
 
-    // Las miniaturas son afordancia visual: el experiencia accesible es
+    // Las miniaturas son afordancia visual: la experiencia accesible es
     // «flechas + región viva del escenario». Se sacan del orden de tabulación
     // y del árbol de accesibilidad (evita anunciar las obras 3 veces).
     track.setAttribute('aria-hidden', 'true');
@@ -66,27 +88,20 @@ export function initObraCarousel({ section, obras, initialIndex = 0 } = {}) {
 
     // --- Estado ---
     let pos = total + clampInitial(initialIndex, total); // copia del medio
-    let currentX = 0;
+    let draggable = null;
 
-    // Distancia (en px de layout) para que la miniatura `position` quede
-    // centrada en el viewport. offsetLeft no se altera por el transform, así
-    // que el cálculo es estable en cualquier posición de la pista.
-    const centerOffset = (position) => {
-      const li = items[position];
-      return viewport.clientWidth / 2 - (li.offsetLeft + li.offsetWidth / 2);
+    // --- Geometría de la pista ---
+    // Las miniaturas son uniformes (mismo ancho + gap), así que la posición x
+    // que centra una miniatura es LINEAL: xForPos(p) = origin − p·step. Eso hace
+    // que ir de px → índice (y al revés) sea aritmética simple y estable.
+    let step = 0; // distancia entre centros de miniaturas consecutivas
+    let originX = 0; // x que centra la miniatura de índice 0
+    const measure = () => {
+      step = items.length > 1 ? items[1].offsetLeft - items[0].offsetLeft : items[0].offsetWidth;
+      originX = viewport.clientWidth / 2 - (items[0].offsetLeft + items[0].offsetWidth / 2);
     };
-
-    const applyTransform = (position, animate) => {
-      currentX = centerOffset(position);
-      if (animate && !reduced) {
-        track.style.transform = `translateX(${currentX}px)`;
-      } else {
-        track.style.transition = 'none';
-        track.style.transform = `translateX(${currentX}px)`;
-        void track.offsetWidth; // fuerza reflow para "soltar" la transición
-        track.style.transition = '';
-      }
-    };
+    const xForPos = (p) => originX - p * step;
+    const posForX = (x) => Math.round((originX - x) / step);
 
     const setActive = (position) => {
       buttons.forEach((button, i) => {
@@ -95,8 +110,8 @@ export function initObraCarousel({ section, obras, initialIndex = 0 } = {}) {
       });
     };
 
-    const updateStage = (logical) => {
-      const obra = obras[logical];
+    // Aplica la obra al escenario SIN animar (cambia src, alt, dimensiones y ficha).
+    const swapStage = (obra) => {
       stageImage.src = obra.src;
       stageImage.alt = buildStageAlt(obra);
       if (obra.width) stageImage.width = obra.width;
@@ -105,39 +120,151 @@ export function initObraCarousel({ section, obras, initialIndex = 0 } = {}) {
       if (metaEl) metaEl.textContent = buildMeta(obra);
     };
 
-    const render = (position, animate) => {
-      setActive(position);
-      updateStage(logicalOf(position));
-      applyTransform(position, animate);
+    // Token anti-carrera: si el usuario cambia de obra antes de que termine la
+    // transición (clics/flechas rápidas), solo la ÚLTIMA petición pinta.
+    let stageReq = 0;
+
+    // Cross-fade del escenario: la obra actual se disuelve (opacity→0) y, cuando
+    // la nueva YA está precargada (sin flash vacío), entra (opacity→1). El swap
+    // ocurre en opacity 0 → el cambio se ve suave, no brusco.
+    const updateStage = (logical, animate) => {
+      const obra = obras[logical];
+
+      // Colocación inicial o reduced-motion → cambio directo, sin disolvencia.
+      if (!animate || reduced) {
+        gsap.killTweensOf(stageImage);
+        swapStage(obra);
+        gsap.set(stageImage, { opacity: 1 });
+        return;
+      }
+
+      const req = (stageReq += 1);
+      gsap.killTweensOf(stageImage);
+
+      // El swap+entrada solo procede cuando AMBOS terminan: el fade-out y la
+      // precarga de la nueva imagen. Así nunca se ve un hueco ni una a medio cargar.
+      let fadedOut = false;
+      let preloaded = false;
+      const commit = () => {
+        if (!fadedOut || !preloaded || req !== stageReq) return;
+        swapStage(obra);
+        gsap.to(stageImage, { opacity: 1, duration: STAGE_FADE_IN, ease: STAGE_EASE });
+      };
+
+      gsap.to(stageImage, {
+        opacity: 0,
+        duration: STAGE_FADE_OUT,
+        ease: 'power1.in',
+        onComplete: () => {
+          fadedOut = true;
+          commit();
+        },
+      });
+
+      const preload = new Image();
+      preload.onload = preload.onerror = () => {
+        preloaded = true;
+        commit();
+      };
+      preload.src = obra.src;
+      if (preload.complete) preloaded = true; // ya cacheada: no esperamos onload
     };
 
-    // Devuelve `pos` a la copia del medio si se salió de su rango. La copia
-    // equivalente luce idéntica y su translateX coincide → re-centrar es
-    // imperceptible (la pieza del loop infinito).
-    const normalize = () => {
+    // Re-centra `pos` a la copia del MEDIO si se salió de su rango. La copia
+    // equivalente luce idéntica y su x coincide salvo un múltiplo de copias →
+    // el reposicionamiento instantáneo es imperceptible (la pieza del loop).
+    const recenter = () => {
       if (pos < total || pos >= 2 * total) {
         pos = total + logicalOf(pos);
-        applyTransform(pos, false);
+        gsap.set(track, { x: xForPos(pos) });
         setActive(pos);
+        draggable && draggable.update();
       }
     };
 
-    const go = (direction) => {
-      // Arranca SIEMPRE desde la copia del medio (sin salto) → un paso nunca
-      // se sale del buffer aunque el usuario pulse rápido.
-      normalize();
-      pos += direction;
-      render(pos, true);
+    // Coverflow visual mientras la pista se mueve (arrastre/inercia): marca la
+    // miniatura central según la x en vivo. Es solo CSS (borde + escala) → barato;
+    // la obra grande NO se toca aquí (su cross-fade es al asentar).
+    const syncActive = () => {
+      const p = posForX(draggable.x);
+      if (p !== pos) {
+        pos = p;
+        setActive(p);
+      }
     };
 
-    const goTo = (position) => {
-      if (position === pos) return;
-      normalize();
-      pos = position;
-      render(pos, true);
+    // Viaje programático (flecha / clic en miniatura / teclado) hasta centrar `p`.
+    const goToPos = (p) => {
+      pos = p;
+      setActive(p);
+      updateStage(logicalOf(p), true); // cross-fade de la obra grande al cambiar
+
+      if (reduced) {
+        gsap.set(track, { x: xForPos(p) });
+        draggable && draggable.update();
+        recenter();
+        return;
+      }
+
+      gsap.to(track, {
+        x: xForPos(p),
+        duration: SETTLE_DUR,
+        ease: SETTLE_EASE,
+        overwrite: true, // un nuevo viaje redirige al anterior (sin encimar)
+        onUpdate: () => draggable && draggable.update(),
+        onComplete: recenter,
+      });
     };
 
-    // --- Eventos ---
+    const go = (direction) => goToPos(pos + direction);
+
+    // Al soltar el arrastre (fin de la inercia, o al instante si reduced): fija
+    // el centrado exacto, hace cross-fade a la obra final y ordena el buffer.
+    const finalizeDrag = (instance) => {
+      pos = posForX(instance.x);
+      setActive(pos);
+      updateStage(logicalOf(pos), true);
+      gsap.set(track, { x: xForPos(pos) }); // centrado exacto (sobre todo en reduced)
+      instance.update();
+      recenter();
+    };
+
+    // --- Estado inicial (sin viaje ni disolvencia) ---
+    measure();
+    gsap.set(track, { x: xForPos(pos) });
+    setActive(pos);
+    updateStage(logicalOf(pos), false);
+
+    // --- Arrastre con inercia (GSAP Draggable + InertiaPlugin) ---
+    draggable = Draggable.create(track, {
+      type: 'x',
+      inertia: !reduced,
+      dragClickables: true, // se puede agarrar desde una miniatura; el clic limpio sigue vivo
+      cursor: 'grab',
+      activeCursor: 'grabbing',
+      // Snap del LANZAMIENTO al centro de la miniatura más cercana al punto donde
+      // termina el envión → cae donde lo soltaste (multi-paso), sin rebotes.
+      snap: { x: (value) => xForPos(posForX(value)) },
+      onPress() {
+        gsap.killTweensOf(track); // corta un viaje de flecha en curso para agarre inmediato
+      },
+      onDragStart() {
+        viewport.classList.add('is-dragging'); // cursor: grabbing en toda la zona (CSS)
+      },
+      onDrag: syncActive,
+      onThrowUpdate: syncActive,
+      onRelease() {
+        viewport.classList.remove('is-dragging');
+      },
+      onDragEnd() {
+        if (reduced) finalizeDrag(this); // sin inercia: asienta al soltar
+      },
+      onThrowComplete() {
+        finalizeDrag(this); // con inercia: asienta al terminar el envión
+      },
+    })[0];
+
+    // --- Eventos de navegación discreta ---
     prevBtn?.addEventListener('click', () => go(-1));
     nextBtn?.addEventListener('click', () => go(1));
 
@@ -146,7 +273,7 @@ export function initObraCarousel({ section, obras, initialIndex = 0 } = {}) {
       const button = event.target.closest('[data-obra-thumb]');
       if (!button || !track.contains(button)) return;
       const index = buttons.indexOf(button);
-      if (index !== -1) goTo(index);
+      if (index !== -1 && index !== pos) goToPos(index);
     });
 
     // Teclado: ←/→ solo con el foco en una flecha del carrusel.
@@ -158,19 +285,16 @@ export function initObraCarousel({ section, obras, initialIndex = 0 } = {}) {
       go(event.key === 'ArrowRight' ? 1 : -1);
     });
 
-    // Al terminar el deslizamiento, ordena el buffer (caso reposo).
-    track.addEventListener('transitionend', (event) => {
-      if (event.propertyName === 'transform') normalize();
-    });
-
-    bindDrag({ viewport, track, items, getPos: () => pos, getBaseX: () => currentX, go, snapBack: () => render(pos, true), reduced });
-
-    // --- Estado inicial + recálculo ante cambios de layout ---
-    render(pos, false);
+    // --- Recálculo ante cambios de layout/breakpoint ---
+    const reflow = () => {
+      measure();
+      gsap.set(track, { x: xForPos(pos) });
+      draggable && draggable.update();
+    };
     if (typeof ResizeObserver !== 'undefined') {
-      new ResizeObserver(() => applyTransform(pos, false)).observe(viewport);
+      new ResizeObserver(reflow).observe(viewport);
     } else {
-      window.addEventListener('resize', () => applyTransform(pos, false), { passive: true });
+      window.addEventListener('resize', reflow, { passive: true });
     }
   } catch (error) {
     logError(FILE, 'initObraCarousel', error);
@@ -182,66 +306,4 @@ function clampInitial(index, total) {
   const i = Number(index);
   if (!Number.isInteger(i) || i < 0 || i >= total) return 0;
   return i;
-}
-
-/**
- * Arrastre horizontal (puntero/touch). Mueve la pista con el dedo y, al
- * soltar, cambia de obra si se superó el umbral; si no, regresa al centro.
- * `touch-action: pan-y` (CSS) deja el scroll vertical de la página intacto.
- *
- * ⚠ El pointer capture se difiere hasta que el dedo REALMENTE arrastra
- * (supera DRAG_START). Capturar en el `pointerdown` re-dirige el `click` de
- * compatibilidad al viewport (spec de Pointer Events) → el handler de clic en
- * la miniatura nunca lo recibe. Difiriéndolo, un tap nunca captura y su `click`
- * llega limpio a la miniatura (la trae al centro); solo el swipe captura.
- */
-function bindDrag({ viewport, track, items, getPos, getBaseX, go, snapBack, reduced }) {
-  const DRAG_START = 4; // px que distinguen un tap (deja pasar el click) de un arrastre
-  let pointerActive = false;
-  let dragging = false; // true solo tras superar DRAG_START (ya capturó)
-  let startX = 0;
-  let baseX = 0;
-
-  const onDown = (event) => {
-    if (event.button != null && event.button !== 0) return;
-    pointerActive = true;
-    dragging = false;
-    startX = event.clientX;
-    baseX = getBaseX();
-  };
-
-  const onMove = (event) => {
-    if (!pointerActive) return;
-    const dx = event.clientX - startX;
-    if (!dragging) {
-      if (Math.abs(dx) < DRAG_START) return; // aún es un tap potencial
-      // Arranca el arrastre: ahora sí captura y congela la transición.
-      dragging = true;
-      track.style.transition = 'none';
-      viewport.setPointerCapture?.(event.pointerId);
-    }
-    track.style.transform = `translateX(${baseX + dx}px)`;
-  };
-
-  const onUp = (event) => {
-    if (!pointerActive) return;
-    pointerActive = false;
-    // Tap puro: nunca arrastró ni capturó → no tocamos nada; el `click` natural
-    // sobre la miniatura dispara goTo en el handler de `track`.
-    if (!dragging) return;
-    dragging = false;
-    if (!reduced) track.style.transition = '';
-    const dx = event.clientX - startX;
-    const pos = getPos();
-    const step = items[pos].offsetWidth; // ancho de una miniatura ≈ un paso
-    const threshold = step * SWIPE_RATIO;
-    if (dx <= -threshold) go(1);
-    else if (dx >= threshold) go(-1);
-    else snapBack();
-  };
-
-  viewport.addEventListener('pointerdown', onDown);
-  viewport.addEventListener('pointermove', onMove);
-  viewport.addEventListener('pointerup', onUp);
-  viewport.addEventListener('pointercancel', onUp);
 }

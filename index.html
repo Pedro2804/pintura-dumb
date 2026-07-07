@@ -399,7 +399,11 @@
         </div>
 
         <div class="trayectoria__stage section-works__stage">
-          <figure class="works-selector__figure" data-obra-stage aria-live="polite">
+          <!-- data-animate en el FIGURE (no en la <img>): la entrada por scroll
+               (fade-up, como los textos) anima el bloque obra+ficha, mientras el
+               cross-fade de obraCarousel.js sigue animando la <img> de adentro
+               sin chocar (son elementos distintos: opacity del figure vs de la img). -->
+          <figure class="works-selector__figure" data-obra-stage data-animate aria-live="polite">
             <!-- Imagen y ficha hidratadas por JS (obraCarousel.js). -->
             <img class="works-selector__image" alt="" loading="lazy" data-obra-image />
             <figcaption class="works-selector__caption">

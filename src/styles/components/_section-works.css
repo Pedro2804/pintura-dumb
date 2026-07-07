@@ -82,6 +82,17 @@
   padding-block: var(--space-xs);
   /* Gestos horizontales → carrusel; verticales → scroll de la página. */
   touch-action: pan-y;
+  /* Invita a arrastrar con el mouse (el motor ya soporta drag por puntero). */
+  cursor: grab;
+}
+
+/* Mientras se arrastra, la mano se cierra. El JS (obraCarousel.js) pone
+   `.is-dragging` al superar el umbral de arrastre y la quita al soltar; el
+   override en la miniatura evita que el `pointer` del botón gane durante el
+   gesto. */
+.works-viewport.is-dragging,
+.works-viewport.is-dragging .works-thumb {
+  cursor: grabbing;
 }
 
 /* La PISTA. `position: relative` la vuelve el offsetParent de las miniaturas
@@ -92,7 +103,9 @@
   display: flex;
   gap: var(--space-2xs);
   position: relative;
-  transition: transform var(--duration-slow) var(--ease-out);
+  /* El movimiento de la pista lo controla GSAP (Draggable + tweens de viaje en
+     obraCarousel.js). Sin `transition` CSS aquí: pelearía con GSAP por el
+     `transform`. `will-change` avisa al compositor del cambio de transform. */
   will-change: transform;
 }
 
