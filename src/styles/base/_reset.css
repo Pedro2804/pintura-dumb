@@ -21,6 +21,19 @@ html {
   font-size: 100%;               /* respeta la preferencia del usuario (16px base) */
   -webkit-text-size-adjust: 100%; /* evita el reescalado de texto en iOS landscape */
   scroll-behavior: smooth;
+  /* Scroll-snap entre secciones: al rodar la rueda y rebasar el umbral, la
+     sección encaja sola (no hay que cuadrarla a mano). `proximity` (no
+     `mandatory`): acomoda cuando estás CERCA del punto, pero NO te atrapa si una
+     sección llega a superar el alto del viewport (móvil, texto largo) → puedes
+     leerla completa. El alineamiento a sangre lo dan scroll-padding-top (3rem) y
+     el scroll-margin-top:-3rem de cada sección, igual que la navegación. */
+  scroll-snap-type: y proximity;
+}
+
+/* Cada sección de la página es un punto de anclaje del snap. `start` = su borde
+   superior cuadra con el snapport (ajustado por el padding/margin de aterrizaje). */
+#contenido-principal > section {
+  scroll-snap-align: start;
 }
 
 body {
@@ -135,6 +148,9 @@ ol[class] {
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+    /* Sin snap para quien pide menos movimiento: el "jalón" del encaje puede
+       resultar desorientador. El scroll queda libre y manual. */
+    scroll-snap-type: none;
   }
 
   *,
