@@ -36,6 +36,23 @@
   object-fit: cover;
 }
 
+/* Desktop: reencuadre para que la FIGURA con el cuadro no invada la mitad
+   derecha (donde va el texto). Fix cliente `.ai/ajuste.md` #6.
+   La foto de origen es VERTICAL y el cuadro cae al CENTRO horizontal; con
+   `object-fit: cover` el ancho se llena exacto → no hay margen para panear.
+   Misma técnica que el Hero: transform sobre la imagen (levers tuneables):
+     · pan X:  translateX(−%) → empuja el cuadro a la IZQUIERDA (libera la der.)
+     · pan Y:  translateY(±%) → sube/baja el encuadre
+     · zoom:   scale()        → >1 asegura cobertura al desplazar (sin bordes).
+   Solo en desktop: en móvil la composición es apilada (texto full-width) y este
+   corrimiento sacaría el cuadro de cuadro. */
+@media (min-width: 768px) {
+  .contacto__media img {
+    transform: translate(-24%, 0) scale(1.55);
+    transform-origin: center center;
+  }
+}
+
 /* Scrim NEUTRO (negro, sin tinte azul) que solo oscurece hacia la DERECHA para
    legibilidad del texto. La IZQUIERDA queda transparente → la foto respira y los
    logos (con blend) no muestran ningún color de fondo. */
@@ -44,12 +61,16 @@
   position: absolute;
   inset: 0;
   z-index: -1;
+  /* Cortina oscura reforzada hacia la DERECHA (fix cliente #6: mejorar la
+     legibilidad del texto). Se oscurece antes (30%) y más fuerte al borde
+     (0.88) → el texto blanco descansa sobre negro casi pleno sin competir con
+     la imagen. La IZQUIERDA sigue transparente (la foto y los logos respiran). */
   background: linear-gradient(
     90deg,
     transparent 0%,
-    transparent 32%,
-    rgba(0, 0, 0, 0.42) 70%,
-    rgba(0, 0, 0, 0.66) 100%
+    transparent 30%,
+    rgba(0, 0, 0, 0.55) 58%,
+    rgba(0, 0, 0, 0.88) 100%
   );
 }
 

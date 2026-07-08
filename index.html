@@ -240,16 +240,46 @@
         aria-labelledby="exposicion-title"
         data-nav-theme="light"
       >
-        <figure class="exposicion__media section-split__media">
-          <img
-            src="./src/assets/images/exposicion/exposicion-museo-barroco.png"
-            alt="Fachada del Museo Internacional del Barroco en Puebla"
-            width="1213"
-            height="1296"
-            loading="lazy"
-            data-animate="reveal-up"
-          />
-        </figure>
+        <div class="exposicion__aside">
+          <figure class="exposicion__media section-split__media">
+            <img
+              src="./src/assets/images/exposicion/exposicion-museo-barroco.png"
+              alt="Fachada del Museo Internacional del Barroco en Puebla"
+              width="1213"
+              height="1296"
+              loading="lazy"
+              data-animate="reveal-up"
+            />
+          </figure>
+
+          <dl class="exposicion__data">
+            <div class="exposicion__datum" data-animate data-animate-start="top bottom">
+              <dt>Inauguración</dt>
+              <dd>
+                <time datetime="2026-11-13T18:33:00-06:00">
+                  <span class="exposicion__num">13</span>
+                  <span class="exposicion__detail">noviembre 2026</span>
+                </time>
+              </dd>
+            </div>
+            <div class="exposicion__datum" data-animate data-animate-start="top bottom">
+              <dt>Horario</dt>
+              <dd>
+                <span class="exposicion__num">6:33</span>
+                <span class="exposicion__detail">p.m.</span>
+              </dd>
+            </div>
+            <div class="exposicion__datum" data-animate data-animate-start="top bottom">
+              <dt>Cierre</dt>
+              <dd>
+                <time datetime="2027-03-07">
+                  <span class="exposicion__num">07</span>
+                  <span class="exposicion__detail">marzo 2027</span>
+                </time>
+              </dd>
+            </div>
+          </dl>
+        </div>
 
         <div class="exposicion__content section-split__content">
           <h2 id="exposicion-title" class="exposicion__title" data-animate>
@@ -274,34 +304,6 @@
             <strong>Más que cerrar el fenómeno, esta primera sede lo abre al público.</strong>
           </p>
         </div>
-
-        <dl class="exposicion__data">
-          <div class="exposicion__datum" data-animate data-animate-start="top bottom">
-            <dt>Inauguración</dt>
-            <dd>
-              <time datetime="2026-11-13T18:33:00-06:00">
-                <span class="exposicion__num">13</span>
-                <span class="exposicion__detail">noviembre 2026</span>
-              </time>
-            </dd>
-          </div>
-          <div class="exposicion__datum" data-animate data-animate-start="top bottom">
-            <dt>Horario</dt>
-            <dd>
-              <span class="exposicion__num">6:33</span>
-              <span class="exposicion__detail">p.m.</span>
-            </dd>
-          </div>
-          <div class="exposicion__datum" data-animate data-animate-start="top bottom">
-            <dt>Cierre</dt>
-            <dd>
-              <time datetime="2027-03-07">
-                <span class="exposicion__num">07</span>
-                <span class="exposicion__detail">marzo 2027</span>
-              </time>
-            </dd>
-          </div>
-        </dl>
       </section>
 
       <!-- ============================================================
@@ -327,9 +329,10 @@
           </button>
 
           <figure class="works-selector__figure" data-obra-stage aria-live="polite">
-            <!-- El botón-miniatura ACTIVO viaja hasta aquí (GSAP Flip) y se
-                 muestra en grande; la ficha se hidrata por JS (obraSelector.js). -->
-            <div class="works-selector__media" data-obra-stage-media></div>
+            <!-- La obra activa se muestra COMPLETA aquí (sin recorte). El src, el
+                 alt y la ficha los hidrata JS (obraSelector.js); al cambiar de
+                 obra entra con una animación aleatoria del repertorio. -->
+            <img class="works-selector__image" data-obra-image alt="" decoding="async" />
             <figcaption class="works-selector__caption">
               <span class="works-selector__name" data-obra-name></span><span class="works-selector__meta" data-obra-meta></span>
             </figcaption>

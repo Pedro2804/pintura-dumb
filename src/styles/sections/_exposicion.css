@@ -11,18 +11,37 @@
   scroll-margin-top: -3rem;
 }
 
-/* Desktop: 2 filas → contenido (imagen + texto) arriba, fila de datos a TODO
-   el ancho al pie. La fila 1fr absorbe el alto sobrante y ancla los datos abajo. */
+/* Desktop: 2 columnas 50/50 → izquierda .exposicion__aside (imagen + fecha
+   como un bloque) | derecha el texto. */
 @media (min-width: 768px) {
   .exposicion {
-    grid-template-rows: 1fr auto;
+    /* Override del split SOLO en esta sección: 50/50 (imagen | texto) en vez
+       del 40/60 del componente. minmax(0,1fr) evita que el contenido reviente
+       su columna. El componente _section-split se queda intacto para las demás
+       secciones (Fenómeno, Artista, Archivo, Contacto). Fix cliente #3. */
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  /* Fila de datos a la MITAD del ancho de la pantalla (alineada a la izq.,
-     bajo la imagen). En móvil queda full-width. */
-  .exposicion__data {
-    width: 50%;
+  /* Bloque imagen+fecha CENTRADO en su columna y a 75% de ancho:
+     · max-width            → encoge el bloque (imagen y fecha juntas).
+     · justify-self:center  → lo centra en HORIZONTAL en la columna.
+     · justify-content:center (flex column) → centra el grupo en VERTICAL.
+     Sin flex:1 en la imagen → la fecha va PEGADA bajo la imagen, no anclada al
+     pie (eso quitaba el hueco/desface del layout viejo). Fix cliente #3. */
+  .exposicion__aside {
+    max-width: 75%;
+    justify-self: center;
+    justify-content: center;
   }
+}
+
+/* ---------- Columna izquierda: imagen + fecha, UN solo bloque ----------
+   El aside agrupa <figure> (imagen) + <dl> (fecha) en la columna 1 del split.
+   Integración ESTRUCTURAL (HTML), no un truco de grid: se mueven juntas y
+   comparten el ancho de la columna. Apiladas en vertical (imagen arriba). */
+.exposicion__aside {
+  display: flex;
+  flex-direction: column;
 }
 
 /* ---------- Imagen como CARD contenida ----------
@@ -31,7 +50,7 @@
 .exposicion__media {
   aspect-ratio: auto; /* anula el 4/5 móvil del componente */
   display: grid;
-  place-items: end center; /* card al FONDO de su columna → pegada a la fecha */
+  place-items: center; /* imagen centrada (horizontal + vertical) en su caja */
   padding: var(--space-lg) var(--space-lg) 0; /* sin padding inferior (sin hueco) */
 }
 
@@ -58,14 +77,18 @@
   text-align: justify;
 }
 
-/* ---------- Fila de datos: a TODO el ancho, al pie (bajo imagen + texto) ---------- */
+/* ---------- Fila de datos: dentro del aside, alineada con la imagen ---------- */
 .exposicion__data {
-  grid-column: 1 / -1; /* abarca las dos columnas del split (ancho completo) */
   display: flex;
   flex-wrap: wrap;
   row-gap: var(--space-md);
-  /* Padding-top mínimo: pega los datos a la imagen (sin hueco). */
-  padding: var(--space-2xs) var(--gutter) var(--space-lg);
+  /* Respiro entre imagen y fecha (--space-sm). COMPENSADO en el padding-bottom
+     (ahora --space-xs): descuenta el respiro agregado Y el margen del título
+     (`dd`) que se subió antes, para que el alto del bloque no crezca (regla: el
+     margen que se agrega se resta del padding). Sin padding lateral → la fila
+     ocupa el ANCHO COMPLETO de su contenedor padre (el aside). Fix cliente #3. */
+  margin-top: var(--space-sm);
+  padding: 0 0 var(--space-xs);
 }
 
 .exposicion__datum {
@@ -73,9 +96,9 @@
   padding-inline: var(--space-lg);
 }
 
-.exposicion__datum:first-child {
-  padding-left: 0;
-}
+/* Antes el primer datum iba a ras (padding-left:0) para alinear con la imagen.
+   Ahora la fila es full-width de su contenedor → se dejan los DOS extremos con
+   el mismo padding para que la fecha quede CENTRADA/simétrica en el aside. */
 
 /* Divisor vertical ROJO entre datos (acento funcional permitido). */
 .exposicion__datum + .exposicion__datum {
@@ -83,7 +106,7 @@
 }
 
 .exposicion__datum dt {
-  font-size: var(--fs-eyebrow);
+  font-size: var(--fs-small); /* un paso arriba de --fs-eyebrow (fix cliente #3: labels más grandes) */
   font-weight: var(--weight-semibold);
   text-transform: uppercase;
   letter-spacing: var(--tracking-eyebrow);
@@ -91,18 +114,28 @@
 }
 
 .exposicion__datum dd {
-  margin-top: var(--space-2xs);
+  margin-top: var(--space-xs); /* margen entre el título (dt) y la fecha (fix cliente #3) */
   display: flex;
   align-items: baseline;
   gap: var(--space-2xs);
 }
 
-/* Número grande (día / hora) en Black; el resto chico y atenuado. */
+/* Número grande (día / hora): ALTO Y ESBELTO, no grueso (fix cliente #3).
+   Black(900) engordaba el dígito → bajamos a Semibold(600) para adelgazar el
+   trazo, reducimos un paso el tamaño y estiramos en vertical con scaleY para
+   recuperar altura sin engrosar. transform-origin en el baseline (bottom) para
+   que el número crezca HACIA ARRIBA y no rompa la alineación con el detalle.
+   (Poppins no trae variante condensada cargada; el scaleY es la vía honesta
+   para el look estirado que pide la referencia .ai/img_page/Exposicion.png.) */
 .exposicion__num {
   font-family: var(--font-display);
-  font-weight: var(--weight-black);
-  font-size: clamp(1.75rem, 1.2rem + 1.6vw, 2.5rem);
+  font-weight: var(--weight-semibold);
+  font-size: clamp(1.5rem, 1.05rem + 1.3vw, 2.125rem);
   line-height: 1;
+  display: inline-block;
+  transform: scaleY(1.5);
+  transform-origin: bottom;
+  letter-spacing: -0.01em;
 }
 
 .exposicion__detail {

@@ -140,6 +140,16 @@
   border-color: var(--color-accent);
 }
 
+/* Foco por teclado: el anillo global usa `currentColor`, que en esta sección
+   CLARA es el azul-casi-negro (#000033) → se veía como un recuadro NEGRO. Aquí
+   lo pasamos al ROJO acento para que hable el mismo lenguaje que la selección.
+   No se encima con el borde: el borde va pegado a la imagen y el outline flota
+   a `outline-offset` (3px) por fuera → dos anillos distintos (marco = activa,
+   anillo exterior = foco de teclado). */
+.works-thumb:focus-visible {
+  outline-color: var(--color-accent);
+}
+
 .works-thumb:hover img,
 .works-thumb:focus-visible img {
   transform: scale(1.05); /* microinteracción sutil */

@@ -1,41 +1,51 @@
 import gsap from 'gsap';
-import { Flip } from 'gsap/Flip';
 import { $, prefersReducedMotion } from '../utils/dom.js';
 import { logError } from '../utils/log.js';
 import { buildThumb, buildStageAlt, buildMeta } from '../utils/obras.js';
 
 const FILE = 'obraSelector.js';
 
-// Tempo de la transición de obra. Más lento que el default del sistema y con
-// ease inOut (no expo.out): el VIAJE debe verse suave, no un latigazo. Tuneable.
-const DURATION = 0.9;
-const EASE = 'power2.inOut';
+// Tempo de la entrada de la obra en el escenario. Sobrio, museográfico. Ease
+// suave (power2.out, no expo.out que arranca muy seco) y algo más largo para
+// que el cambio se sienta gentil (petición del dev).
+const DURATION = 0.8;
+const EASE = 'power2.out';
 
-let flipRegistered = false;
+// Repertorio de ENTRADAS del escenario. Cada cambio de obra elige UNA al azar
+// (decisión del dev: la obra grande "aparece" con animación aleatoria, ya SIN
+// la animación de viaje/movimiento del Flip anterior). No se combinan entre sí:
+// una sola por cambio. Solo `opacity` + `transform` → sin reflow (regla GSAP).
+// Cada entrada es el estado INICIAL (`from`); GSAP anima hacia el natural.
+const ENTRANCES = [
+  { opacity: 0 }, // fundido puro
+  { opacity: 0, y: 28 }, // sube al entrar
+  { opacity: 0, y: -28 }, // baja al entrar
+  { opacity: 0, scale: 0.94 }, // se acerca
+  { opacity: 0, scale: 1.06 }, // se aleja
+  { opacity: 0, x: 32 }, // deriva desde la derecha
+  { opacity: 0, x: -32 }, // deriva desde la izquierda
+];
 
 /**
- * Selector de obras de Dump con transición de ELEMENTO COMPARTIDO (GSAP Flip).
+ * Selector de obras de Dump: GRID 2×2 de miniaturas SIEMPRE visibles + un
+ * escenario aparte con la obra completa (sin recorte). La miniatura activa se
+ * marca con marco rojo (CSS, vía `aria-current`).
  *
- * Mecánica (idea del dev): cada obra tiene una CELDA FIJA en el grid. La obra
- * activa NO está en el grid: su botón-miniatura VIAJA al escenario y se muestra
- * en grande (por eso se ven 3 miniaturas, no 4; su celda queda vacía y reservada
- * por CSS). Al seleccionar otra:
- *   - la entrante viaja desde su celda al escenario (crece),
- *   - la saliente viaja del escenario de regreso a su celda (encoge),
- *   - se cruzan en el aire.
- * Flip mide el antes/después y anima el viaje, incluso entre contenedores.
+ * Ajuste de cliente (`.ai/ajuste.md` #4 y #5): antes usaba GSAP Flip, donde la
+ * miniatura activa VIAJABA al escenario y desaparecía del grid, y el escenario
+ * la recortaba (`cover`). El cliente pidió lo contrario: las miniaturas no
+ * desaparecen, la activa se distingue por color de marco, y la obra se ve
+ * completa. Al volver al `<img>` con `object-fit: contain` el recorte se
+ * resuelve solo. La transición de viaje se sustituye por una ENTRADA aleatoria.
  *
- * El MISMO botón `.works-thumb` es el elemento que viaja; su tamaño/encuadre los
- * dicta el CSS según el contenedor (celda = cuadrado recortado · escenario =
- * obra completa). Progressive enhancement: el HTML aporta el cascarón (grid +
- * `[data-obra-stage-media]`); este módulo lo hidrata.
+ * Progressive enhancement: el HTML aporta el cascarón (grid + `[data-obra-image]`);
+ * este módulo lo hidrata. Estado encapsulado por instancia (Dump y Trayectoria
+ * no comparten estado).
  *
- * Estado encapsulado por instancia → Dump y Trayectoria no comparten estado.
- *
- * @param {Object}        config
- * @param {string|Element} config.section      Selector CSS o nodo de la <section>.
- * @param {Array}         config.obras         Array de obras (ver src/data/obras-dump.js).
- * @param {number}        [config.initialIndex=0] Obra inicial.
+ * @param {Object}         config
+ * @param {string|Element} config.section         Selector CSS o nodo de la <section>.
+ * @param {Array}          config.obras           Array de obras (ver src/data/obras-dump.js).
+ * @param {number}         [config.initialIndex=0] Obra inicial.
  */
 export function initObraSelector({ section, obras, initialIndex = 0 } = {}) {
   try {
@@ -44,36 +54,21 @@ export function initObraSelector({ section, obras, initialIndex = 0 } = {}) {
     if (!Array.isArray(obras) || obras.length === 0) return;
 
     const thumbsContainer = $('[data-obra-thumbs]', root);
-    const stageMedia = $('[data-obra-stage-media]', root);
+    const stageImg = $('[data-obra-image]', root);
     const nameEl = $('[data-obra-name]', root);
     const metaEl = $('[data-obra-meta]', root);
     const prevBtn = $('[data-obra-prev]', root);
     const nextBtn = $('[data-obra-next]', root);
 
     // Sin grid de miniaturas o sin escenario no hay nada que hidratar.
-    if (!thumbsContainer || !stageMedia) return;
+    if (!thumbsContainer || !stageImg) return;
 
-    if (!flipRegistered) {
-      gsap.registerPlugin(Flip);
-      flipRegistered = true;
-    }
-
-    // --- Construcción: una CELDA fija por obra (su botón viajará al escenario) ---
-    const slots = [];
+    // --- Miniaturas: TODAS permanecen visibles; la activa la marca el CSS. ---
     const buttons = [];
     const fragment = document.createDocumentFragment();
     obras.forEach((obra, index) => {
       const li = buildThumb(obra, index); // <li><button.works-thumb><img></button></li>
-      li.classList.add('works-slot'); // reserva su cuadro aunque quede vacío (CSS)
-      const button = $('.works-thumb', li);
-      // Proporción real de la obra: el CSS la usa SOLO en el escenario para que
-      // la caja grande tenga el aspecto de la obra. Así el `cover` abre el
-      // recorte gradualmente durante el viaje (la forma se adapta suave).
-      if (obra.width && obra.height) {
-        button.style.setProperty('--obra-ratio', `${obra.width} / ${obra.height}`);
-      }
-      slots.push(li);
-      buttons.push(button);
+      buttons.push($('.works-thumb', li));
       fragment.append(li);
     });
     thumbsContainer.replaceChildren(fragment);
@@ -81,55 +76,76 @@ export function initObraSelector({ section, obras, initialIndex = 0 } = {}) {
     const wrap = (index) => (index + obras.length) % obras.length;
     const reduced = prefersReducedMotion();
     let current = -1;
+    let lastEntrance = -1;
+
+    // Elige una entrada al azar SIN repetir la anterior (más variedad percibida).
+    const pickEntrance = () => {
+      let idx;
+      do {
+        idx = Math.floor(Math.random() * ENTRANCES.length);
+      } while (ENTRANCES.length > 1 && idx === lastEntrance);
+      lastEntrance = idx;
+      return ENTRANCES[idx];
+    };
+
+    // Vuelca los datos de la obra al escenario (src/alt/ficha + dimensiones anti-CLS).
+    const paintStage = (obra) => {
+      stageImg.src = obra.src;
+      stageImg.alt = buildStageAlt(obra);
+      if (obra.width) stageImg.width = obra.width;
+      if (obra.height) stageImg.height = obra.height;
+    };
 
     const select = (index) => {
       const i = wrap(index);
       if (i === current) return;
+      const obra = obras[i];
 
-      const incoming = buttons[i]; // va al escenario (crece)
-      const outgoing = current >= 0 ? buttons[current] : null; // vuelve a su celda (encoge)
-
-      // Captura las posiciones ANTES de mover. Solo animamos en cambios REALES
-      // (hay saliente): en la colocación inicial la obra nace en el escenario
-      // sin viaje, y con reduced-motion el cambio es instantáneo.
-      const state = reduced || !outgoing ? null : Flip.getState([incoming, outgoing]);
-
-      // Reparenta: saliente → su celda · entrante → escenario.
-      if (outgoing) slots[current].append(outgoing);
-      stageMedia.append(incoming);
-
-      // alt: la obra grande describe la pieza; la que vuelve a miniatura, decorativa.
-      const incomingImg = $('img', incoming);
-      if (incomingImg) incomingImg.alt = buildStageAlt(obras[i]);
-      if (outgoing) {
-        const outgoingImg = $('img', outgoing);
-        if (outgoingImg) outgoingImg.alt = '';
-      }
-
-      // Marca de obra activa (la del escenario) para a11y/estilos.
+      // Marca de obra activa (marco rojo por CSS) + a11y.
       buttons.forEach((button) => button.removeAttribute('aria-current'));
-      incoming.setAttribute('aria-current', 'true');
+      buttons[i].setAttribute('aria-current', 'true');
 
-      if (nameEl) nameEl.textContent = obras[i].nombre;
-      if (metaEl) metaEl.textContent = buildMeta(obras[i]);
+      if (nameEl) nameEl.textContent = obra.nombre;
+      if (metaEl) metaEl.textContent = buildMeta(obra);
 
+      const isInitial = current < 0;
       current = i;
 
-      // Anima el viaje (entrante crece / saliente encoge, se cruzan).
-      if (state) {
-        Flip.from(state, { duration: DURATION, ease: EASE, absolute: true });
-      }
+      paintStage(obra);
+
+      // La colocación inicial y `prefers-reduced-motion` van SIN entrada: el
+      // escenario nace con la obra puesta. La miniatura ya trae la imagen en
+      // caché (mismo `src`) → el swap es instantáneo, sin parpadeo.
+      if (isInitial || reduced) return;
+
+      // Entrada aleatoria del repertorio (una sola, no combinada). `overwrite`
+      // evita solapes si el usuario cambia de obra a media animación.
+      const from = pickEntrance();
+      gsap.fromTo(
+        stageImg,
+        from,
+        {
+          opacity: 1,
+          x: 0,
+          y: 0,
+          scale: 1,
+          duration: DURATION,
+          ease: EASE,
+          overwrite: 'auto',
+          clearProps: 'transform',
+        },
+      );
     };
 
     // --- Eventos ---
-    // Clic en una miniatura de su celda → la trae al escenario.
+    // Clic en una miniatura → la muestra en el escenario.
     thumbsContainer.addEventListener('click', (event) => {
       const button = event.target.closest('[data-obra-thumb]');
       if (!button || !thumbsContainer.contains(button)) return;
       select(Number(button.dataset.obraIndex));
     });
 
-    // Flechas: ciclan (wrap-around) con el mismo viaje.
+    // Flechas: ciclan (wrap-around).
     prevBtn?.addEventListener('click', () => select(current - 1));
     nextBtn?.addEventListener('click', () => select(current + 1));
 
@@ -143,9 +159,13 @@ export function initObraSelector({ section, obras, initialIndex = 0 } = {}) {
       }
       event.preventDefault();
       select(event.key === 'ArrowRight' ? current + 1 : current - 1);
+      // El foco SIGUE a la obra activa: si no, se quedaba en la miniatura que se
+      // clicó con el mouse y el anillo de teclado aparecía HUÉRFANO sobre una
+      // obra que ya no es la mostrada. `preventScroll` evita saltos de página.
+      buttons[current]?.focus({ preventScroll: true });
     });
 
-    // --- Estado inicial: la obra inicial nace en el escenario (sin viaje). ---
+    // --- Estado inicial: la obra inicial nace en el escenario (sin entrada). ---
     select(wrap(initialIndex));
   } catch (error) {
     logError(FILE, 'initObraSelector', error);

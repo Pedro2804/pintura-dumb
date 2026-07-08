@@ -34,7 +34,13 @@
        · zoom:   scale()        → más alto = sujeto más grande/acercado
        · pan X:  translateX(+%) → empuja al sujeto a la DERECHA (recorta la izq.)
        · pan Y:  translateY(−%) → sube el sujeto (recorta abajo) */
-  transform: translate(19%, -18%) scale(1.4);
+  /* Ajuste 2026-07-06 (fix cliente, .ai/ajuste.md #1): figura desplazada
+     LIGERAMENTE a la izquierda (19% → 13%) para "limpiar" el título. Es un
+     DESVÍO consciente de la captura de referencia. Propuesta alternativa
+     (alejar la figura a la DERECHA para dar aire al título) registrada en
+     .ai/memory/decisiones/2026-07-06_hero-encuadre-fix-cliente.md por si se
+     requiere. */
+  transform: translate(13%, -18%) scale(1.4);
   transform-origin: center center;
 }
 

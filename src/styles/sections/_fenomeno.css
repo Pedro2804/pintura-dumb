@@ -55,10 +55,12 @@
   z-index: 1; /* sobre la imagen */
   margin-left: auto; /* empuja el bloque a la derecha (sobre el lienzo claro) */
   background: transparent;
-  /* Padding PROPIO de Fenómeno (la primera sección respira menos): la mitad
-     del padding del componente compartido. Override local → no afecta a las
-     demás secciones split ni al Hero. */
-  padding: calc(var(--section-y) / 2) calc(var(--gutter) / 2);
+  /* Padding: vertical a la MITAD (la primera sección respira menos), pero
+     HORIZONTAL al --gutter COMPLETO (antes gutter/2). Así el borde derecho del
+     texto se alinea al MARGEN DE LA PÁGINA — la misma retícula que usan el nav
+     y todas las demás secciones split (_section-split.css). Fix cliente
+     .ai/ajuste.md #2: "respetar el borde y la retícula del diseño general". */
+  padding: calc(var(--section-y) / 2) var(--gutter);
 }
 
 /* Tablet+: el bloque de texto ocupa la MITAD derecha de la pantalla. */
