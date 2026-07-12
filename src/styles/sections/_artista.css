@@ -50,22 +50,37 @@
 }
 
 /* ============================================================
-   MÓVIL (≤767px) · Ficha superpuesta
-   Sin acople al viewport (scroll fluido, snap off): la foto y el
-   texto se apilaban como DOS ladrillos pegados con un corte a filo
-   oscuro→blanco. Aquí se amarran en UNA composición: el bloque de
-   contenido SUBE sobre la foto como una ficha de museo que se monta
-   sobre la placa. Un solo movimiento y deja de leerse partido.
+   UNA COLUMNA (≤1023px) · imagen arriba + ficha superpuesta
+   La imagen va ARRIBA a todo el ANCHO y el contenido monta sobre ella como
+   ficha de museo. Se mantiene en UNA columna hasta 1024px (abajo de ese ancho
+   el split de 2-col se aprieta en CUALQUIER pantalla, no solo iPad); en ≥1024
+   vuelve al split de 2 columnas (aprobado en desktop).
+
+   Antes era MÓVIL (≤767px); se extendió a ≤1023px para que aplique a cualquier
+   pantalla angosta, no a un dispositivo puntual.
    ============================================================ */
-@media (max-width: 767px) {
-  /* La foto gana presencia vertical (deja de ser "banner"): 4/5 → 3/4
-     (más alta). Encuadre sesgado hacia la figura de Jarett. PERILLA:
-     ajustar object-position por captura si queda descentrado. */
+@media (max-width: 1023px) {
+  /* Fuerza UNA columna sobre el componente (que va 2-col + 100dvh en ≥768).
+     minmax(0,1fr) evita overflow horizontal; min-height:auto = scroll fluido. */
+  .artista {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: auto;
+  }
+
+  /* Imagen RESPONSIVA para cualquier pantalla: banda FULL-WIDTH con alto atado
+     al VIEWPORT (`height: 65vh`) y recorte `cover`. NO se usa `aspect-ratio`:
+     combinado con un tope de alto, el aspect-ratio conserva la proporción
+     ENCOGIENDO EL ANCHO (dejaba franja blanca a la derecha). Con alto en vh la
+     banda ocupa siempre todo el ancho y una fracción constante de la pantalla,
+     en cualquier dispositivo. `position: static` anula el `absolute` que el
+     componente pone en ≥768 (en una columna colapsaría). PERILLA: el 65vh
+     (presencia) y object-position. */
   .artista__media {
-    aspect-ratio: 3 / 4;
+    height: 65vh; /* banda full-width; presencia media-alta atada a la pantalla */
   }
 
   .artista__media img {
+    position: static;
     object-position: center 35%;
   }
 

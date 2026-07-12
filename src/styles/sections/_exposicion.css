@@ -1,9 +1,17 @@
 /* ============================================================
    SECCIÓN · Museo Internacional del Barroco (#exposicion) — CLARA
-   Split con imagen-CARD (contenida, NO a sangre) IZQUIERDA /
-   contenido DERECHA sobre blanco. Al pie, fila de datos con
-   divisores ROJOS. Layout base en _section-split (variante --light).
-   Referencia: .ai/img_page/Exposicion.png
+   Split: imagen GRANDE (llena su columna) + fila de datos al pie /
+   contenido DERECHA sobre blanco. Layout base en _section-split
+   (variante --light).
+   Referencia lado-a-lado (imagen al lado): .ai/exp.png
+   Referencia móvil (una columna, diseño libre): acordado con el dev.
+
+   Estrategia responsive (2026-07-12):
+   · < 1024px  → UNA columna (diseño libre): imagen full-bleed, fechas en
+                 una fila, texto igual. Evita el 2-col APRETADO de 768px
+                 (título partido, fechas descuadradas) que traía el componente.
+   · ≥ 1024px  → imagen al lado como .ai/exp.png: imagen llena su columna,
+                 fechas en una fila bajo la imagen, texto a la derecha.
    ============================================================ */
 
 /* Aterrizaje de ancla a SANGRE bajo el nav fijo (igual que Fenómeno/Artista). */
@@ -11,94 +19,53 @@
   scroll-margin-top: -3rem;
 }
 
-/* Desktop: 2 columnas 50/50 → izquierda .exposicion__aside (imagen + fecha
-   como un bloque) | derecha el texto. */
-@media (min-width: 768px) {
-  .exposicion {
-    /* Override del split SOLO en esta sección: 50/50 (imagen | texto) en vez
-       del 40/60 del componente. minmax(0,1fr) evita que el contenido reviente
-       su columna. El componente _section-split se queda intacto para las demás
-       secciones (Fenómeno, Artista, Archivo, Contacto). Fix cliente #3. */
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  /* Bloque imagen+fecha CENTRADO en su columna y a 75% de ancho:
-     · max-width            → encoge el bloque (imagen y fecha juntas).
-     · justify-self:center  → lo centra en HORIZONTAL en la columna.
-     · justify-content:center (flex column) → centra el grupo en VERTICAL.
-     Sin flex:1 en la imagen → la fecha va PEGADA bajo la imagen, no anclada al
-     pie (eso quitaba el hueco/desface del layout viejo). Fix cliente #3. */
-  .exposicion__aside {
-    max-width: 75%;
-    justify-self: center;
-    justify-content: center;
-  }
-}
-
 /* ---------- Columna izquierda: imagen + fecha, UN solo bloque ----------
-   El aside agrupa <figure> (imagen) + <dl> (fecha) en la columna 1 del split.
-   Integración ESTRUCTURAL (HTML), no un truco de grid: se mueven juntas y
-   comparten el ancho de la columna. Apiladas en vertical (imagen arriba). */
+   El aside agrupa <figure> (imagen) + <dl> (fecha), apilados en vertical. */
 .exposicion__aside {
   display: flex;
   flex-direction: column;
 }
 
-/* ---------- Imagen como CARD contenida ----------
-   La foto del museo se muestra COMPLETA (pequeña), centrada en su columna y
-   con margen — como en la referencia. Anula el full-bleed del componente. */
+/* ---------- Imagen: LLENA el ancho de su contenedor ----------
+   Antes iba como card contenida con padding (se veía CHICA y con aire muerto,
+   y desacomodaba el resto). La foto es casi cuadrada (1213×1296): ahora llena
+   el ancho → full-bleed en una columna, y llena su columna en desktop. Anula
+   el recorte 4/5 y el position:absolute del componente. */
 .exposicion__media {
-  aspect-ratio: auto; /* anula el 4/5 móvil del componente */
-  display: grid;
-  place-items: center; /* imagen centrada (horizontal + vertical) en su caja */
-  padding: var(--space-lg) var(--space-lg) 0; /* sin padding inferior (sin hueco) */
+  aspect-ratio: auto;
+  overflow: visible;
+  padding: 0;
 }
 
 .exposicion__media img {
-  position: static; /* anula el position:absolute (desktop) del componente */
+  position: static;
   width: 100%;
   height: auto; /* imagen completa, sin recorte */
+  display: block;
 }
 
-.exposicion__title {
-  font-size: clamp(2.25rem, 1.4rem + 3.2vw, 3.25rem);
-}
-
-.exposicion__content > p:not([class]) {
-  color: var(--color-text-muted);
-  text-align: justify;
-}
-
-/* Cierre con línea delimitadora roja arriba (3px), como en Artista / la captura. */
-.exposicion__closing {
-  margin-top: var(--space-sm);
-  padding-top: var(--space-sm);
-  border-top: 3px solid var(--color-accent);
-  text-align: justify;
-}
-
-/* ---------- Fila de datos: dentro del aside, alineada con la imagen ---------- */
+/* ---------- Fila de datos: SIEMPRE una sola FILA ----------
+   Tres datos (Inauguración | Horario | Cierre) repartidos en partes iguales,
+   con divisores ROJOS verticales. `nowrap` garantiza que nunca envuelvan
+   2+1 como antes (el padding heredado de 3rem los desacomodaba). Las
+   etiquetas/detalles pueden partir DENTRO de su columna; la FILA sigue siendo
+   una sola. */
 .exposicion__data {
   display: flex;
-  flex-wrap: wrap;
-  row-gap: var(--space-md);
-  /* Respiro entre imagen y fecha (--space-sm). COMPENSADO en el padding-bottom
-     (ahora --space-xs): descuenta el respiro agregado Y el margen del título
-     (`dd`) que se subió antes, para que el alto del bloque no crezca (regla: el
-     margen que se agrega se resta del padding). Sin padding lateral → la fila
-     ocupa el ANCHO COMPLETO de su contenedor padre (el aside). Fix cliente #3. */
-  margin-top: var(--space-sm);
-  padding: 0 0 var(--space-xs);
+  flex-wrap: nowrap;
+  margin-top: var(--space-md);
 }
 
 .exposicion__datum {
-  flex: 1 1 0; /* reparten el ancho COMPLETO en partes iguales (no a la mitad) */
-  padding-inline: var(--space-lg);
+  flex: 1 1 0; /* 3 partes iguales */
+  min-width: 0; /* permite encoger sin desbordar la fila */
+  padding-inline: var(--space-sm);
 }
 
-/* Antes el primer datum iba a ras (padding-left:0) para alinear con la imagen.
-   Ahora la fila es full-width de su contenedor → se dejan los DOS extremos con
-   el mismo padding para que la fecha quede CENTRADA/simétrica en el aside. */
+/* La 1ª fecha a ras del borde izquierdo (se alinea con la imagen). */
+.exposicion__datum:first-child {
+  padding-left: 0;
+}
 
 /* Divisor vertical ROJO entre datos (acento funcional permitido). */
 .exposicion__datum + .exposicion__datum {
@@ -106,7 +73,7 @@
 }
 
 .exposicion__datum dt {
-  font-size: var(--fs-small); /* un paso arriba de --fs-eyebrow (fix cliente #3: labels más grandes) */
+  font-size: var(--fs-small);
   font-weight: var(--weight-semibold);
   text-transform: uppercase;
   letter-spacing: var(--tracking-eyebrow);
@@ -114,19 +81,17 @@
 }
 
 .exposicion__datum dd {
-  margin-top: var(--space-xs); /* margen entre el título (dt) y la fecha (fix cliente #3) */
+  margin-top: var(--space-xs);
   display: flex;
   align-items: baseline;
   gap: var(--space-2xs);
 }
 
-/* Número grande (día / hora): ALTO Y ESBELTO, no grueso (fix cliente #3).
-   Black(900) engordaba el dígito → bajamos a Semibold(600) para adelgazar el
-   trazo, reducimos un paso el tamaño y estiramos en vertical con scaleY para
+/* Número grande (día / hora): ALTO Y ESBELTO, no grueso. Black(900) engordaba
+   el dígito al estirarlo → Semibold(600) para adelgazar el trazo + scaleY para
    recuperar altura sin engrosar. transform-origin en el baseline (bottom) para
-   que el número crezca HACIA ARRIBA y no rompa la alineación con el detalle.
-   (Poppins no trae variante condensada cargada; el scaleY es la vía honesta
-   para el look estirado que pide la referencia .ai/img_page/Exposicion.png.) */
+   que crezca HACIA ARRIBA y no rompa la alineación con el detalle. (Poppins no
+   trae condensada cargada; el scaleY es la vía honesta para el look de exp.png.) */
 .exposicion__num {
   font-family: var(--font-display);
   font-weight: var(--weight-semibold);
@@ -142,4 +107,122 @@
   font-size: var(--fs-small);
   color: var(--color-text-muted);
   line-height: var(--lh-heading);
+}
+
+/* ---------- Contenido derecho (texto): sin cambios de fondo ---------- */
+.exposicion__title {
+  font-size: clamp(2.25rem, 1.4rem + 3.2vw, 3.25rem);
+  text-wrap: balance; /* reparte el título en líneas parejas, sin partir palabras */
+}
+
+.exposicion__content > p:not([class]) {
+  color: var(--color-text-muted);
+  text-align: justify;
+}
+
+/* Cierre con línea delimitadora roja arriba (3px), como en Artista / la captura. */
+.exposicion__closing {
+  margin-top: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: 3px solid var(--color-accent);
+  text-align: justify;
+}
+
+/* ============================================================
+   UNA COLUMNA (≤1023px) · diseño libre
+   El componente .section-split salta a 2-col en 768px, pero ahí la
+   sección queda apretada. Se FUERZA una columna hasta 1024px (donde
+   ya hay ancho para el layout de exp.png). Gana sobre el componente
+   por orden de import (sección después de componente).
+   ============================================================ */
+@media (max-width: 1023px) {
+  .exposicion {
+    /* minmax(0,1fr) — NO `1fr`: el track `1fr` no encoge por debajo del
+       contenido mínimo (la fila de fechas `nowrap`), y eso hacía la sección
+       MÁS ANCHA que la pantalla → overflow horizontal (texto cortado a la
+       derecha). minmax(0,…) permite encoger y elimina el desborde. */
+    grid-template-columns: minmax(0, 1fr);
+    min-height: auto; /* anula el 100dvh del componente en una columna */
+  }
+
+  /* Las fechas sí llevan gutter (la imagen va full-bleed a los bordes, pero
+     números/labels pegados al filo se ven pobres). Ligera divergencia móvil. */
+  .exposicion__data {
+    padding-inline: var(--gutter);
+  }
+
+  /* Etiquetas un paso más chicas para que quepan en 3 columnas angostas. */
+  .exposicion__datum dt {
+    font-size: var(--fs-eyebrow);
+  }
+
+  /* Cuerpo y cierre a la IZQUIERDA: el justificado abre "ríos" en ancho
+     angosto (misma corrección que Fenómeno/Artista). Desktop (≥1024) conserva
+     el justificado editorial de exp.png. */
+  .exposicion__content > p:not([class]),
+  .exposicion__closing {
+    text-align: left;
+  }
+}
+
+/* ---------- Teléfono (≤599px): fechas APILADAS ----------
+   En 360px, "INAUGURACIÓN" (palabra larga) + número estirado NO caben en un
+   tercio de ancho: en `nowrap` se desbordan de su columna y se ENCIMAN. Se
+   apilan en vertical, cada una con barra roja a la izquierda (limpio e
+   intencional). De 600px en adelante (iPad incluido) sí caben en una fila. */
+@media (max-width: 599px) {
+  .exposicion__data {
+    flex-direction: column;
+    row-gap: var(--space-sm);
+  }
+
+  /* Todas con barra roja a la izquierda (ya no divisor entre columnas). */
+  .exposicion__datum,
+  .exposicion__datum:first-child {
+    padding-left: var(--space-sm);
+    border-left: 3px solid var(--color-accent);
+  }
+}
+
+/* ============================================================
+   IMAGEN AL LADO (≥1024px) · como .ai/exp.png
+   Imagen grande que LLENA su columna (se acabó el encogido), fechas
+   en una fila bajo la imagen, texto a la derecha. Solo tamaños.
+   ============================================================ */
+@media (min-width: 1024px) {
+  .exposicion {
+    /* Imagen ~42% / texto ~58% (proporción de exp.png). minmax(0,…) evita
+       que cualquier columna reviente. */
+    grid-template-columns: minmax(0, 42%) minmax(0, 1fr);
+  }
+
+  /* ACOPLE AL VIEWPORT (convención #2 del plan): la sección cabe en 100dvh.
+     El padding vertical se REDUCE — `--section-y` llegaba a 10rem (20rem
+     arriba+abajo) y desbordaba en pantallas bajas (p. ej. 1440×900), haciendo
+     que la sección creciera más allá de la pantalla. Como ambos bloques van
+     CENTRADOS en vertical, el centrado rellena el resto del alto. En MÓVIL
+     NO aplica: ahí el scroll es fluido (`min-height:auto`).
+     PERILLA: subir/bajar este `--pad-y` por captura. */
+  .exposicion {
+    --pad-y: var(--space-md); /* 32px — bajado (la imagen casi cuadrada es alta) */
+  }
+
+  /* El bloque imagen+fecha: centrado en vertical, con gutter a la izquierda
+     (se separa del borde como en exp.png). El grid-gap lo separa del texto.
+     COMPENSACIÓN (regla del acople): el respiro que agrega `.exposicion__data`
+     con `margin-top: --space-md` se DESCUENTA del padding inferior → el bloque
+     no crece de más y cabe en 100dvh. */
+  .exposicion__aside {
+    justify-content: center;
+    padding: var(--pad-y) 0 calc(var(--pad-y) - var(--space-md)) var(--gutter);
+  }
+
+  /* El texto hereda del componente `padding: var(--section-y) var(--gutter)`;
+     se le reduce el vertical al --pad-y. COMPENSACIÓN: el cierre suma un
+     `margin-top: --space-sm` extra (sobre el gap del flex) → se descuenta del
+     padding inferior. Mantiene el gutter lateral del componente. */
+  .exposicion__content {
+    padding-top: var(--pad-y);
+    padding-bottom: calc(var(--pad-y) - var(--space-sm));
+  }
 }
