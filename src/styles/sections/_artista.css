@@ -48,3 +48,56 @@
   font-weight: var(--weight-semibold);
   text-align: justify;
 }
+
+/* ============================================================
+   MÓVIL (≤767px) · Ficha superpuesta
+   Sin acople al viewport (scroll fluido, snap off): la foto y el
+   texto se apilaban como DOS ladrillos pegados con un corte a filo
+   oscuro→blanco. Aquí se amarran en UNA composición: el bloque de
+   contenido SUBE sobre la foto como una ficha de museo que se monta
+   sobre la placa. Un solo movimiento y deja de leerse partido.
+   ============================================================ */
+@media (max-width: 767px) {
+  /* La foto gana presencia vertical (deja de ser "banner"): 4/5 → 3/4
+     (más alta). Encuadre sesgado hacia la figura de Jarett. PERILLA:
+     ajustar object-position por captura si queda descentrado. */
+  .artista__media {
+    aspect-ratio: 3 / 4;
+  }
+
+  .artista__media img {
+    object-position: center 35%;
+  }
+
+  /* El CTA sube para que la ficha (que traslapa 2rem = --space-md) no lo
+     tape. Queda flotando sobre la foto, con aire sobre el borde de la ficha. */
+  .artista__media .media-cta {
+    bottom: var(--space-xl); /* 64px: despeja el traslape de 2rem + holgura */
+  }
+
+  /* La FICHA: se monta sobre la foto con margen negativo, se eleva con
+     z-index y una sombra suave hacia arriba (azul oficial a baja alfa →
+     paleta con opacidad, sin color nuevo). Esquinas superiores redondeadas
+     para vender la "hoja que sube". PERILLA: overlap (margin-top) y radio. */
+  .artista__content {
+    position: relative;
+    z-index: 1;
+    margin-top: calc(var(--space-md) * -1); /* -2rem: cuánto monta sobre la foto */
+    /* Aire arriba del título: con el traslape, el padding heredado (~2rem)
+       dejaba el título pegado al borde de la ficha. Se le da respiro propio. */
+    padding-top: var(--space-lg); /* 48px */
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+    box-shadow: 0 -6px 24px rgba(0, 0, 51, 0.18);
+  }
+
+  /* Cuerpo y cita a la IZQUIERDA: el justificado abre "ríos" en ancho
+     angosto y compite con la imagen (la jerarquía es imagen → texto). Se
+     alinea a la izquierda para lectura limpia. Selector con la clase de la
+     sección para ganar especificidad sobre la regla base de arriba; desktop
+     conserva el justificado editorial (fuera de este @media). */
+  .artista.section-split .artista__content > p:not([class]),
+  .artista.section-split .artista__quote {
+    text-align: left;
+  }
+}
