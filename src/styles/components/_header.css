@@ -228,26 +228,104 @@ body.has-menu-open {
     justify-content: flex-end;
   }
 
+  /* El toggle (hamburguesa / X) queda POR ENCIMA del overlay y en blanco cuando
+     el menú está abierto: el overlay es cristal oscuro, y el color adaptativo
+     dejaría la X invisible sobre secciones claras. */
   .site-nav__toggle {
     display: inline-flex;
+    position: relative;
+    z-index: 2;
   }
 
+  body.has-menu-open .site-nav__toggle {
+    color: var(--color-white);
+  }
+
+  /* La marca se oculta con el menú abierto: si no, quedaría difuminada tras el
+     cristal, restando limpieza al overlay. */
+  body.has-menu-open .site-header__brand {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  /* ---------- Overlay a pantalla completa (frosted) ----------
+     El menú deja de ser un desplegable y pasa a ser un MOMENTO museográfico:
+     cubre todo el viewport, la obra se difumina detrás, items centrados con
+     aire. El JS ya bloquea el scroll (body.has-menu-open) y atrapa el foco. */
   .site-nav__menu {
-    position: absolute;
-    top: 100%;
-    right: var(--gutter);
+    position: fixed;
+    inset: 0;
+    z-index: 1;   /* dentro del header (z-header); bajo el toggle (z-index:2) */
+
     flex-direction: column;
-    align-items: flex-end;
-    gap: var(--space-sm);
-    padding: var(--space-md);
-    background-color: var(--surface-dark);
-    border: 1px solid var(--color-border);
-    border-radius: 2px;
-    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(var(--space-sm), 4vh, var(--space-lg));
+    padding: var(--space-xl) var(--gutter);
+
+    /* CONTRASTE: superficie oscura autónoma → texto blanco, desacoplado del
+       color adaptativo del header. */
+    color: var(--color-white);
+
+    /* CRISTAL ESMERILADO uniforme. FALLBACK (sin soporte de blur): tinte casi
+       opaco para garantizar legibilidad. El tinte se deriva por ALFA del azul
+       oficial (#000033) → sin colores nuevos, es la paleta con opacidad. */
+    background-color: rgba(0, 0, 51, 0.95);
+
+    /* Aparición: fundido + asentado sutil desde el CENTRO (el 'despliegue de
+       esquina' en pantalla completa se lee raro). Solo transform + opacity, sin
+       reflow. prefers-reduced-motion: el reset global anula la transición. */
+    transform-origin: center;
+    transform: scale(1.04);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      transform var(--duration-base) var(--ease-out),
+      opacity var(--duration-base) var(--ease-out),
+      visibility var(--duration-base) var(--ease-out);
+  }
+
+  /* Con soporte de desenfoque: bajamos el tinte y difuminamos la obra de atrás.
+     Tinte FIRME (0.72) para que el cristal se lea UNIFORME pese a que el fondo
+     varíe (cielo claro arriba / obra oscura abajo). El saturate aviva el color
+     de esa obra (matiz artístico). */
+  @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .site-nav__menu {
+      background-color: rgba(0, 0, 51, 0.72);
+      -webkit-backdrop-filter: blur(24px) saturate(1.3);
+      backdrop-filter: blur(24px) saturate(1.3);
+    }
+  }
+
+  /* Items grandes y aireados (editorial), centrados. El subrayado rojo del
+     activo/hover ya crece desde el centro, así que cae alineado. */
+  .site-nav__link {
+    font-size: var(--fs-h3);
+    letter-spacing: 0.1em;
   }
 
   /* Abierto: el JS pone aria-expanded="true" en el toggle */
   .site-nav__toggle[aria-expanded="true"] ~ .site-nav__menu {
-    display: flex;
+    transform: scale(1);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  /* ---------- Morph de la hamburguesa a «X» al abrir ----------
+     Las barras superior/inferior (::before/::after) se trasladan al centro y
+     rotan ±45° (solo transform → animado por la transición ya declarada en el
+     ícono). La barra del medio (el propio span) se desvanece. */
+  .site-nav__toggle[aria-expanded="true"] .site-nav__toggle-icon {
+    background-color: transparent;
+  }
+
+  .site-nav__toggle[aria-expanded="true"] .site-nav__toggle-icon::before {
+    transform: translateY(0.45rem) rotate(45deg);
+  }
+
+  .site-nav__toggle[aria-expanded="true"] .site-nav__toggle-icon::after {
+    transform: translateY(-0.45rem) rotate(-45deg);
   }
 }

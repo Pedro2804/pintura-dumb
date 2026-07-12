@@ -36,6 +36,15 @@ html {
   scroll-snap-align: start;
 }
 
+/* En MÓVIL el snap estorba: las secciones superan el alto del viewport (texto
+   largo) y el "acomodo automático" pelea con la lectura. Scroll FLUIDO, sin
+   snap. En desktop sí se conserva (las secciones caben en ~100vh). */
+@media (max-width: 767px) {
+  html {
+    scroll-snap-type: none;
+  }
+}
+
 body {
   min-height: 100vh;
   min-height: 100dvh;            /* viewport dinámico en móviles */

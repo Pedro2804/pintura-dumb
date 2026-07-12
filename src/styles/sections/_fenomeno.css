@@ -115,11 +115,28 @@
 
   /* (El CTA ya es blanco por el componente .media-cta — no se repite aquí.) */
 
-  /* Sin velo azul: el contraste lo da SOLO la sombra del texto, para no
-     tapar la obra (es la pieza a mostrar). Doble capa: halo amplio + filo. */
   .fenomeno__content {
+    /* RESPIRA: el bloque fluye DESDE ARRIBA (no centrado apretado), el título
+       arranca bajo la nav fija (ya no encimado), más aire entre bloques y
+       respiro al pie. El scroll fluido (snap off en móvil) hace cómoda la
+       lectura aunque el texto pase del viewport. */
+    justify-content: flex-start;
+    padding-top: calc(5rem + var(--space-md));
+    padding-bottom: var(--space-xl);
+    gap: var(--space-md);
+
+    /* Sin velo azul: el contraste lo da SOLO la sombra del texto, para no
+       tapar la obra (es la pieza a mostrar). Doble capa: halo amplio + filo. */
     text-shadow:
       0 1px 12px rgba(0, 0, 51, 0.9),
       0 0 2px rgba(0, 0, 51, 0.7);
+  }
+
+  /* El justificado abre "ríos"/huecos en ancho angosto → alineación IZQUIERDA
+     para lectura limpia. Desktop conserva el justificado editorial. */
+  .fenomeno__lead,
+  .fenomeno__content > p:not([class]),
+  .fenomeno__closing {
+    text-align: left;
   }
 }

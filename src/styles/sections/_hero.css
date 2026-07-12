@@ -25,22 +25,20 @@
   height: 100%;
   object-fit: cover;
   object-position: center; /* base: sujeto centrado, recorte vertical al centro */
-  /* En la foto fuente (3:2) Jarett + la obra están AL CENTRO y alejados; la captura
-     los quiere ACERCADOS y a la DERECHA (~70% del ancho), un poco más arriba.
-     object-position X no tiene rango aquí: la imagen es más angosta que el viewport,
-     así que el ancho llena exacto. El encuadre se controla con este transform.
-     PERILLAS (el translate va en espacio de pantalla; el scale debe ser ≥ que el
-     paneo para que no se descubran los bordes):
-       · zoom:   scale()        → más alto = sujeto más grande/acercado
-       · pan X:  translateX(+%) → empuja al sujeto a la DERECHA (recorta la izq.)
-       · pan Y:  translateY(−%) → sube el sujeto (recorta abajo) */
-  /* Ajuste 2026-07-06 (fix cliente, .ai/ajuste.md #1): figura desplazada
-     LIGERAMENTE a la izquierda (19% → 13%) para "limpiar" el título. Es un
-     DESVÍO consciente de la captura de referencia. Propuesta alternativa
-     (alejar la figura a la DERECHA para dar aire al título) registrada en
-     .ai/memory/decisiones/2026-07-06_hero-encuadre-fix-cliente.md por si se
-     requiere. */
-  transform: translate(13%, -18%) scale(1.4);
+  /* Encuadre MÓVIL (base, mobile-first): en portrait el `cover` ya acerca el
+     centro de la foto, donde están Jarett y la obra. Solo un leve ajuste
+     vertical + un pelín de zoom para encuadrarlos bien. El encuadre DESKTOP
+     (afinado y aprobado por el cliente) vive en el @media (min-width:768px)
+     de más abajo → aquí NO se toca lo aprobado.
+     PERILLAS móvil (afinar por captura; el translate va en espacio de pantalla):
+       · zoom:  scale()        → más alto = sujeto más acercado
+       · pan Y: translateY(−%) → sube el sujeto (recorta abajo)
+       · pan X: translateX(±%) → mueve H (con cuidado: en portrait el ancho
+                                  llena exacto, panear de más descubre borde)
+     ⚠ COBERTURA: el margen que aporta el scale por CADA lado es (scale−1)/2 y
+     debe ser ≥ al % de paneo, o se descubre el borde OPUESTO (franja del fondo
+     azul #000033). Aquí: pan Y 10% → scale ≥ 1.20. Usamos 1.22 (~1% de holgura). */
+  transform: translate(0, -10%) scale(1.22);
   transform-origin: center center;
 }
 
@@ -126,7 +124,10 @@
   align-items: flex-start; /* alinea ":" con los números, no con los labels */
   gap: var(--space-xs) var(--space-sm);
   margin-top: var(--space-sm);
-  padding-top: var(--space-sm);
+  /* Aire extra bajo el divisor: los números crecen hacia arriba (scaleY origin
+     bottom), así que se les da holgura contra la línea de arriba. Duplicado a
+     pedido del dev (space-md 32px → space-xl 64px). */
+  padding-top: var(--space-xl);
 }
 
 /* Línea divisora sobre el countdown: a la MITAD del ancho y 2px de grosor
@@ -151,10 +152,21 @@
 
 .countdown__value {
   font-family: var(--font-display);
-  font-weight: var(--weight-black); /* timer → Black (900), siguiente peso cargado arriba de Semibold */
-  font-size: var(--fs-h3); /* alineado a la escala (antes era un clamp propio fuera de token) */
+  /* Look ALARGADO como la fecha de Exposición (.exposicion__num): Black engorda
+     el dígito al estirarlo → se baja a Semibold para adelgazar el trazo, y se
+     estira en vertical con scaleY. transform-origin en el baseline (bottom) para
+     que crezca HACIA ARRIBA y no rompa la alineación con los labels. Poppins no
+     trae variante condensada cargada; el scaleY es la vía honesta. */
+  font-weight: var(--weight-semibold);
+  /* Mismo tamaño base que .exposicion__num, pero estirado 1.5× MÁS a pedido del
+     dev: scaleY 1.5 → 2.25 (la altura resultante es 1.5× la que tenía). */
+  font-size: clamp(1.5rem, 1.05rem + 1.3vw, 2.125rem);
   line-height: 1;
   font-variant-numeric: tabular-nums;
+  display: inline-block;
+  transform: scaleY(2.25);
+  transform-origin: bottom;
+  letter-spacing: -0.01em;
 }
 
 .countdown__label {
@@ -170,10 +182,38 @@
 
 .countdown__separator {
   font-family: var(--font-display);
-  font-weight: var(--weight-black); /* mismo peso que el número (en sync) */
-  font-size: var(--fs-h3); /* mismo tamaño que el número (en sync) */
+  font-weight: var(--weight-semibold); /* en sync con el número (ya no Black) */
+  font-size: clamp(1.5rem, 1.05rem + 1.3vw, 2.125rem); /* mismo tamaño que el número (en sync) */
   line-height: 1;
   color: var(--color-text-faint);
+  /* Mismo estirado que el número para que el ":" acompañe la altura. */
+  display: inline-block;
+  transform: scaleY(2.25);
+  transform-origin: bottom;
+}
+
+/* ---------- Countdown en MÓVIL: "reloj numérico" ----------
+   Las 5 unidades a --fs-h3 con labels anchos (tracking 0.18em) no caben en una
+   línea y se partían feo. En móvil se compacta en UNA fila (nowrap): los números
+   con ":" quedan prominentes como un reloj, y los labels pasan a micro-leyenda
+   tenue bajo cada número (tracking reducido para que dejen de ensanchar la
+   unidad). Los números se quedan a --fs-h3 (protagonistas); los segundos siguen
+   en rojo (regla del PLAN). */
+@media (max-width: 767px) {
+  .countdown {
+    flex-wrap: nowrap;
+    gap: var(--space-3xs); /* 4px: junta los números como marcador */
+    align-items: flex-start; /* ":" alineado con los números, no con los labels */
+  }
+
+  .countdown__unit {
+    align-items: center; /* micro-label centrado bajo su número */
+  }
+
+  .countdown__label {
+    font-size: 0.5625rem; /* ~9px: leyenda tenue */
+    letter-spacing: 0.02em; /* baja del 0.18em → deja de ensanchar la unidad */
+  }
 }
 
 .hero__video-trigger {
@@ -190,6 +230,16 @@
    imagen (Jarett + obra quedan visibles a la derecha).
    ============================================================ */
 @media (min-width: 768px) {
+  /* Encuadre DESKTOP: figura ACERCADA, a la derecha y un poco arriba.
+     Ajuste 2026-07-06 (fix cliente, .ai/ajuste.md #1): desplazada LIGERAMENTE a
+     la izquierda (19% → 13%) para "limpiar" el título — desvío consciente de la
+     captura. Alternativa en decisiones/2026-07-06_hero-encuadre-fix-cliente.md.
+     PERILLAS: scale() zoom · translateX(+%) empuja a la derecha · translateY(−%)
+     sube el sujeto. */
+  .hero__bg {
+    transform: translate(13%, -18%) scale(1.4);
+  }
+
   .hero__title,
   .hero__byline {
     max-width: 18ch;
