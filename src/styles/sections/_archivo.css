@@ -143,3 +143,63 @@
   left: auto;
   right: 0;
 }
+
+/* ============================================================
+   UNA COLUMNA (≤1023px) · imagen arriba (banda) + ficha superpuesta
+   MISMO patrón responsive que Artista: hasta 1024px el split de 2-col se aprieta
+   (en iPad el texto y las categorías quedan amontonados), así que Archivo pasa a
+   UNA columna con la imagen como banda full-width arriba y el contenido montado
+   como ficha de museo. DIFERENCIA con Artista: aquí el contenido va PRIMERO en el
+   DOM (--reverse → texto-izq. en el split desktop), así que se reordena con
+   `order` para poner la imagen ENCIMA. En ≥1024 vuelve el split 2-col aprobado.
+   ============================================================ */
+@media (max-width: 1023px) {
+  /* Fuerza UNA columna sobre el componente (2-col + 100dvh en ≥768).
+     minmax(0,1fr) evita overflow; min-height:auto = scroll fluido. */
+  .archivo {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: auto;
+  }
+
+  /* Imagen ARRIBA: el DOM la tiene DESPUÉS del contenido (--reverse) → `order`
+     la sube. Banda full-width con alto atado al VIEWPORT (`height: 60vh`) y
+     recorte `cover`, igual criterio que Artista (NO aspect-ratio: con un tope de
+     alto encoge el ancho y deja franja). PERILLA: 60vh + object-position. */
+  .archivo__media {
+    order: -1;
+    height: 60vh;
+  }
+
+  .archivo__media img {
+    position: static; /* anula el absolute que el componente pone en ≥768 */
+    object-position: center 30%; /* sesga al rostro (sujeto en el tercio alto) */
+  }
+
+  /* El CTA sube para que la ficha (traslape de 2rem = --space-md) no lo tape.
+     Queda flotando abajo-derecha sobre la foto (su lado ya lo fija la regla de
+     arriba), con aire sobre el borde de la ficha. */
+  .archivo__media .media-cta {
+    bottom: var(--space-xl); /* 64px: despeja el traslape + holgura */
+  }
+
+  /* La FICHA: monta sobre la foto con margen negativo, se eleva con z-index y
+     una sombra suave hacia arriba (azul oficial a baja alfa → paleta con
+     opacidad, sin color nuevo). Esquinas superiores redondeadas para vender la
+     "hoja que sube" (idéntico a Artista). PERILLA: overlap (margin-top) y radio. */
+  .archivo__content {
+    position: relative;
+    z-index: 1;
+    margin-top: calc(var(--space-md) * -1); /* -2rem: cuánto monta sobre la foto */
+    padding-top: var(--space-lg); /* 48px: respiro del título tras el traslape */
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+    box-shadow: 0 -6px 24px rgba(0, 0, 51, 0.18);
+  }
+
+  /* Descripción a la IZQUIERDA: el justificado abre "ríos" en ancho angosto y
+     compite con la imagen (jerarquía imagen → texto). Selector con la clase de
+     sección para ganar especificidad; desktop conserva el justificado editorial. */
+  .archivo.section-split .archivo__description {
+    text-align: left;
+  }
+}
