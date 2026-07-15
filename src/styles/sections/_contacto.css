@@ -33,7 +33,7 @@
 .contacto__media img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: cover; /* móvil: encuadre CENTRADO (la obra cae al centro del fondo) */
 }
 
 /* Desktop: reencuadre para que la FIGURA con el cuadro no invada la mitad
@@ -61,17 +61,31 @@
   position: absolute;
   inset: 0;
   z-index: -1;
-  /* Cortina oscura reforzada hacia la DERECHA (fix cliente #6: mejorar la
-     legibilidad del texto). Se oscurece antes (30%) y más fuerte al borde
-     (0.88) → el texto blanco descansa sobre negro casi pleno sin competir con
-     la imagen. La IZQUIERDA sigue transparente (la foto y los logos respiran). */
+  /* MÓVIL (base): cortina VERTICAL — transparente ARRIBA (la obra respira y tiene
+     FOCO) y oscura ABAJO (donde caen el texto y los logos, para legibilidad). */
   background: linear-gradient(
-    90deg,
+    180deg,
     transparent 0%,
     transparent 30%,
-    rgba(0, 0, 0, 0.55) 58%,
-    rgba(0, 0, 0, 0.88) 100%
+    rgba(0, 0, 0, 0.45) 55%,
+    rgba(0, 0, 0, 0.82) 100%
   );
+}
+
+@media (min-width: 768px) {
+  /* DESKTOP/TABLET: cortina HORIZONTAL reforzada a la DERECHA (fix cliente #6): el
+     texto va en la mitad derecha; la izquierda respira (foto + logos). Se oscurece
+     antes (30%) y más fuerte al borde (0.88) → texto blanco sobre negro casi
+     pleno sin competir con la imagen. */
+  .contacto::after {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      transparent 30%,
+      rgba(0, 0, 0, 0.55) 58%,
+      rgba(0, 0, 0, 0.88) 100%
+    );
+  }
 }
 
 /* ---------- Contenido sobrepuesto a la derecha ---------- */
@@ -86,6 +100,22 @@
   .contacto__content {
     width: 50%;
     margin-left: auto; /* empuja el bloque a la derecha */
+  }
+}
+
+/* ---------- MÓVIL (≤767): foto CENTRADA + gran hueco para la obra ----------
+   Con la foto centrada (sin reencuadre), el texto largo la tapaba. Se PARTE el
+   contenido en dos: título + descripción ARRIBA, correo + CTA + categorías ABAJO.
+   El gran hueco del medio deja ver la PINTURA (centrada en el fondo). Idea del dev. */
+@media (max-width: 767px) {
+  .contacto__content {
+    flex: 1; /* el contenido llena el alto de la sección (hay espacio que repartir) */
+  }
+
+  .contacto__email {
+    /* Absorbe el espacio libre ANTES del correo → empuja correo+CTA+categorías al
+       fondo y abre el gran hueco entre la descripción y el correo (la obra asoma). */
+    margin-top: auto;
   }
 }
 
@@ -145,6 +175,23 @@
   border-left: 1px solid var(--color-border);
 }
 
+/* MÓVIL + TABLET (≤1023): las categorías se apiñaban en 2 columnas con divisores.
+   Se sueltan: más aire entre columnas y SIN divisores (que al saltar de línea se
+   ven pegados). Desktop conserva su fila con divisores. */
+@media (max-width: 1023px) {
+  .contacto__categories {
+    gap: var(--space-2xs) var(--space-md);
+  }
+
+  .contacto__categories li {
+    padding-inline: 0;
+  }
+
+  .contacto__categories li + li {
+    border-left: none;
+  }
+}
+
 /* ---------- Logos institucionales: SOBREPUESTOS, esquina inferior IZQUIERDA ----------
    El asset trae logos NEGROS sobre fondo blanco. invert(1) → blancos (y el fondo
    a negro); mix-blend-mode: screen → ese negro se vuelve transparente (deja ver
@@ -155,22 +202,28 @@
      fondo (saldría un recuadro negro). Al ser absolute sin z-index, sigue
      sobrepuesto sobre el contenido pero el blend alcanza la foto. */
   position: absolute;
-  left: var(--gutter);
-  right: var(--gutter); /* móvil: ancho completo */
+  /* MÓVIL + TABLET (≤1023): banda FULL-WIDTH, centrada y anclada abajo → los logos
+     se ven lo más grandes posible (antes en tablet ocupaban solo la mitad
+     izquierda y salían chicos). */
+  left: 0;
+  right: 0;
   bottom: var(--space-lg);
-  padding-inline: var(--space-sm); /* respiro horizontal (igual que el texto) */
+  padding-inline: var(--space-sm); /* respiro horizontal (perilla del tamaño) */
+  text-align: center;
 }
 
-@media (min-width: 768px) {
-  /* Ocupa la MITAD izquierda (espejo del texto, que va en la mitad derecha);
-     la imagen de los logos llena ese ancho. */
+@media (min-width: 1024px) {
+  /* DESKTOP: composición aprobada — mitad IZQUIERDA (espejo del texto, que va en
+     la mitad derecha); la imagen de los logos llena ese ancho. */
   .contacto__partners {
+    left: var(--gutter);
     right: 50%;
+    text-align: left;
   }
 }
 
 .contacto__partners img {
-  display: block;
+  display: inline-block; /* respeta el text-align del contenedor */
   width: 100%;
   height: auto;
   filter: invert(1);
