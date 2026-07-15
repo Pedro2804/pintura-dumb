@@ -316,6 +316,14 @@
           <ul class="works-selector__thumbs" data-obra-thumbs data-animate aria-label="Selección de obras de Pintura dump">
             <!-- Miniaturas generadas por JS desde src/data/obras-dump.js (FASE 5-BIS). -->
           </ul>
+
+          <!-- Tira coverflow con loop (solo TABLET): copias de las obras generadas
+               por JS para el loop infinito; motor por transform (obraSelector.js).
+               Oculta en teléfono (puntos) y desktop (rejilla 2×2). aria-hidden:
+               afordancia visual; la a11y la dan las flechas + la figura viva. -->
+          <div class="dump__strip" data-obra-strip-viewport aria-hidden="true">
+            <ul class="dump__strip-track" data-obra-strip></ul>
+          </div>
         </div>
 
         <div class="dump__stage section-works__stage" data-obra-selector>
@@ -336,6 +344,11 @@
             <figcaption class="works-selector__caption">
               <span class="works-selector__name" data-obra-name></span><span class="works-selector__meta" data-obra-meta></span>
             </figcaption>
+            <ul class="works-selector__dots" data-obra-dots aria-hidden="true">
+              <!-- Puntos indicadores (móvil, sin miniaturas): generados por JS
+                   desde obraSelector.js. Afordancia de "cuántas obras y en cuál
+                   voy"; la a11y la dan la figura viva + las flechas. -->
+            </ul>
           </figure>
 
           <button
