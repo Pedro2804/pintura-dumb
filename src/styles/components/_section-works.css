@@ -31,6 +31,17 @@
   scroll-margin-top: -3rem;
 }
 
+/* Contención del eje X (solo ≤767px): el coverflow de Trayectoria tiene
+   miniaturas fuera de cuadro a propósito y, en móvil, el contenido puede spillear
+   una fracción de píxel (sub-píxel del gutter) → 1px de scroll horizontal. `clip`
+   lo contiene sin crear contenedor de scroll ni afectar sticky/fixed. En ≥768 el
+   coverflow vive en su columna con su propio clip; no se toca. */
+@media (max-width: 767px) {
+  .section-works {
+    overflow-x: clip;
+  }
+}
+
 @media (min-width: 768px) {
   .section-works {
     /* intro ~44% / obra ~56%. minmax(0, …) evita que el contenido
