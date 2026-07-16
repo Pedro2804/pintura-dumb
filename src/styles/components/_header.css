@@ -112,8 +112,7 @@ html {
   font-family: var(--font-body);
   font-size: var(--fs-eyebrow);
   font-weight: var(--weight-semibold);
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-eyebrow);
+  letter-spacing: var(--tracking-tight);
   color: inherit;
   transition:
     color var(--duration-base) var(--ease-out),
@@ -313,10 +312,12 @@ body.has-menu-open {
   }
 
   /* Items grandes y aireados (editorial), centrados. El subrayado rojo del
-     activo/hover ya crece desde el centro, así que cae alineado. */
+     activo/hover ya crece desde el centro, así que cae alineado. Sentence-case
+     (los títulos van "Fenómeno", no "FENÓMENO") → tracking tight, sin el espaciado
+     de mayúsculas. */
   .site-nav__link {
     font-size: var(--fs-h3);
-    letter-spacing: 0.1em;
+    letter-spacing: var(--tracking-tight);
   }
 
   /* Abierto: el JS pone aria-expanded="true" en el toggle */
