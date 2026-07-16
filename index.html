@@ -12,6 +12,7 @@
     />
     <meta name="author" content="Jarett Aramis" />
     <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://pinturadump.com/" />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Pintura dump." />
@@ -21,6 +22,11 @@
       content="Exposición pictórica de Jarett Aramis en el Museo Internacional del Barroco. Una tendencia del arte contemporáneo."
     />
     <meta property="og:locale" content="es_MX" />
+    <meta property="og:url" content="https://pinturadump.com/" />
+    <meta property="og:image" content="https://pinturadump.com/og-pintura-dump.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Jarett Aramis recargado sobre una de sus obras en el Museo Internacional del Barroco" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Pintura dump. — Una tendencia del arte contemporáneo" />
@@ -28,6 +34,7 @@
       name="twitter:description"
       content="Exposición pictórica de Jarett Aramis en el Museo Internacional del Barroco. Una tendencia del arte contemporáneo."
     />
+    <meta name="twitter:image" content="https://pinturadump.com/og-pintura-dump.jpg" />
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="stylesheet" href="/src/style.css" />
@@ -46,6 +53,41 @@
           }, 4000);
         } catch (e) {}
       })();
+    </script>
+
+    <!-- Datos estructurados: la exposición como evento (Schema.org / ExhibitionEvent).
+         Ayuda a que buscadores muestren fecha, sede y artista en resultados enriquecidos. -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "ExhibitionEvent",
+        "name": "Pintura dump. Una tendencia del arte contemporáneo",
+        "description": "Exposición pictórica de Jarett Aramis en el Museo Internacional del Barroco, Puebla. Una tendencia del arte contemporáneo.",
+        "image": "https://pinturadump.com/og-pintura-dump.jpg",
+        "url": "https://pinturadump.com/",
+        "startDate": "2026-11-13T18:33:00-06:00",
+        "endDate": "2027-03-07",
+        "eventStatus": "https://schema.org/EventScheduled",
+        "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+        "location": {
+          "@type": "Place",
+          "name": "Museo Internacional del Barroco",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Puebla",
+            "addressRegion": "Puebla",
+            "addressCountry": "MX"
+          }
+        },
+        "performer": {
+          "@type": "Person",
+          "name": "Jarett Aramis"
+        },
+        "organizer": {
+          "@type": "Organization",
+          "name": "Museo Internacional del Barroco"
+        }
+      }
     </script>
   </head>
   <body>
