@@ -30,6 +30,23 @@
     />
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="stylesheet" href="/src/style.css" />
+
+    <!-- Marca de animación: activa el "ocultar inicial" del Hero SOLO si hay JS y
+         no se pide menos movimiento. Sin JS o con reduced-motion, el Hero se ve
+         normal (nunca atrapado). Failsafe: si el bundle no carga en 4s, se revela
+         igual (main.js cancela el timeout al arrancar). -->
+    <script>
+      (function () {
+        try {
+          if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+          document.documentElement.classList.add('anim');
+          window.__heroReveal = window.setTimeout(function () {
+            document.documentElement.classList.remove('anim');
+          }, 4000);
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <a class="skip-link" href="#contenido-principal">Ir al contenido</a>
@@ -68,14 +85,19 @@
            1 · HERO — Pintura dump.
            ============================================================ -->
       <section id="hero" class="hero" aria-labelledby="hero-title">
-        <img
-          class="hero__bg"
-          src="./src/assets/images/hero/hero-desktop-jarett-obra-museo.webp"
-          alt="Jarett Aramis recargado sobre una de sus obras en el Museo Internacional del Barroco"
-          width="2400"
-          height="1600"
-          fetchpriority="high"
-        />
+        <!-- Wrapper del fondo: la entrada cinematográfica escala ESTE contenedor
+             (settle 1.06→1) mientras el encuadre (translate+scale) vive en la
+             .hero__bg → no se pelean por el mismo transform. -->
+        <div class="hero__media">
+          <img
+            class="hero__bg"
+            src="./src/assets/images/hero/hero-desktop-jarett-obra-museo.webp"
+            alt="Jarett Aramis recargado sobre una de sus obras en el Museo Internacional del Barroco"
+            width="2400"
+            height="1600"
+            fetchpriority="high"
+          />
+        </div>
 
         <div class="hero__content">
           <h1 id="hero-title" class="hero__title">Pintura dump.</h1>
@@ -136,11 +158,11 @@
       <section id="fenomeno" class="fenomeno section-split" aria-labelledby="fenomeno-title" data-nav-theme="light" data-brand-theme="dark">
         <figure class="fenomeno__media section-split__media">
           <img
-            src="./src/assets/images/fenomeno/fenomeno-rostro-pintado.jpg"
+            src="./src/assets/images/fenomeno/fenomeno-rostro-pintado.webp"
             alt="Detalle de una pintura dump: un rostro tratado con desenfoques y aberraciones cromáticas propias de la fotografía móvil"
-            width="2183"
-            height="2729"
-            loading="lazy"
+            width="1280"
+            height="1600"
+            fetchpriority="high"
           />
           <a class="media-cta" href="#contacto">Formar parte</a>
         </figure>
@@ -190,7 +212,7 @@
       >
         <figure class="artista__media section-split__media">
           <img
-            src="./src/assets/images/artista/artista-jarett-retrato.jpg"
+            data-img="artista"
             alt="Jarett Aramis de pie sobre una escalera, retrato en penumbra"
             width="4289"
             height="6434"
@@ -243,7 +265,7 @@
         <div class="exposicion__aside">
           <figure class="exposicion__media section-split__media">
             <img
-              src="./src/assets/images/exposicion/exposicion-museo-barroco.png"
+              data-img="exposicion"
               alt="Fachada del Museo Internacional del Barroco en Puebla"
               width="1213"
               height="1296"
@@ -336,10 +358,14 @@
             <span aria-hidden="true">&lsaquo;</span>
           </button>
 
-          <figure class="works-selector__figure" data-obra-stage aria-live="polite">
-            <!-- La obra activa se muestra COMPLETA aquí (sin recorte). El src, el
-                 alt y la ficha los hidrata JS (obraSelector.js); al cambiar de
-                 obra entra con una animación aleatoria del repertorio. -->
+          <figure class="works-selector__figure" data-obra-stage data-animate aria-live="polite">
+            <!-- data-animate en el FIGURE (no en la <img>): la entrada por scroll
+                 (fade-up) revela el bloque obra+ficha COORDINADO con el título y las
+                 miniaturas, en vez de que la obra aparezca de golpe al hidratar. El
+                 cross-fade/entradas de obraSelector.js siguen animando la <img> de
+                 adentro sin chocar (son elementos distintos). Igual que Trayectoria.
+                 El src, el alt y la ficha los hidrata JS (obraSelector.js); al
+                 cambiar de obra entra con una animación aleatoria del repertorio. -->
             <img class="works-selector__image" data-obra-image alt="" decoding="async" />
             <figcaption class="works-selector__caption">
               <span class="works-selector__name" data-obra-name></span><span class="works-selector__meta" data-obra-meta></span>
@@ -488,7 +514,7 @@
 
         <figure class="archivo__media section-split__media">
           <img
-            src="./src/assets/images/archivo/archivo-registro.jpg"
+            data-img="archivo"
             alt="Jarett Aramis sosteniendo una de sus obras durante un registro de archivo"
             width="4183"
             height="6274"
@@ -506,11 +532,11 @@
       <section id="contacto" class="contacto" aria-labelledby="contacto-title">
           <figure class="contacto__media">
             <img
-              src="./src/assets/images/contacto/contacto-jarett.jpg"
+              src="./src/assets/images/contacto/contacto-jarett.webp"
               alt="Retrato cenital de Jarett Aramis junto a una de sus obras"
-              width="4289"
-              height="6434"
-              loading="lazy"
+              width="1333"
+              height="2000"
+              fetchpriority="high"
             />
           </figure>
 
@@ -547,7 +573,7 @@
 
         <div class="contacto__partners">
           <img
-            src="./src/assets/images/contacto/contacto-logos-institucionales.png"
+            data-img="contacto-logos"
             alt="Logotipos de las instituciones aliadas: Gobierno de Puebla, Secretaría de Cultura, Museo Internacional del Barroco y Massimo"
             width="8000"
             height="1563"

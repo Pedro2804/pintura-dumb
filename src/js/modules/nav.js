@@ -51,6 +51,9 @@ export function initNav() {
 
     updateScrolled();
     updateNavTheme();
+    // El color de la nav ya está calculado → se revela (anti-flash del blanco por
+    // defecto al recargar sobre una sección clara). Ver `.anim .site-header` en CSS.
+    header.dataset.navReady = 'true';
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', updateNavTheme, { passive: true });
 

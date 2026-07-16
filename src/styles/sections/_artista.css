@@ -76,6 +76,11 @@
      componente pone en ≥768 (en una columna colapsaría). PERILLA: el 65vh
      (presencia) y object-position. */
   .artista__media {
+    /* Anula el aspect-ratio 4/5 del componente (regla BASE, activa en ≤767px):
+       con `height` fijo, ese 4/5 calcula el ANCHO desde el alto (65vh×4/5) y la
+       banda deja de estirarse al 100% → franja blanca a la derecha. Con `auto`,
+       el ancho lo manda el grid (stretch) → full-width. Mismo criterio que Exposición. */
+    aspect-ratio: auto;
     height: 65vh; /* banda full-width; presencia media-alta atada a la pantalla */
   }
 

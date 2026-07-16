@@ -23,55 +23,107 @@
   -webkit-backdrop-filter: blur(4px);
 }
 
+/* ---------- Fundido de SALIDA (transición al revelar la página) ----------
+   El JS (videoIntro.js) agrega .is-closing y cierra el <dialog> al terminar la
+   transición → en vez de un corte seco, el overlay se desvanece revelando el
+   Hero (que entra en crossfade). Reduced-motion: el JS cierra directo. */
+.video-intro,
+.video-intro::backdrop {
+  transition: opacity var(--duration-slow) var(--ease-out);
+}
+
+.video-intro.is-closing,
+.video-intro.is-closing::backdrop {
+  opacity: 0;
+}
+
 .video-intro__video {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-/* ---------- Controles (esquina superior derecha) ---------- */
-.video-intro__controls {
+/* ---------- Acciones (par abajo: primaria IZQ. / saltar DER.) ----------
+   Diseño EDITORIAL de solo texto (sin cajas): la primaria manda por el subrayado
+   rojo; "Saltar" queda tenue y discreta. Sobre un scrim inferior sutil para que
+   la lectura no dependa del frame del video. */
+.video-intro__actions {
   position: absolute;
-  top: var(--space-sm);
-  right: var(--space-sm);
+  inset-inline: 0;
+  bottom: 0;
   z-index: 2;
   display: flex;
-  gap: var(--space-2xs);
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-2xl) var(--gutter) var(--space-lg);
+  /* Scrim: azul noche oficial con alfa (no color nuevo), se desvanece hacia
+     arriba → las etiquetas descansan sobre una base oscura sin tapar el video. */
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--color-ink) 78%, transparent) 0%,
+    color-mix(in srgb, var(--color-ink) 30%, transparent) 55%,
+    transparent 100%
+  );
 }
 
+/* Base: etiqueta de TEXTO, sin caja. Área táctil ≥44px vía min-height. Alineadas
+   al fondo (flex-end) → las dos comparten línea base aunque tengan tamaños. */
 .video-intro__btn {
+  position: relative;
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 2.75rem;
-  height: 2.75rem;
-  padding: 0 var(--space-sm);
+  align-items: flex-end;
+  min-height: 2.75rem;
+  padding-block: var(--space-2xs);
   font-family: var(--font-body);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--on-dark);
+  transition: color var(--duration-base) var(--ease-out);
+}
+
+/* Foco por teclado (el <dialog> atrapa el foco): anillo rojo visible sobre oscuro. */
+.video-intro__btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+}
+
+/* PRIMARIA · "Ver fenómeno": eyebrow en MAYÚSCULAS + subrayado ROJO que crece en
+   hover/focus (acento funcional, mismo lenguaje que el CTA "Formar parte"). */
+.video-intro__btn--start {
   font-size: var(--fs-eyebrow);
   font-weight: var(--weight-semibold);
   text-transform: uppercase;
   letter-spacing: var(--tracking-eyebrow);
+}
+
+.video-intro__btn--start::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0; /* bajo el texto (el padding-block da la separación) */
+  width: 2.5rem;
+  height: 3px;
+  background-color: var(--color-accent);
+  transition: width var(--duration-base) var(--ease-out);
+}
+
+.video-intro__btn--start:hover::after,
+.video-intro__btn--start:focus-visible::after {
+  width: 100%;
+}
+
+/* SECUNDARIA · "Saltar": tenue (sin mayúsculas ni subrayado); aclara a blanco
+   pleno en hover/focus. Jerarquía clara sin competir con la primaria. */
+.video-intro__btn--skip {
+  font-size: var(--fs-small);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-tight);
+  color: color-mix(in srgb, var(--on-dark) 60%, transparent);
+}
+
+.video-intro__btn--skip:hover,
+.video-intro__btn--skip:focus-visible {
   color: var(--on-dark);
-  background-color: color-mix(in srgb, var(--color-ink) 55%, transparent);
-  border: 1px solid var(--color-border-invert);
-  border-radius: 2px;
-  transition:
-    background-color var(--duration-base) var(--ease-out),
-    border-color var(--duration-base) var(--ease-out);
-}
-
-.video-intro__btn:hover {
-  background-color: var(--color-accent);
-  border-color: var(--color-accent);
-}
-
-.video-intro__btn--unmute[aria-pressed="true"] {
-  background-color: var(--color-accent);
-  border-color: var(--color-accent);
-}
-
-.video-intro__btn--close {
-  padding: 0;
-  font-size: 1.5rem;
-  line-height: 1;
 }

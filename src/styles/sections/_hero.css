@@ -16,11 +16,19 @@
   background-color: var(--surface-dark);
 }
 
-/* ---------- Fondo a sangre (LCP) ---------- */
-.hero__bg {
+/* ---------- Fondo a sangre (LCP) ----------
+   Capa de fondo: la ENTRADA cinematográfica escala este wrapper (settle 1.06→1);
+   el encuadre (translate+scale) va en la imagen → no comparten el mismo transform. */
+.hero__media {
   position: absolute;
   inset: 0;
   z-index: -2;
+  overflow: hidden;
+}
+
+.hero__bg {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -40,6 +48,18 @@
      azul #000033). Aquí: pan Y 10% → scale ≥ 1.20. Usamos 1.22 (~1% de holgura). */
   transform: translate(0, -10%) scale(1.22);
   transform-origin: center center;
+}
+
+/* ---------- Estado INICIAL de la entrada (solo con .anim) ----------
+   `.anim` lo pone un mini-script del <head> SOLO si hay JS y no se pide menos
+   movimiento → sin JS/reduced-motion el Hero se ve normal (nunca atrapado).
+   heroIntro.js revela el contenido (fade-up) y asienta el fondo (scale→1). */
+.anim .hero__content {
+  opacity: 0;
+}
+
+.anim .hero__media {
+  transform: scale(1.06);
 }
 
 /* Scrim difuminado: el azul noche se concentra a la IZQUIERDA y se desvanece

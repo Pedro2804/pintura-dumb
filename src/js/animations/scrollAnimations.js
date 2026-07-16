@@ -33,8 +33,16 @@ const REVEAL = Object.freeze({
   start: 'top 85%', // dispara cuando el elemento asoma 15% en el viewport
 });
 
+// Tempo de las IMÁGENES (reveal-*): más LENTO y con un ease más SUAVE que el
+// texto. El wipe con clip-path se sentía abrupto con `expo.out` (muy front-load)
+// a 0.8s → el descubrimiento pasaba casi de golpe. `power2.out` reparte el wipe y
+// una duración mayor lo vuelve un develado gentil, no un "pop". PERILLAS.
+const IMG_DURATION = 1.2;
+const IMG_EASE = 'power2.out';
+
 /**
  * Presets de entrada. `hidden` = estado inicial/oculto, `shown` = en posición.
+ * Un preset puede fijar su propio `duration`/`ease`; si no, usa los de REVEAL.
  * Solo propiedades sin reflow (transform/opacity/clip-path).
  */
 const PRESETS = Object.freeze({
@@ -48,12 +56,16 @@ const PRESETS = Object.freeze({
   'reveal-left': {
     hidden: { autoAlpha: 0, clipPath: 'inset(0% 100% 0% 0%)', scale: 1.06 },
     shown: { autoAlpha: 1, clipPath: 'inset(0% 0% 0% 0%)', scale: 1 },
+    duration: IMG_DURATION,
+    ease: IMG_EASE,
   },
   // Imagen: se DEVELA de abajo hacia arriba (wipe vertical). Para cards ancladas
   // al pie (p. ej. la fachada del museo): "crece" en su lugar sin desplazarse.
   'reveal-up': {
     hidden: { autoAlpha: 0, clipPath: 'inset(100% 0% 0% 0%)' },
     shown: { autoAlpha: 1, clipPath: 'inset(0% 0% 0% 0%)' },
+    duration: IMG_DURATION,
+    ease: IMG_EASE,
   },
   // Imagen: se DEVELA de derecha a izquierda (wipe + leve zoom). Pareja SIMÉTRICA
   // de 'reveal-left' → regla del sistema: las imágenes full-bleed se develan
@@ -61,6 +73,8 @@ const PRESETS = Object.freeze({
   'reveal-right': {
     hidden: { autoAlpha: 0, clipPath: 'inset(0% 0% 0% 100%)', scale: 1.06 },
     shown: { autoAlpha: 1, clipPath: 'inset(0% 0% 0% 0%)', scale: 1 },
+    duration: IMG_DURATION,
+    ease: IMG_EASE,
   },
 });
 
@@ -85,15 +99,19 @@ export function initScrollAnimations() {
     });
 
     groups.forEach(({ start, type, els }) => {
-      const { hidden, shown } = PRESETS[type];
+      const preset = PRESETS[type];
+      const { hidden, shown } = preset;
+      // Duración/ease propios del preset (imágenes) o los de REVEAL (texto).
+      const duration = preset.duration ?? REVEAL.duration;
+      const ease = preset.ease ?? REVEAL.ease;
       ScrollTrigger.batch(els, {
         start,
         // Bajando: entra al viewport → revela en cascada (orden del DOM).
         onEnter: (batch) =>
           gsap.to(batch, {
             ...shown,
-            duration: REVEAL.duration,
-            ease: REVEAL.ease,
+            duration,
+            ease,
             stagger: REVEAL.stagger,
             overwrite: true,
           }),
@@ -101,8 +119,8 @@ export function initScrollAnimations() {
         onLeaveBack: (batch) =>
           gsap.to(batch, {
             ...hidden,
-            duration: REVEAL.duration,
-            ease: REVEAL.ease,
+            duration,
+            ease,
             stagger: { each: REVEAL.stagger, from: 'end' },
             overwrite: true,
           }),

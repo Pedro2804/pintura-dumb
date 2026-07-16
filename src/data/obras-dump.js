@@ -18,10 +18,14 @@
  *   height  {number}  Alto real del archivo (anti-CLS).
  */
 
+// Los .webp destacados ya vienen optimizados de MASSIMO (~1300-1600px) → se
+// importan tal cual. Los .jpg pesados (14-20 MP) pasan por vite-imagetools:
+// `fit=inside` cap del lado largo a 1600px, WebP q80 (conserva el ratio → los
+// width/height de abajo, y por tanto el anti-CLS, siguen siendo válidos).
 import fuerteConviccion from '../assets/images/dump/fuerte-conviccion-principal.webp';
-import weekendBaby from '../assets/images/dump/weekend-baby-principal.jpg';
-import framesUsuarioI from '../assets/images/dump/frames-de-un-usuario-01.jpg';
-import framesUsuarioII from '../assets/images/dump/frames-de-un-usuario-02.jpg';
+import weekendBaby from '../assets/images/dump/weekend-baby-principal.jpg?w=1600&h=1600&fit=inside&format=webp&quality=80';
+import framesUsuarioI from '../assets/images/dump/frames-de-un-usuario-01.jpg?w=1600&h=1600&fit=inside&format=webp&quality=80';
+import framesUsuarioII from '../assets/images/dump/frames-de-un-usuario-02.jpg?w=1600&h=1600&fit=inside&format=webp&quality=80';
 
 export const obrasDump = [
   {

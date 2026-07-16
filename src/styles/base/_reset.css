@@ -152,6 +152,18 @@ ol[class] {
 }
 
 /* ============================================================
+   Estado INICIAL de las entradas por scroll (anti-flash al recargar)
+   `.anim` lo pone un mini-script del <head> SOLO si hay JS y no se pide menos
+   movimiento. Oculta los [data-animate] DESDE el primer paint → sin el "salto"
+   (visible→oculto) al recargar con una sección ya en pantalla. scrollAnimations.js
+   toma el control (gsap.set/reveal); sin JS/reduced-motion no hay `.anim` → todo
+   se ve normal (nunca atrapado), y el failsafe del <head> lo revela si el JS falla.
+   ============================================================ */
+.anim [data-animate] {
+  opacity: 0;
+}
+
+/* ============================================================
    Movimiento reducido (WCAG 2.3.3 / RNF-3)
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {

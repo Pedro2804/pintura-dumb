@@ -21,7 +21,21 @@
   color: var(--color-white);
   transition:
     color var(--duration-base) var(--ease-out),
-    padding var(--duration-base) var(--ease-out);
+    padding var(--duration-base) var(--ease-out),
+    opacity var(--duration-base) var(--ease-out);
+}
+
+/* Anti-flash del color del nav al recargar: bajo `.anim` el header nace OCULTO y
+   nav.js lo revela (data-nav-ready) recién con el color correcto YA calculado →
+   no se ve el blanco por defecto transicionando a azul sobre secciones claras.
+   Sin JS/reduced-motion (sin `.anim`) o si el bundle falla (el failsafe quita
+   `.anim`) → header visible normal. */
+.anim .site-header {
+  opacity: 0;
+}
+
+.anim .site-header[data-nav-ready="true"] {
+  opacity: 1;
 }
 
 /* Sobre secciones de fondo CLARO: letras en azul noche (#000033). El brand y

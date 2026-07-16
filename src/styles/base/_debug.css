@@ -1,9 +1,0 @@
-/* ============================================================
-   DEBUG (TEMPORAL) — Identificar dónde termina cada sección.
-   ⚠️ QUITAR antes de producción: borra este archivo y su @import
-   en src/style.css.
-   ============================================================ */
-
-main > section {
-  border-bottom: 2px dashed #c0392b;
-}

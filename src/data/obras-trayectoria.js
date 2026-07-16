@@ -7,10 +7,12 @@
  * MASSIMO en algunas). Crecer el catálogo = un import + una entrada.
  */
 
+// Igual que obras-dump: los .webp ya optimizados se importan tal cual; los .jpg
+// pesados pasan por vite-imagetools (cap 1600px lado largo, WebP q80).
 import inundacionII from '../assets/images/trayectoria/inundacion-informatica-ii-principal.webp';
-import inundacionI from '../assets/images/trayectoria/inundacion-informatica-i-reproductibilidad.jpg';
-import burbujaPinchadaII from '../assets/images/trayectoria/burbuja-pinchada-ii.jpg';
-import perroDefecando from '../assets/images/trayectoria/estudio-de-perfil-de-un-perro-defecando.jpg';
+import inundacionI from '../assets/images/trayectoria/inundacion-informatica-i-reproductibilidad.jpg?w=1600&h=1600&fit=inside&format=webp&quality=80';
+import burbujaPinchadaII from '../assets/images/trayectoria/burbuja-pinchada-ii.jpg?w=1600&h=1600&fit=inside&format=webp&quality=80';
+import perroDefecando from '../assets/images/trayectoria/estudio-de-perfil-de-un-perro-defecando.jpg?w=1600&h=1600&fit=inside&format=webp&quality=80';
 import pescadoresI from '../assets/images/trayectoria/pescadores-de-hombres-01.webp';
 import pescadoresII from '../assets/images/trayectoria/pescadores-de-hombres-02.webp';
 import sanJeronimo from '../assets/images/trayectoria/san-jeronimo-principal.webp';

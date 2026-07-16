@@ -4,6 +4,15 @@
    El orden importa (cascada). Mobile-first en cada archivo.
    ============================================================ */
 
+/* ---------- Tipografía del sistema (Poppins, subset latin) ----------
+   Importada AQUÍ (no en main.js) para que viaje dentro de la hoja de estilos
+   BLOQUEANTE del <head> → sin FOUC ni flash de fuente al recargar. Los @import
+   deben ir antes de cualquier regla. Pesos: 400/500/600/900. */
+@import '@fontsource/poppins/latin-400.css';
+@import '@fontsource/poppins/latin-500.css';
+@import '@fontsource/poppins/latin-600.css';
+@import '@fontsource/poppins/latin-900.css';
+
 /* ---------- Base ---------- */
 @import './styles/base/_tokens.css';
 @import './styles/base/_reset.css';
@@ -28,6 +37,3 @@
 @import './styles/sections/_archivo.css';
 @import './styles/sections/_contacto.css';
 @import './styles/sections/_video-intro.css';
-
-/* ⚠️ TEMPORAL — bordes de sección para depurar espaciado. Quitar antes de deploy. */
-@import './styles/base/_debug.css';
