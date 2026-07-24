@@ -103,15 +103,16 @@
 }
 
 .hero__subtitle {
-  margin-top: var(--space-2xs);
+  margin-top: var(--space-3xs); /* la mitad del previo (space-2xs 8px → 4px) */
   font-size: clamp(1rem, 0.85rem + 1vw, 1.5rem);
   font-weight: var(--weight-medium);
   line-height: var(--lh-heading);
 }
 
 .hero__byline {
-  margin-top: var(--space-2xs);
+  margin-top: 0; /* sin separación con el subtítulo (pegado, según referencia) */
   font-size: var(--fs-small);
+  line-height: var(--lh-heading); /* interlineado ceñido, igual que subtítulo/museo/fecha */
   color: var(--color-text-muted);
 }
 
@@ -122,17 +123,19 @@
   padding-top: var(--space-lg);
   display: flex;
   flex-direction: column;
-  gap: var(--space-3xs);
+  gap: 0; /* museo y fecha pegados (sin separación, según referencia) */
 }
 
 .hero__venue {
   font-weight: var(--weight-black); /* Semibold(600) → Black(900): único paso cargado arriba (a revisión visual) */
   font-size: var(--fs-h3);
+  line-height: var(--lh-heading); /* interlineado ceñido: quita el aire bajo el texto */
 }
 
 .hero__date {
   font-size: var(--fs-small);
   font-weight: var(--weight-medium); /* Regular(400) → Medium(500), un paso arriba */
+  line-height: var(--lh-heading); /* interlineado ceñido: acerca la fecha al museo */
   color: var(--color-text-muted);
 }
 
@@ -144,10 +147,7 @@
   align-items: flex-start; /* alinea ":" con los números, no con los labels */
   gap: var(--space-xs) var(--space-sm);
   margin-top: var(--space-sm);
-  /* Aire extra bajo el divisor: los números crecen hacia arriba (scaleY origin
-     bottom), así que se les da holgura contra la línea de arriba. Duplicado a
-     pedido del dev (space-md 32px → space-xl 64px). */
-  padding-top: var(--space-xl);
+  padding-top: var(--space-sm);
 }
 
 /* Línea divisora sobre el countdown: a la MITAD del ancho y 2px de grosor
@@ -167,26 +167,15 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-3xs);
-  align-items: flex-start;
+  align-items: center; /* número centrado sobre el ancho de su etiqueta */
 }
 
 .countdown__value {
   font-family: var(--font-display);
-  /* Look ALARGADO como la fecha de Exposición (.exposicion__num): Black engorda
-     el dígito al estirarlo → se baja a Semibold para adelgazar el trazo, y se
-     estira en vertical con scaleY. transform-origin en el baseline (bottom) para
-     que crezca HACIA ARRIBA y no rompa la alineación con los labels. Poppins no
-     trae variante condensada cargada; el scaleY es la vía honesta. */
-  font-weight: var(--weight-semibold);
-  /* Mismo tamaño base que .exposicion__num, pero estirado 1.5× MÁS a pedido del
-     dev: scaleY 1.5 → 2.25 (la altura resultante es 1.5× la que tenía). */
-  font-size: clamp(1.5rem, 1.05rem + 1.3vw, 2.125rem);
+  font-weight: var(--weight-regular); /* sin bold (peso ligero para el timer) */
+  font-size: var(--fs-h3); /* alineado a la escala */
   line-height: 1;
   font-variant-numeric: tabular-nums;
-  display: inline-block;
-  transform: scaleY(2.25);
-  transform-origin: bottom;
-  letter-spacing: -0.01em;
 }
 
 .countdown__label {
@@ -202,14 +191,10 @@
 
 .countdown__separator {
   font-family: var(--font-display);
-  font-weight: var(--weight-semibold); /* en sync con el número (ya no Black) */
-  font-size: clamp(1.5rem, 1.05rem + 1.3vw, 2.125rem); /* mismo tamaño que el número (en sync) */
+  font-weight: var(--weight-regular); /* en sync con el número (sin bold) */
+  font-size: var(--fs-h3); /* mismo tamaño que el número (en sync) */
   line-height: 1;
   color: var(--color-text-faint);
-  /* Mismo estirado que el número para que el ":" acompañe la altura. */
-  display: inline-block;
-  transform: scaleY(2.25);
-  transform-origin: bottom;
 }
 
 /* ---------- Countdown en MÓVIL: "reloj numérico" ----------
@@ -243,6 +228,17 @@
      flexbox reparte el espacio libre en partes iguales → el grupo (museo +
      fecha + temporizador + este botón) sube a la MITAD del hueco. Responsive. */
   margin-bottom: auto;
+}
+
+/* Override puntual del CTA "Repetir video" (NO del componente .link-cta global):
+   la línea va SIEMPRE en rojo y con ancho FIJO (no crece en hover). El texto
+   conserva su cambio de color a rojo en hover (heredado de .link-cta). */
+.hero__video-trigger::after {
+  background-color: var(--color-accent);
+}
+
+.hero__video-trigger:hover::after {
+  width: var(--space-xl); /* mismo ancho que en reposo → la línea no crece */
 }
 
 /* ============================================================
