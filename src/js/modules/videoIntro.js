@@ -5,13 +5,15 @@ import { STORAGE_KEYS, getFlag, setFlag } from '../utils/storage.js';
 const FILE = 'videoIntro.js';
 
 /**
- * ¿Se debe autoreproducir en la primera visita?
- * NO si: movimiento reducido, móvil (<768px) o conexión lenta (2g/slow-2g).
- * En esos casos el ritual queda disponible bajo demanda vía "Repetir video".
+ * ¿Se puede AUTOREPRODUCIR el loop muteado de la previsualización?
+ * El gate (overlay + botón play) SIEMPRE aparece en la 1ª visita — el video es la
+ * entrada a la exposición. Esto solo decide si el loop arranca solo o queda en
+ * pausa esperando el play (poster).
+ * NO auto-arranca si: movimiento reducido o conexión lenta (2g/slow-2g) — ahí no
+ * cargamos ~6MB sin que el usuario lo pida.
  */
-function shouldAutoplay() {
+function shouldAutoplayPreview() {
   if (prefersReducedMotion()) return false;
-  if (window.matchMedia('(max-width: 767px)').matches) return false;
 
   const connection = navigator.connection;
   if (connection && /(^|-)2g$/.test(connection.effectiveType || '')) return false;
@@ -25,16 +27,18 @@ function hasPlayableSource(video) {
 }
 
 /**
- * Ritual de video de Pintura dump.
+ * Ritual/gate de video de Pintura dump.
  * Usa <dialog> nativo: showModal() aporta focus-trap y cierre con Escape.
  *
- * Flujo (PLAN — COMPORTAMIENTO DEL RITUAL DE VIDEO):
- *  - Overlay previo al Hero. En desktop capaz autoplay MUTED en la 1ª visita.
- *  - "Ver fenómeno"  → activa el audio (opt-in por gesto del usuario) y reproduce.
- *  - "Saltar"        → cierra el overlay y revela la página.
- *  - El video termina → cierra. El video falla → cierra en silencio.
- *  - "Repetir video" (Hero) → reabre y reproduce desde 0.
- *  - Persistencia: flag en localStorage (se ve una vez por dispositivo).
+ * Flujo:
+ *  PREVIEW (data-state="preview"): video en LOOP MUTEADO como previsualización
+ *    infinita, capa azul a pantalla completa y botón "Ver fenómeno" (play) centrado.
+ *  "Ver fenómeno" → PLAYING: reinicia desde 0, CON sonido, sin loop; se quita la
+ *    capa y el play, aparece la X para saltar.
+ *  "Saltar" (X)   → cierra el overlay y revela la página.
+ *  El video termina (solo en PLAYING) → cierra. El video falla → cierra en silencio.
+ *  "Repetir video" (Hero) → reabre entrando DIRECTO a PLAYING (con sonido desde 0).
+ *  Persistencia: flag en localStorage (el gate se ve una vez por dispositivo).
  */
 export function initVideoIntro({ onReveal } = {}) {
   try {
@@ -50,6 +54,10 @@ export function initVideoIntro({ onReveal } = {}) {
     const skipBtn = $('[data-video-intro-skip]', dialog);
     const trigger = $('[data-video-intro-trigger]');
 
+    const setState = (state) => {
+      dialog.dataset.state = state;
+    };
+
     // play() devuelve una promesa que el navegador puede rechazar (autoplay
     // bloqueado): la atrapamos para no romper nada ni molestar al usuario.
     const safePlay = () => {
@@ -60,15 +68,43 @@ export function initVideoIntro({ onReveal } = {}) {
       }
     };
 
-    // Abre el overlay y arranca el video MUTED desde el inicio.
-    const open = () => {
+    // Abre el overlay en PREVIEW: loop muteado desde el inicio. En reduced-motion o
+    // 2g no auto-arranca (queda el poster esperando el play).
+    const openPreview = () => {
       if (dialog.open) return;
       dialog.classList.remove('is-closing'); // por si venía de un cierre con fundido
+      setState('preview');
       dialog.showModal();
+      // showModal() enfoca el primer elemento focusable (el CTA) y su indicador de
+      // foco se vería como si estuviera "activo". Movemos el foco al propio diálogo
+      // (tabindex="-1"): el teclado sigue alcanzando el play con Tab.
+      dialog.focus();
       if (!hasPlayableSource(video)) return;
-      video.currentTime = 0;
+      video.loop = true;
       video.muted = true;
+      video.currentTime = 0;
+      if (shouldAutoplayPreview()) safePlay();
+    };
+
+    // Pasa a PLAYING: reproducción real desde 0, CON sonido, sin loop. El click que
+    // dispara esto (botón "Ver fenómeno" o "Repetir video") es el gesto de usuario
+    // que autoriza el audio.
+    const enterPlaying = () => {
+      setState('playing');
+      if (skipBtn) skipBtn.focus(); // el CTA se ocultó: lleva el foco a la X
+      if (!hasPlayableSource(video)) return;
+      video.loop = false;
+      video.muted = false;
+      video.currentTime = 0;
       safePlay();
+    };
+
+    // Reabre el overlay entrando DIRECTO a PLAYING ("Repetir video" del Hero).
+    const openPlaying = () => {
+      if (dialog.open) return;
+      dialog.classList.remove('is-closing');
+      dialog.showModal();
+      enterPlaying();
     };
 
     // Revela la página (dispara la entrada del Hero). Solo la PRIMERA vez: las
@@ -82,8 +118,7 @@ export function initVideoIntro({ onReveal } = {}) {
 
     // Cierre con FUNDIDO: agrega .is-closing (el CSS anima la opacidad del overlay
     // y su ::backdrop) y cierra el <dialog> al terminar la transición. Revela el
-    // Hero al ARRANCAR el fundido → crossfade (el Hero entra mientras el overlay
-    // sale). Con reduced-motion: cierre directo (el CSS no anima).
+    // Hero al ARRANCAR el fundido → crossfade. Con reduced-motion: cierre directo.
     const closeWithFade = () => {
       if (!dialog.open) return;
       if (prefersReducedMotion()) {
@@ -109,16 +144,12 @@ export function initVideoIntro({ onReveal } = {}) {
       reveal();
     });
 
-    // "Ver fenómeno": el audio es opt-in y este click es el gesto que lo permite.
+    // "Ver fenómeno": entra a la reproducción real (con audio).
     if (startBtn) {
-      startBtn.addEventListener('click', () => {
-        if (!video) return;
-        video.muted = false;
-        safePlay();
-      });
+      startBtn.addEventListener('click', enterPlaying);
     }
 
-    // "Saltar": cierra con fundido.
+    // "Saltar" (X): cierra con fundido.
     if (skipBtn) {
       skipBtn.addEventListener('click', closeWithFade);
     }
@@ -129,13 +160,14 @@ export function initVideoIntro({ onReveal } = {}) {
       closeWithFade();
     });
 
-    // "Repetir video" (Hero): reabre desde 0 a demanda, ignora el flag.
+    // "Repetir video" (Hero): reabre directo a PLAYING, ignora el flag.
     if (trigger) {
-      trigger.addEventListener('click', open);
+      trigger.addEventListener('click', openPlaying);
     }
 
     if (video) {
-      // Al terminar → cierra con fundido y revela la página. Sin loop.
+      // Al terminar → cierra con fundido y revela la página. En PREVIEW el loop
+      // está activo, así que `ended` solo dispara en la reproducción real.
       video.addEventListener('ended', closeWithFade);
       // Si el video falla con el overlay abierto → cierra en silencio.
       video.addEventListener('error', () => {
@@ -143,14 +175,10 @@ export function initVideoIntro({ onReveal } = {}) {
       });
     }
 
-    // Autoplay en primera visita: solo si pasa los fallbacks y existe video.
-    // Si NO se abre el overlay, se revela la página de una (el Hero entra al load).
-    if (
-      !getFlag(STORAGE_KEYS.INTRO_SEEN) &&
-      shouldAutoplay() &&
-      hasPlayableSource(video)
-    ) {
-      open();
+    // Gate de primera visita: se abre SIEMPRE en preview (el video es la entrada).
+    // Si ya se vio o no hay fuente reproducible, revela la página de una.
+    if (!getFlag(STORAGE_KEYS.INTRO_SEEN) && hasPlayableSource(video)) {
+      openPreview();
     } else {
       reveal();
     }

@@ -635,13 +635,18 @@
     -->
 
     <!-- ============================================================
-         RITUAL DE VIDEO — overlay previo al Hero
-         Hooks de botones (-start / -skip) se cablean en FASE 3-BIS.
+         RITUAL DE VIDEO — overlay/gate previo al Hero
+         Estado PREVIEW  (data-state="preview"): loop muteado + capa azul
+           + CTA de play. El video es la entrada a la exposición.
+         Estado PLAYING  (data-state="playing"): solo video (con sonido) + X.
+         Lógica en src/js/modules/videoIntro.js.
          ============================================================ -->
     <dialog
       class="video-intro"
       aria-label="Presentación de Pintura dump."
       data-video-intro
+      data-state="preview"
+      tabindex="-1"
     >
       <video
         class="video-intro__video"
@@ -652,23 +657,37 @@
         data-video-intro-video
       ></video>
 
-      <div class="video-intro__actions">
-        <button
-          type="button"
-          class="video-intro__btn video-intro__btn--start"
-          data-video-intro-start
-        >
-          Ver fenómeno
-        </button>
+      <!-- Capa azul (solo en preview): señala que esto es una previsualización
+           y que la acción es dar play para continuar. -->
+      <div class="video-intro__veil" data-video-intro-veil aria-hidden="true"></div>
 
-        <button
-          type="button"
-          class="video-intro__btn video-intro__btn--skip"
-          data-video-intro-skip
-        >
-          Saltar
-        </button>
-      </div>
+      <!-- CTA de entrada (preview): botón play + "Ver fenómeno". -->
+      <button
+        type="button"
+        class="video-intro__start"
+        data-video-intro-start
+      >
+        <span class="video-intro__play" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" focusable="false">
+            <circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="1.25" />
+            <path d="M10 8.5 16 12l-6 3.5V8.5Z" fill="currentColor" />
+          </svg>
+        </span>
+        <span class="video-intro__start-label">Ver fenómeno</span>
+      </button>
+
+      <!-- Saltar (solo tras el play): X discreta, esquina superior derecha.
+           Ícono pequeño pero con área táctil ≥44px por accesibilidad. -->
+      <button
+        type="button"
+        class="video-intro__skip"
+        data-video-intro-skip
+        aria-label="Saltar presentación"
+      >
+        <svg viewBox="0 0 24 24" fill="none" focusable="false" aria-hidden="true">
+          <path d="M6 6 18 18M18 6 6 18" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" />
+        </svg>
+      </button>
     </dialog>
 
     <script type="module" src="/src/main.js"></script>
