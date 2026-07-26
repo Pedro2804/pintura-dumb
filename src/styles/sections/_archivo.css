@@ -180,11 +180,12 @@
     object-position: center 30%; /* sesga al rostro (sujeto en el tercio alto) */
   }
 
-  /* El CTA sube para que la ficha (traslape de 2rem = --space-md) no lo tape.
-     Queda flotando abajo-derecha sobre la foto (su lado ya lo fija la regla de
-     arriba), con aire sobre el borde de la ficha. */
+  /* El CTA baja a la MITAD del espacio que tenía (era --space-xl/64px y quedaba
+     muy arriba): --space-md (32px) = justo el borde del traslape de la ficha
+     (2rem), sin quedar flotando alto. Su lado (derecha) ya lo fija la regla de
+     arriba. */
   .archivo__media .media-cta {
-    bottom: var(--space-xl); /* 64px: despeja el traslape + holgura */
+    bottom: var(--space-md);
   }
 
   /* La FICHA: monta sobre la foto con margen negativo, se eleva con z-index y
