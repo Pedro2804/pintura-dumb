@@ -27,6 +27,9 @@ import weekendBaby from '../assets/images/dump/weekend-baby-principal.jpg?w=1600
 import framesUsuarioI from '../assets/images/dump/frames-de-un-usuario-01.jpg?w=1600&h=1600&fit=inside&format=webp&quality=80';
 import framesUsuarioII from '../assets/images/dump/frames-de-un-usuario-02.jpg?w=1600&h=1600&fit=inside&format=webp&quality=80';
 
+// Info entregada por MASSIMO (.ai/img_page/Info-obras/info-obras.md). El catálogo
+// CRECERÁ con más obras hasta la exposición → a futuro se migrará a un carrusel
+// (hoy el grid 2×2 muestra las que hay; decisión de layout diferida por el dev).
 export const obrasDump = [
   {
     src: fuerteConviccion,
@@ -39,19 +42,24 @@ export const obrasDump = [
   {
     src: weekendBaby,
     nombre: 'Weekend baby',
-    // tecnica/anio pendientes de MASSIMO (bloqueante) → la ficha los omite.
+    tecnica: 'óleo sobre lienzo',
+    anio: 2025,
     width: 4501,
     height: 3133,
   },
   {
     src: framesUsuarioI,
-    nombre: 'Frames de un usuario I',
+    nombre: 'Frames de un usuario (parte I)',
+    tecnica: 'óleo sobre lienzo',
+    anio: 2025,
     width: 3428,
     height: 6002,
   },
   {
     src: framesUsuarioII,
-    nombre: 'Frames de un usuario II',
+    nombre: 'Frames de un usuario (parte II)',
+    tecnica: 'óleo sobre lienzo',
+    anio: 2025,
     width: 3213,
     height: 5632,
   },

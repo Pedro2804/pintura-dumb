@@ -2,6 +2,7 @@ import gsap from 'gsap';
 import { $, prefersReducedMotion } from '../utils/dom.js';
 import { logError } from '../utils/log.js';
 import { buildThumb, buildStageAlt, buildMeta } from '../utils/obras.js';
+import { initLightbox } from './lightbox.js';
 
 const FILE = 'obraSelector.js';
 
@@ -11,20 +12,10 @@ const FILE = 'obraSelector.js';
 const DURATION = 0.8;
 const EASE = 'power2.out';
 
-// Repertorio de ENTRADAS del escenario. Cada cambio de obra elige UNA al azar
-// (decisión del dev: la obra grande "aparece" con animación aleatoria, ya SIN
-// la animación de viaje/movimiento del Flip anterior). No se combinan entre sí:
-// una sola por cambio. Solo `opacity` + `transform` → sin reflow (regla GSAP).
-// Cada entrada es el estado INICIAL (`from`); GSAP anima hacia el natural.
-const ENTRANCES = [
-  { opacity: 0 }, // fundido puro
-  { opacity: 0, y: 28 }, // sube al entrar
-  { opacity: 0, y: -28 }, // baja al entrar
-  { opacity: 0, scale: 0.94 }, // se acerca
-  { opacity: 0, scale: 1.06 }, // se aleja
-  { opacity: 0, x: 32 }, // deriva desde la derecha
-  { opacity: 0, x: -32 }, // deriva desde la izquierda
-];
+// ENTRADA del escenario al cambiar de obra: FUNDIDO PURO (decisión del dev; antes
+// se elegía una de 7 variantes al azar). Es el estado INICIAL (`from`); GSAP anima
+// hacia el natural. Solo `opacity` → sin reflow (regla GSAP).
+const ENTRANCE = { opacity: 0 };
 
 /**
  * Selector de obras de Dump: GRID 2×2 de miniaturas SIEMPRE visibles + un
@@ -101,7 +92,6 @@ export function initObraSelector({ section, obras, initialIndex = 0 } = {}) {
     const wrap = (index) => (index + obras.length) % obras.length;
     const reduced = prefersReducedMotion();
     let current = -1;
-    let lastEntrance = -1;
 
     // ============================================================
     // TIRA COVERFLOW CON LOOP (solo TABLET) — motor por transform
@@ -218,16 +208,6 @@ export function initObraSelector({ section, obras, initialIndex = 0 } = {}) {
       }).observe(stripViewport);
     }
 
-    // Elige una entrada al azar SIN repetir la anterior (más variedad percibida).
-    const pickEntrance = () => {
-      let idx;
-      do {
-        idx = Math.floor(Math.random() * ENTRANCES.length);
-      } while (ENTRANCES.length > 1 && idx === lastEntrance);
-      lastEntrance = idx;
-      return ENTRANCES[idx];
-    };
-
     // Vuelca los datos de la obra al escenario (src/alt/ficha + dimensiones anti-CLS).
     const paintStage = (obra) => {
       stageImg.src = obra.src;
@@ -266,12 +246,11 @@ export function initObraSelector({ section, obras, initialIndex = 0 } = {}) {
       // caché (mismo `src`) → el swap es instantáneo, sin parpadeo.
       if (isInitial || reduced) return;
 
-      // Entrada aleatoria del repertorio (una sola, no combinada). `overwrite`
-      // evita solapes si el usuario cambia de obra a media animación.
-      const from = pickEntrance();
+      // Entrada de fundido puro. `overwrite` evita solapes si el usuario cambia
+      // de obra a media animación.
       gsap.fromTo(
         stageImg,
-        from,
+        ENTRANCE,
         {
           opacity: 1,
           x: 0,
@@ -293,13 +272,14 @@ export function initObraSelector({ section, obras, initialIndex = 0 } = {}) {
     const canAutoplay = !reduced && obras.length > 1;
     let hovering = false;
     let focused = false;
+    let lightboxOpen = false; // pausa el autoplay mientras la obra está ampliada
     let autoplayId = null;
     const scheduleAutoplay = () => {
       if (autoplayId) {
         clearInterval(autoplayId);
         autoplayId = null;
       }
-      if (!canAutoplay || hovering || focused || document.hidden) return;
+      if (!canAutoplay || hovering || focused || lightboxOpen || document.hidden) return;
       autoplayId = window.setInterval(() => select(current + 1), AUTOPLAY_MS);
     };
 
@@ -400,6 +380,21 @@ export function initObraSelector({ section, obras, initialIndex = 0 } = {}) {
         swiping = false;
       });
     }
+
+    // --- Lightbox: clic (o Enter/Espacio) en la obra grande → vista ampliada
+    //     centrada en la MISMA página. Pausa el autoplay mientras esté abierto. ---
+    initLightbox({
+      trigger: stageImg,
+      getSource: () => ({ src: stageImg.currentSrc || stageImg.src, alt: stageImg.alt }),
+      onOpen: () => {
+        lightboxOpen = true;
+        scheduleAutoplay();
+      },
+      onClose: () => {
+        lightboxOpen = false;
+        scheduleAutoplay();
+      },
+    });
 
     // --- Estado inicial: la obra inicial nace en el escenario (sin entrada). ---
     select(wrap(initialIndex));

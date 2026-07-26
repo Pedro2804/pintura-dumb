@@ -377,9 +377,9 @@
            ============================================================ -->
       <section id="dump" class="dump section-works" aria-labelledby="dump-title" data-nav-theme="light">
         <div class="dump__intro section-works__intro">
-          <h2 id="dump-title" class="dump__title" data-animate>Del vertedero a la trascendencia.</h2>
+          <h2 id="dump-title" class="dump__title">Del vertedero a la trascendencia.</h2>
 
-          <ul class="works-selector__thumbs" data-obra-thumbs data-animate aria-label="Selección de obras de Pintura dump">
+          <ul class="works-selector__thumbs" data-obra-thumbs aria-label="Selección de obras de Pintura dump">
             <!-- Miniaturas generadas por JS desde src/data/obras-dump.js (FASE 5-BIS). -->
           </ul>
 
@@ -402,14 +402,11 @@
             <span aria-hidden="true">&lsaquo;</span>
           </button>
 
-          <figure class="works-selector__figure" data-obra-stage data-animate aria-live="polite">
-            <!-- data-animate en el FIGURE (no en la <img>): la entrada por scroll
-                 (fade-up) revela el bloque obra+ficha COORDINADO con el título y las
-                 miniaturas, en vez de que la obra aparezca de golpe al hidratar. El
-                 cross-fade/entradas de obraSelector.js siguen animando la <img> de
-                 adentro sin chocar (son elementos distintos). Igual que Trayectoria.
-                 El src, el alt y la ficha los hidrata JS (obraSelector.js); al
-                 cambiar de obra entra con una animación aleatoria del repertorio. -->
+          <figure class="works-selector__figure" data-obra-stage aria-live="polite">
+            <!-- Sin data-animate (estático al entrar/recargar, decisión del dev). El
+                 src, el alt y la ficha los hidrata JS (obraSelector.js); al cambiar
+                 de obra la <img> entra con un fundido puro. Clic en la <img> → abre el
+                 lightbox (obraSelector.js + lightbox.js). -->
             <img class="works-selector__image" data-obra-image alt="" decoding="async" />
             <figcaption class="works-selector__caption">
               <span class="works-selector__name" data-obra-name></span><span class="works-selector__meta" data-obra-meta></span>

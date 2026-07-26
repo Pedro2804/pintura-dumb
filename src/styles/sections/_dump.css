@@ -23,6 +23,12 @@
   letter-spacing: var(--tracking-display);
 }
 
+/* La obra grande es clicable → abre el lightbox (vista ampliada). Cursor de
+   "ampliar". Solo Dump (Trayectoria no tiene el lightbox cableado). */
+.dump [data-obra-image] {
+  cursor: zoom-in;
+}
+
 /* ============================================================
    Grid estático + escenario con la obra COMPLETA (ajuste cliente #4/#5)
    Las 4 miniaturas SIEMPRE visibles (la activa con marco rojo, en el

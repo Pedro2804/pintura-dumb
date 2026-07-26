@@ -26,6 +26,7 @@
 @import './styles/components/_footer.css';
 @import './styles/components/_section-split.css';
 @import './styles/components/_section-works.css';
+@import './styles/components/_lightbox.css';
 
 /* ---------- Secciones (orden de aparición) ---------- */
 @import './styles/sections/_hero.css';
