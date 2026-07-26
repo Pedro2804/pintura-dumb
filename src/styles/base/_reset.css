@@ -36,10 +36,11 @@ html {
   scroll-snap-align: start;
 }
 
-/* En MÓVIL el snap estorba: las secciones superan el alto del viewport (texto
-   largo) y el "acomodo automático" pelea con la lectura. Scroll FLUIDO, sin
-   snap. En desktop sí se conserva (las secciones caben en ~100vh). */
-@media (max-width: 767px) {
+/* En MÓVIL y TABLET el snap estorba: las secciones superan el alto del viewport
+   (texto largo) y el "acomodo automático" pelea con la lectura. Scroll FLUIDO,
+   sin snap hasta < 1280px. Solo en desktop (≥1280) se conserva (las secciones
+   caben en ~100vh). */
+@media (max-width: 1279px) {
   html {
     scroll-snap-type: none;
   }

@@ -19,17 +19,20 @@
   /* Color por defecto: BLANCO (sobre secciones oscuras). nav.js conmuta
      [data-nav-on="light"] cuando la barra pasa sobre una sección clara. */
   color: var(--color-white);
+  /* `opacity` NO se transiciona a propósito: el header debe aparecer DE GOLPE al
+     recargar (sin fade), solo con el anti-flash de color. `color` y `padding` sí
+     animan (cambio de tema del nav al hacer scroll / cruzar breakpoint). */
   transition:
     color var(--duration-base) var(--ease-out),
-    padding var(--duration-base) var(--ease-out),
-    opacity var(--duration-base) var(--ease-out);
+    padding var(--duration-base) var(--ease-out);
 }
 
 /* Anti-flash del color del nav al recargar: bajo `.anim` el header nace OCULTO y
    nav.js lo revela (data-nav-ready) recién con el color correcto YA calculado →
    no se ve el blanco por defecto transicionando a azul sobre secciones claras.
-   Sin JS/reduced-motion (sin `.anim`) o si el bundle falla (el failsafe quita
-   `.anim`) → header visible normal. */
+   El revelado es INSTANTÁNEO (opacity sin transición) → aparece de golpe, no con
+   fade. Sin JS/reduced-motion (sin `.anim`) o si el bundle falla (el failsafe
+   quita `.anim`) → header visible normal. */
 .anim .site-header {
   opacity: 0;
 }

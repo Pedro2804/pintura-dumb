@@ -49,6 +49,23 @@
   object-position: center top;
 }
 
+/* ---------- Velo azul (scrim UNIFORME · todas las pantallas) ----------
+   Capa ENTRE la imagen (z-index 0) y el contenido (z-index 1): el ::after
+   se pinta después de la imagen (primer hijo) → queda encima de ella, y el
+   contenido, con z-index mayor, queda encima del velo. Tinte PLANO: el MISMO
+   tono en toda la pantalla, sin desvanecido. En ESCRITORIO va muy tenue
+   (el texto es oscuro sobre el lienzo claro → un velo fuerte lo empeoraría);
+   en MÓVIL sube de tono (ver bloque < 768px), donde el texto es blanco.
+   Negro oficial (#000033) por opacidad — sin color nuevo. */
+.fenomeno::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-color: rgba(0, 0, 51, 0.08);
+  pointer-events: none;
+}
+
 /* ---------- Contenido superpuesto (transparente, texto oscuro) ---------- */
 .fenomeno__content {
   position: relative;
@@ -63,23 +80,34 @@
   padding: calc(var(--section-y) / 2) var(--gutter);
 }
 
-/* Tablet+: el bloque de texto ocupa la MITAD derecha de la pantalla. */
+/* Tablet+: el bloque de texto ocupa el 60% derecho de la pantalla (un poco más
+   de aire que la mitad; el ajuste fino de móvil queda pendiente). */
 @media (min-width: 768px) {
   .fenomeno__content {
-    width: 50%;
+    width: 60%;
   }
 }
 
 /* El CTA "Formar parte" cae abajo-izq sobre el cuerpo oscuro de la figura →
-   se queda BLANCO con sombra (el default del componente .media-cta). No se
-   sobreescribe aquí. */
+   se queda BLANCO con sombra (el default del componente .media-cta).
+   Override PUNTUAL solo en Fenómeno (NO el componente global, que conservan
+   Artista y Contacto): la línea roja NO crece en hover; en su lugar el TEXTO
+   se pone rojo. La línea ya es roja por defecto (se mantiene). */
+.fenomeno .media-cta:hover::before,
+.fenomeno .media-cta:focus-visible::before {
+  width: 1.5rem; /* mismo ancho que en reposo → la línea no crece */
+}
 
-/* Título CENTRADO sobre el ancho del bloque de texto (align-self:stretch
-   hace que ocupe todo el ancho del contenido y text-align:center lo centra
-   respecto a ese ancho), como en la captura. */
+.fenomeno .media-cta:hover,
+.fenomeno .media-cta:focus-visible {
+  color: var(--color-accent); /* el texto "Formar parte" se pone rojo en hover/focus */
+}
+
+/* Título a la IZQUIERDA (align-self:stretch → ocupa todo el ancho del bloque;
+   text-align:left lo alinea al borde izquierdo del contenido). */
 .fenomeno__title {
   align-self: stretch;
-  text-align: center;
+  text-align: left;
   font-size: clamp(2.25rem, 1.4rem + 3.2vw, 3.25rem);
 }
 
@@ -101,42 +129,81 @@
 }
 
 /* ============================================================
-   Móvil (< 768px): la imagen llena la pantalla y la figura crece,
-   así que el texto oscuro se pierde sobre la obra. Solución:
-   texto CLARO + velo azul MÍNIMO (para no tapar la obra) + sombra
-   de texto que da el contraste LOCAL (halo), no oscureciendo todo.
+   Tablet + móvil (< 1280px): la imagen se recorta por los LADOS y
+   partes oscuras de la obra caen bajo el texto → el texto azul se
+   pierde. Fix de CONTRASTE (idéntico en tablet y móvil): texto
+   CLARO + VELO azul con más tono. Sin sombra por letra.
    ============================================================ */
-@media (max-width: 767px) {
+@media (max-width: 1279px) {
   /* Texto a blanco (reasigno tokens → título, frase madre y cuerpo voltean). */
   .fenomeno {
     --color-text: var(--color-white);
     --color-text-muted: rgba(255, 255, 255, 0.85);
   }
 
+  /* Velo con más tono: el texto blanco pide respaldo. Mismo tinte PLANO que en
+     escritorio (uniforme, sin desvanecido), solo subido de opacidad para que
+     el texto se lea limpio sobre la obra. */
+  .fenomeno::after {
+    background-color: rgba(0, 0, 51, 0.40);
+  }
+
   /* (El CTA ya es blanco por el componente .media-cta — no se repite aquí.) */
 
+  /* El contenido fluye DESDE ARRIBA (no centrado). El componente centra el
+     texto vertical (justify-content:center), pero aquí el cuerpo es más ALTO
+     que el viewport → centrado empuja el título por encima del borde y lo
+     PEGA al nav. Con flex-start + holgura superior el título arranca bajo la
+     barra fija y respira. Aplica a tablet Y móvil. */
   .fenomeno__content {
-    /* RESPIRA: el bloque fluye DESDE ARRIBA (no centrado apretado), el título
-       arranca bajo la nav fija (ya no encimado), más aire entre bloques y
-       respiro al pie. El scroll fluido (snap off en móvil) hace cómoda la
-       lectura aunque el texto pase del viewport. */
     justify-content: flex-start;
     padding-top: calc(5rem + var(--space-md));
     padding-bottom: var(--space-xl);
     gap: var(--space-md);
-
-    /* Sin velo azul: el contraste lo da SOLO la sombra del texto, para no
-       tapar la obra (es la pieza a mostrar). Doble capa: halo amplio + filo. */
-    text-shadow:
-      0 1px 12px rgba(0, 0, 51, 0.9),
-      0 0 2px rgba(0, 0, 51, 0.7);
   }
+}
 
+/* ============================================================
+   Solo móvil (< 768px): además del contraste y el flujo desde
+   arriba (heredados del bloque < 1280px), alinea a la IZQUIERDA
+   (el justificado abre "ríos" en ancho angosto) y ancla la imagen
+   a la izquierda. Tablet NO hereda esto (conserva su justificado
+   editorial y su encuadre `center top`).
+   ============================================================ */
+@media (max-width: 767px) {
   /* El justificado abre "ríos"/huecos en ancho angosto → alineación IZQUIERDA
-     para lectura limpia. Desktop conserva el justificado editorial. */
+     para lectura limpia. Desktop/tablet conservan el justificado editorial. */
   .fenomeno__lead,
   .fenomeno__content > p:not([class]),
   .fenomeno__closing {
     text-align: left;
+  }
+
+  /* Encuadre móvil: en ancho angosto el cover recorta los LADOS y, centrado,
+     empuja/corta a la persona (está a media altura, cargada a la izquierda).
+     Anclamos a la IZQUIERDA para que esa mitad con la figura SIEMPRE se vea.
+     Se mantiene el borde superior (la cabeza). Escritorio/tablet conservan
+     el `center top` de la regla base. */
+  .fenomeno__media img {
+    object-position: left top;
+  }
+
+  /* CTA "Formar parte" CENTRADO en el hueco bajo el texto. El botón es hijo
+     directo de la sección; aquí la sección pasa a columna flex y el CTA fluye
+     tras el contenido. Con márgenes verticales `auto` se reparte por igual el
+     espacio libre arriba y abajo → queda a la MITAD entre el fin del texto y el
+     fin de la sección. Si el texto llena la sección, los `auto` colapsan y el
+     CTA cae justo bajo el texto (fallback natural). `position:relative`+z-index:
+     lo mantiene en el flujo (a diferencia del `absolute` del componente) pero lo
+     sube SOBRE la imagen de fondo (un estático se pintaría detrás). */
+  .fenomeno {
+    flex-direction: column;
+  }
+
+  .fenomeno .media-cta {
+    position: relative;
+    z-index: 2;
+    align-self: flex-start; /* pegado a la izquierda (cross-axis de la columna) */
+    margin: auto 0 auto var(--gutter); /* auto arriba/abajo centra; izq = gutter del texto */
   }
 }

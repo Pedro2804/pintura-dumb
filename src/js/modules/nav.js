@@ -23,6 +23,12 @@ export function initNav() {
       header.dataset.scrolled = String(window.scrollY > SCROLL_THRESHOLD);
     };
 
+    // Override responsive del tema del nav por sección: algunas secciones cambian
+    // de fondo según el ancho (ej. Fenómeno lleva un velo azul fuerte < 1280px que
+    // vuelve oscuro su fondo claro). data-nav-theme-narrow declara el tema a usar
+    // mientras esta media query coincide; fuera de ella manda data-nav-theme.
+    const narrowNav = window.matchMedia('(max-width: 1279px)');
+
     // Color de la nav según el fondo de la sección que queda BAJO la barra:
     // fondo claro (data-nav-theme="light") → letras oscuras; oscuro (default) → blancas.
     // La MARCA ("Pintura dump.", arriba-izq) puede caer sobre un fondo distinto al
@@ -35,7 +41,13 @@ export function initNav() {
       for (const section of themeSections) {
         const rect = section.getBoundingClientRect();
         if (rect.top <= line && rect.bottom > line) {
-          navTheme = section.dataset.navTheme === 'light' ? 'light' : 'dark';
+          // Tema base de la sección; si hay override "narrow" y la media query
+          // coincide, ese manda (solo para el color de los LINKS del nav).
+          let sectionNavTheme = section.dataset.navTheme === 'light' ? 'light' : 'dark';
+          if (narrowNav.matches && section.dataset.navThemeNarrow) {
+            sectionNavTheme = section.dataset.navThemeNarrow === 'light' ? 'light' : 'dark';
+          }
+          navTheme = sectionNavTheme;
           brandTheme = section.dataset.brandTheme || navTheme; // override por sección
           break;
         }
@@ -56,6 +68,8 @@ export function initNav() {
     header.dataset.navReady = 'true';
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', updateNavTheme, { passive: true });
+    // Recalcula el tema al cruzar el umbral (ej. entrar/salir del override narrow).
+    narrowNav.addEventListener('change', updateNavTheme);
 
     // --- 2) Scrollspy: enlace activo según la sección visible ---
     const links = $$('.site-nav__link', header);
