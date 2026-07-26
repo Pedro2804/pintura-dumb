@@ -59,7 +59,7 @@
 .exposicion__datum {
   flex: 1 1 0; /* 3 partes iguales */
   min-width: 0; /* permite encoger sin desbordar la fila */
-  padding-inline: var(--space-sm);
+  padding-inline: calc(var(--space-sm) / 2); /* mitad del espacio a los lados del divisor rojo (24px → 12px) */
 }
 
 /* La 1ª fecha a ras del borde izquierdo (se alinea con la imagen). */
@@ -81,32 +81,27 @@
 }
 
 .exposicion__datum dd {
-  margin-top: var(--space-xs);
+  margin-top: var(--space-2xs); /* mitad del espacio etiqueta↔fecha (16px → 8px) */
   display: flex;
   align-items: baseline;
   gap: var(--space-2xs);
 }
 
-/* Número grande (día / hora): ALTO Y ESBELTO, no grueso. Black(900) engordaba
-   el dígito al estirarlo → Semibold(600) para adelgazar el trazo + scaleY para
-   recuperar altura sin engrosar. transform-origin en el baseline (bottom) para
-   que crezca HACIA ARRIBA y no rompa la alineación con el detalle. (Poppins no
-   trae condensada cargada; el scaleY es la vía honesta para el look de exp.png.) */
+/* Número grande (día / hora): como el countdown del hero — peso REGULAR (sin
+   bold) y SIN estirar. Se quitó el `transform: scaleY(1.5)` que lo alargaba y
+   el Semibold; queda en su altura natural, ligero. */
 .exposicion__num {
   font-family: var(--font-display);
-  font-weight: var(--weight-semibold);
+  font-weight: var(--weight-regular);
   font-size: clamp(1.5rem, 1.05rem + 1.3vw, 2.125rem);
   line-height: 1;
-  display: inline-block;
-  transform: scaleY(1.5);
-  transform-origin: bottom;
-  letter-spacing: -0.01em;
 }
 
 .exposicion__detail {
   font-size: var(--fs-small);
   color: var(--color-text-muted);
   line-height: var(--lh-heading);
+  white-space: nowrap; /* "noviembre 2026" en una sola línea (no parte el "2026") */
 }
 
 /* ---------- Contenido derecho (texto): sin cambios de fondo ---------- */
@@ -154,6 +149,13 @@
   /* Etiquetas un paso más chicas para que quepan en 3 columnas angostas. */
   .exposicion__datum dt {
     font-size: var(--fs-eyebrow);
+  }
+
+  /* Menos aire entre las fechas (fin del aside) y el título: en una columna el
+     contenido hereda padding-top: var(--section-y) del componente y deja un
+     hueco grande. Se reduce a la MITAD. */
+  .exposicion__content {
+    padding-top: calc(var(--section-y) / 2);
   }
 
   /* Cuerpo y cierre a la IZQUIERDA: el justificado abre "ríos" en ancho
