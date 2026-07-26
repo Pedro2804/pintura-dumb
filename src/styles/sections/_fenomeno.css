@@ -88,20 +88,9 @@
   }
 }
 
-/* El CTA "Formar parte" cae abajo-izq sobre el cuerpo oscuro de la figura →
-   se queda BLANCO con sombra (el default del componente .media-cta).
-   Override PUNTUAL solo en Fenómeno (NO el componente global, que conservan
-   Artista y Contacto): la línea roja NO crece en hover; en su lugar el TEXTO
-   se pone rojo. La línea ya es roja por defecto (se mantiene). */
-.fenomeno .media-cta:hover::before,
-.fenomeno .media-cta:focus-visible::before {
-  width: 1.5rem; /* mismo ancho que en reposo → la línea no crece */
-}
-
-.fenomeno .media-cta:hover,
-.fenomeno .media-cta:focus-visible {
-  color: var(--color-accent); /* el texto "Formar parte" se pone rojo en hover/focus */
-}
+/* (El comportamiento del CTA "Formar parte" —línea estática + texto rojo en
+   hover— vive ahora en el componente .media-cta de _section-split.css, unificado
+   para Fenómeno/Artista/Archivo. Antes había un override puntual aquí.) */
 
 /* Título a la IZQUIERDA (align-self:stretch → ocupa todo el ancho del bloque;
    text-align:left lo alinea al borde izquierdo del contenido). */

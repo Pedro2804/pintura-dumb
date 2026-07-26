@@ -314,13 +314,25 @@ body.has-menu-open {
     }
   }
 
-  /* Items grandes y aireados (editorial), centrados. El subrayado rojo del
-     activo/hover ya crece desde el centro, así que cae alineado. Sentence-case
-     (los títulos van "Fenómeno", no "FENÓMENO") → tracking tight, sin el espaciado
-     de mayúsculas. */
+  /* Items grandes y aireados (editorial), centrados. Sentence-case (los títulos
+     van "Fenómeno", no "FENÓMENO") → tracking tight, sin espaciado de mayúsculas. */
   .site-nav__link {
     font-size: var(--fs-h3);
     letter-spacing: var(--tracking-tight);
+  }
+
+  /* En HAMBURGUESA no hay línea (a diferencia del desktop): se oculta el subrayado
+     ::after y la magic line. En su lugar, el TEXTO se pone ROJO en hover/foco y se
+     MANTIENE rojo en la sección activa (scrollspy, aria-current). */
+  .site-nav__link::after,
+  .site-nav__indicator {
+    display: none;
+  }
+
+  .site-nav__link:hover,
+  .site-nav__link:focus-visible,
+  .site-nav__link[aria-current="true"] {
+    color: var(--color-accent);
   }
 
   /* Abierto: el JS pone aria-expanded="true" en el toggle */

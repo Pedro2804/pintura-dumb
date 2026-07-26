@@ -118,10 +118,12 @@
   letter-spacing: var(--tracking-tight);
   color: var(--color-white);
   text-shadow: 0 1px 12px rgba(0, 0, 51, 0.5); /* legibilidad sobre imagen variable */
+  transition: color var(--duration-base) var(--ease-out);
 }
 
-/* Línea roja lead-in (estática) a la izquierda del texto: 3px, igual de
-   gruesa que los divisores. Crece en hover/focus (microinteracción). */
+/* Línea roja lead-in ESTÁTICA a la izquierda del texto: 3px, igual de gruesa que
+   los divisores. NO crece en hover (decisión del dev, unificada para todas las
+   secciones que usan .media-cta: Fenómeno, Artista, Archivo). */
 .media-cta::before {
   content: "";
   position: absolute;
@@ -131,10 +133,10 @@
   width: 1.5rem;
   height: 3px;
   background-color: var(--color-accent);
-  transition: width var(--duration-base) var(--ease-out);
 }
 
-.media-cta:hover::before,
-.media-cta:focus-visible::before {
-  width: 2.25rem;
+/* Hover/foco: el TEXTO se pone rojo (la línea queda estática). */
+.media-cta:hover,
+.media-cta:focus-visible {
+  color: var(--color-accent);
 }
