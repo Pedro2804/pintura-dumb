@@ -31,6 +31,14 @@
   font-size: clamp(2.25rem, 1.4rem + 3.2vw, 3.25rem);
 }
 
+/* Frase madre con barra roja: a pedido del cliente se reduce la separación
+   entre la barra y el texto a 1/3. El componente .frase-madre--accent usa
+   padding-left: var(--space-sm) (24px); aquí queda en var(--space-2xs) (8px).
+   Override SOLO en Artista (Exposición conserva el espacio del componente). */
+.artista .frase-madre--accent {
+  padding-left: var(--space-2xs);
+}
+
 /* Cuerpo: párrafos atenuados y justificados (sin partir palabras). */
 .artista__content > p:not([class]) {
   color: var(--color-text-muted);
@@ -89,10 +97,12 @@
     object-position: center 35%;
   }
 
-  /* El CTA sube para que la ficha (que traslapa 2rem = --space-md) no lo
-     tape. Queda flotando sobre la foto, con aire sobre el borde de la ficha. */
+  /* CTA más ESQUINADO (como en escritorio): pegado a la esquina inferior-izq
+     de la banda. La ficha tapa los últimos 2rem (--space-md) de la imagen → ese
+     es el PISO. El hueco visible sobre el borde de la ficha se reduce a la mitad
+     (0.5rem → 0.25rem). Antes iba a --space-xl (64px) y quedaba muy separado. */
   .artista__media .media-cta {
-    bottom: var(--space-xl); /* 64px: despeja el traslape de 2rem + holgura */
+    bottom: calc(var(--space-md) + var(--space-3xs)); /* 2rem del traslape + 0.25rem = 2.25rem */
   }
 
   /* La FICHA: se monta sobre la foto con margen negativo, se eleva con
