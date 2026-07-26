@@ -53,39 +53,16 @@
   }
 }
 
-/* Scrim NEUTRO (negro, sin tinte azul) que solo oscurece hacia la DERECHA para
-   legibilidad del texto. La IZQUIERDA queda transparente → la foto respira y los
-   logos (con blend) no muestran ningún color de fondo. */
+/* Scrim NEUTRO (negro, sin tinte azul) UNIFORME (tinte plano, sin degradado —
+   mismo criterio que Fenómeno). Un solo valor de opacidad en TODOS los tamaños
+   (el texto es blanco en toda la sección, no cambia por breakpoint). PERILLA:
+   subir/bajar la opacidad por captura. */
 .contacto::after {
   content: "";
   position: absolute;
   inset: 0;
   z-index: -1;
-  /* MÓVIL (base): cortina VERTICAL — transparente ARRIBA (la obra respira y tiene
-     FOCO) y oscura ABAJO (donde caen el texto y los logos, para legibilidad). */
-  background: linear-gradient(
-    180deg,
-    transparent 0%,
-    transparent 30%,
-    rgba(0, 0, 0, 0.45) 55%,
-    rgba(0, 0, 0, 0.82) 100%
-  );
-}
-
-@media (min-width: 768px) {
-  /* DESKTOP/TABLET: cortina HORIZONTAL reforzada a la DERECHA (fix cliente #6): el
-     texto va en la mitad derecha; la izquierda respira (foto + logos). Se oscurece
-     antes (30%) y más fuerte al borde (0.88) → texto blanco sobre negro casi
-     pleno sin competir con la imagen. */
-  .contacto::after {
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      transparent 30%,
-      rgba(0, 0, 0, 0.55) 58%,
-      rgba(0, 0, 0, 0.88) 100%
-    );
-  }
+  background-color: rgba(0, 0, 0, 0.4);
 }
 
 /* ---------- Contenido sobrepuesto a la derecha ---------- */
@@ -128,27 +105,38 @@
   text-align: justify;
 }
 
-/* Email como elemento display prominente (blanco, sin hover). */
+/* Email en BLANCO, negrita, al MISMO tamaño que la descripción (--fs-body):
+   el cliente pidió bajarlo del display grande anterior, dejándolo solo en negrita. */
 .contacto__email {
   width: fit-content;
   font-family: var(--font-display);
   font-weight: var(--weight-black);
-  font-size: clamp(1.125rem, 0.9rem + 1vw, 1.5rem);
+  font-size: var(--fs-body);
   letter-spacing: var(--tracking-tight);
   color: var(--color-white);
 }
 
 /* CTA "Abrir conversación.": la línea del componente link-cta baja DEBAJO del
-   texto (flex column) y se pinta en ROJO, como en la captura. */
+   texto (flex column) y se pinta en ROJO, como en la captura. `width: fit-content`
+   evita que el flex-item se estire a todo el ancho del contenedor (como el correo)
+   → el botón conserva su ancho natural y la línea (100%) mide lo que el texto. */
 .contacto__cta {
+  width: fit-content;
   flex-direction: column;
   align-items: flex-start;
   gap: var(--space-2xs);
 }
 
+/* Línea roja del CTA: ancho COMPLETO del botón (100% = ancho del texto) y
+   ESTÁTICA (el componente link-cta la hace crecer en hover; aquí se fija). */
 .contacto__cta::after {
-  width: 25%; /* ~un cuarto del ancho del texto */
+  width: 100%;
   background-color: var(--color-accent);
+}
+
+.contacto__cta:hover::after,
+.contacto__cta:focus-visible::after {
+  width: 100%; /* anula el crecimiento del componente → línea estática */
 }
 
 /* ---------- Fila de categorías (con divisores verticales muted) ---------- */
@@ -173,6 +161,22 @@
 
 .contacto__categories li + li {
   border-left: 1px solid var(--color-border);
+}
+
+/* Categorías clicables (Prensa, etc.): enlace que hereda el estilo de la fila
+   (color muted, tamaño), con afordancia sutil al pasar el cursor/foco → aclara a
+   blanco. La acción (mailto con asunto+cuerpo, o descarga en Catálogo) la define
+   cada categoría en su href. */
+.contacto__category-link {
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color var(--duration-base) var(--ease-out);
+}
+
+.contacto__category-link:hover,
+.contacto__category-link:focus-visible {
+  color: var(--color-white);
 }
 
 /* MÓVIL + TABLET (≤1023): las categorías se apiñaban en 2 columnas con divisores.
