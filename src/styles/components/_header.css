@@ -41,6 +41,16 @@
   opacity: 1;
 }
 
+/* Sin transición MIENTRAS el header está oculto (antes de nav-ready): así el
+   estado inicial que calcula nav.js al recargar SCROLLEADO —padding compacto
+   (data-scrolled) y color azul en secciones claras— se aplica DE GOLPE. Si no, la
+   transición de padding/color arranca oculta y al revelarse se ve su cola: el
+   "movimiento hacia arriba" del header y el flash de blanco→azul. Tras nav-ready
+   se reactivan (base) para animar el scroll normalmente. */
+.anim .site-header:not([data-nav-ready="true"]) {
+  transition: none;
+}
+
 /* Sobre secciones de fondo CLARO: letras en azul noche (#000033). El brand y
    los links heredan este color; el subrayado activo sigue en rojo (acento). */
 .site-header[data-nav-on="light"] {

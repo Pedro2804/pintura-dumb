@@ -75,6 +75,10 @@ export function initVideoIntro({ onReveal } = {}) {
       dialog.classList.remove('is-closing'); // por si venía de un cierre con fundido
       setState('preview');
       dialog.showModal();
+      // Bloquea el scroll de la página mientras el overlay está abierto: si no, se
+      // puede rodar por debajo y al terminar el video quedas en otra sección. Se
+      // libera en el evento `close`. Así al terminar/saltar siempre asoma el Hero.
+      document.documentElement.classList.add('has-video-intro-open');
       // showModal() enfoca el primer elemento focusable (el CTA) y su indicador de
       // foco se vería como si estuviera "activo". Movemos el foco al propio diálogo
       // (tabindex="-1"): el teclado sigue alcanzando el play con Tab.
@@ -104,6 +108,7 @@ export function initVideoIntro({ onReveal } = {}) {
       if (dialog.open) return;
       dialog.classList.remove('is-closing');
       dialog.showModal();
+      document.documentElement.classList.add('has-video-intro-open'); // bloquea el scroll
       enterPlaying();
     };
 
@@ -139,6 +144,7 @@ export function initVideoIntro({ onReveal } = {}) {
     // asegura que la página quede revelada (cubre ESC/error/cierres directos).
     dialog.addEventListener('close', () => {
       dialog.classList.remove('is-closing');
+      document.documentElement.classList.remove('has-video-intro-open'); // libera el scroll
       if (video) video.pause();
       setFlag(STORAGE_KEYS.INTRO_SEEN, true);
       reveal();

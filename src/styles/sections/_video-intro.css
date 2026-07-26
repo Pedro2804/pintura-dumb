@@ -4,6 +4,16 @@
    backdrop, focus-trap y cierre con Escape.
    ============================================================ */
 
+/* Bloqueo de scroll mientras el overlay del video está abierto (lo pone/quita
+   videoIntro.js en el <html>): `showModal()` deja la página inerte pero NO
+   bloquea el scroll de la raíz → sin esto se puede rodar por debajo y al terminar
+   el video quedas en otra sección. Solo `overflow: hidden` (SIN scrollbar-gutter:
+   reservar el hueco dejaba una franja de fondo sin cubrir). Mismo criterio que el
+   menú móvil. Así al terminar/saltar siempre asoma el Hero. */
+.has-video-intro-open {
+  overflow: hidden;
+}
+
 .video-intro {
   width: 100%;
   height: 100%;
