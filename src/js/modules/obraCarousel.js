@@ -4,6 +4,7 @@ import { InertiaPlugin } from 'gsap/InertiaPlugin';
 import { $, $$, prefersReducedMotion } from '../utils/dom.js';
 import { logError } from '../utils/log.js';
 import { buildThumb, buildStageAlt, buildMeta } from '../utils/obras.js';
+import { initLightbox } from './lightbox.js';
 
 const FILE = 'obraCarousel.js';
 
@@ -13,11 +14,10 @@ const FILE = 'obraCarousel.js';
 // (visualmente idéntica → sin salto).
 const COPIES = 3;
 
-// Tempo del cross-fade de la obra grande (escenario). Salida rápida + entrada
-// más lenta: la disolvencia debe SENTIRSE, no parpadear. Tempo local (mismo
-// criterio que obraSelector.js de Dump → no acoplar a animations/index.js).
-const STAGE_FADE_OUT = 0.22;
-const STAGE_FADE_IN = 0.45;
+// Entrada de la obra grande al cambiar de obra: FUNDIDO PURO, igual que Dump
+// (obraSelector.js) — swap del src + fade-in de opacity. Tempo local (no acoplar
+// a animations/index.js).
+const STAGE_FADE = 0.8;
 const STAGE_EASE = 'power2.out';
 
 // Tempo del viaje del carrusel por flecha/clic/teclado (el arrastre lo maneja
@@ -120,54 +120,25 @@ export function initObraCarousel({ section, obras, initialIndex = 0 } = {}) {
       if (metaEl) metaEl.textContent = buildMeta(obra);
     };
 
-    // Token anti-carrera: si el usuario cambia de obra antes de que termine la
-    // transición (clics/flechas rápidas), solo la ÚLTIMA petición pinta.
-    let stageReq = 0;
-
-    // Cross-fade del escenario: la obra actual se disuelve (opacity→0) y, cuando
-    // la nueva YA está precargada (sin flash vacío), entra (opacity→1). El swap
-    // ocurre en opacity 0 → el cambio se ve suave, no brusco.
+    // Entrada de la obra grande al cambiar (igual que Dump): swap del src +
+    // fade-in de opacity. La miniatura ya trae el mismo `src` en caché → el swap
+    // es instantáneo, sin flash. `overwrite` evita solapes en clics/flechas rápidas.
     const updateStage = (logical, animate) => {
       const obra = obras[logical];
+      gsap.killTweensOf(stageImage);
+      swapStage(obra);
 
-      // Colocación inicial o reduced-motion → cambio directo, sin disolvencia.
+      // Colocación inicial o reduced-motion → cambio directo, sin fundido.
       if (!animate || reduced) {
-        gsap.killTweensOf(stageImage);
-        swapStage(obra);
         gsap.set(stageImage, { opacity: 1 });
         return;
       }
 
-      const req = (stageReq += 1);
-      gsap.killTweensOf(stageImage);
-
-      // El swap+entrada solo procede cuando AMBOS terminan: el fade-out y la
-      // precarga de la nueva imagen. Así nunca se ve un hueco ni una a medio cargar.
-      let fadedOut = false;
-      let preloaded = false;
-      const commit = () => {
-        if (!fadedOut || !preloaded || req !== stageReq) return;
-        swapStage(obra);
-        gsap.to(stageImage, { opacity: 1, duration: STAGE_FADE_IN, ease: STAGE_EASE });
-      };
-
-      gsap.to(stageImage, {
-        opacity: 0,
-        duration: STAGE_FADE_OUT,
-        ease: 'power1.in',
-        onComplete: () => {
-          fadedOut = true;
-          commit();
-        },
-      });
-
-      const preload = new Image();
-      preload.onload = preload.onerror = () => {
-        preloaded = true;
-        commit();
-      };
-      preload.src = obra.src;
-      if (preload.complete) preloaded = true; // ya cacheada: no esperamos onload
+      gsap.fromTo(
+        stageImage,
+        { opacity: 0 },
+        { opacity: 1, duration: STAGE_FADE, ease: STAGE_EASE, overwrite: 'auto' },
+      );
     };
 
     // Re-centra `pos` a la copia del MEDIO si se salió de su rango. La copia
@@ -264,16 +235,31 @@ export function initObraCarousel({ section, obras, initialIndex = 0 } = {}) {
       },
     })[0];
 
+    // --- Lightbox: amplía la obra en la MISMA página (reutiliza lightbox.js).
+    //     Disparadores: la obra grande (desktop, vía initLightbox) y la miniatura
+    //     CENTRAL del carrusel (cuando el escenario está oculto en tablet/móvil).
+    //     getSource lee la obra actual (la del centro). ---
+    const lb = initLightbox({
+      trigger: stageImage,
+      getSource: () => {
+        const obra = obras[logicalOf(pos)];
+        return { src: obra.src, alt: buildStageAlt(obra) };
+      },
+    });
+
     // --- Eventos de navegación discreta ---
     prevBtn?.addEventListener('click', () => go(-1));
     nextBtn?.addEventListener('click', () => go(1));
 
-    // Clic en una miniatura visible (lateral) → la trae al centro.
+    // Clic en una miniatura: la CENTRAL (activa) → amplía en el lightbox; una
+    // LATERAL → la trae al centro.
     track.addEventListener('click', (event) => {
       const button = event.target.closest('[data-obra-thumb]');
       if (!button || !track.contains(button)) return;
       const index = buttons.indexOf(button);
-      if (index !== -1 && index !== pos) goToPos(index);
+      if (index === -1) return;
+      if (index === pos) lb && lb.open();
+      else goToPos(index);
     });
 
     // Teclado: ←/→ solo con el foco en una flecha del carrusel.
@@ -284,6 +270,37 @@ export function initObraCarousel({ section, obras, initialIndex = 0 } = {}) {
       event.preventDefault();
       go(event.key === 'ArrowRight' ? 1 : -1);
     });
+
+    // --- Trackpad: gesto HORIZONTAL de dos dedos (wheel con deltaX) desplaza el
+    //     carrusel. Mac y los touchpads de precisión de Windows mandan `deltaX`
+    //     en gestos horizontales; los ratones (solo deltaY) NO lo activan → el
+    //     scroll vertical de la página sigue vivo. `preventDefault` consume el
+    //     gesto (evita el "atrás" del historial por swipe en Mac). Al terminar el
+    //     gesto (debounce), se asienta en la miniatura más cercana con su fundido. ---
+    let wheelSettle = null;
+    viewport.addEventListener(
+      'wheel',
+      (event) => {
+        if (Math.abs(event.deltaX) <= Math.abs(event.deltaY)) return; // vertical → scroll normal
+        event.preventDefault();
+        gsap.killTweensOf(track);
+        const x = Number(gsap.getProperty(track, 'x')) - event.deltaX;
+        gsap.set(track, { x });
+        draggable && draggable.update();
+        // Realce en vivo de la miniatura central según la x actual (la obra grande
+        // se actualiza al asentar, como en el arrastre).
+        const p = posForX(x);
+        if (p !== pos) {
+          pos = p;
+          setActive(p);
+        }
+        clearTimeout(wheelSettle);
+        wheelSettle = window.setTimeout(() => {
+          goToPos(posForX(Number(gsap.getProperty(track, 'x'))));
+        }, 140);
+      },
+      { passive: false },
+    );
 
     // --- Recálculo ante cambios de layout/breakpoint ---
     const reflow = () => {

@@ -90,6 +90,10 @@ export function initLightbox({ trigger, getSource, onOpen, onClose } = {}) {
       event.preventDefault();
       open();
     });
+
+    // Se devuelve `open` para poder abrir el lightbox desde OTRO disparador
+    // (ej. Trayectoria: la miniatura central del carrusel, no solo la obra grande).
+    return { open };
   } catch (error) {
     logError(FILE, 'initLightbox', error);
   }

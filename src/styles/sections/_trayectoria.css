@@ -22,6 +22,14 @@
   text-align: justify;
 }
 
+/* Afordancia del lightbox: la obra grande (desktop) y la miniatura CENTRAL
+   (carrusel) son clicables para ampliar → cursor de manita (pointer), sin lupa.
+   Las laterales conservan su cursor (pointer/grab del carrusel). */
+.trayectoria [data-obra-image],
+.trayectoria .works-thumb[aria-current='true'] {
+  cursor: pointer;
+}
+
 /* ---------- Carrusel: fila [‹] [miniaturas] [›] ---------- */
 .works-carousel {
   display: flex;
@@ -116,6 +124,29 @@
 @media (max-width: 767px) {
   .trayectoria__stage {
     display: none;
+  }
+}
+
+/* ---------- No-escritorio (≤1023): miniaturas en su FORMA ORIGINAL ----------
+   Con la obra grande oculta, las miniaturas dejan de recortarse a CUADRADO y
+   muestran la obra completa en su proporción real (como la obra de Dump en
+   móvil). Se conserva el ANCHO fijo del slot (uniforme → el motor del coverflow,
+   que centra por posición horizontal, no se altera) y el ALTO pasa a ser natural
+   según el ratio de cada obra. Al variar los altos, las miniaturas se centran en
+   vertical dentro de la pista. En ≥1024 se conserva el cuadrado (ahí la forma
+   completa la muestra la obra grande). */
+@media (max-width: 1023px) {
+  .trayectoria .works-thumb {
+    aspect-ratio: auto; /* anula el cuadrado del componente */
+  }
+
+  .trayectoria .works-thumb img {
+    height: auto; /* alto natural (según el ancho fijo) → forma original, sin recorte */
+    object-fit: fill; /* el box ya es del ratio de la imagen; no hay nada que recortar */
+  }
+
+  .trayectoria .works-selector__thumbs--carousel {
+    align-items: center; /* altos variables → centradas en vertical */
   }
 }
 

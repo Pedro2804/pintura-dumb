@@ -24,9 +24,9 @@
 }
 
 /* La obra grande es clicable → abre el lightbox (vista ampliada). Cursor de
-   "ampliar". Solo Dump (Trayectoria no tiene el lightbox cableado). */
+   manita (pointer), sin lupa. */
 .dump [data-obra-image] {
-  cursor: zoom-in;
+  cursor: pointer;
 }
 
 /* ============================================================

@@ -17,6 +17,7 @@ import pescadoresI from '../assets/images/trayectoria/pescadores-de-hombres-01.w
 import pescadoresII from '../assets/images/trayectoria/pescadores-de-hombres-02.webp';
 import sanJeronimo from '../assets/images/trayectoria/san-jeronimo-principal.webp';
 
+// Info entregada por MASSIMO (.ai/img_page/Info-obras/info-obras.md).
 export const obrasTrayectoria = [
   {
     src: inundacionII,
@@ -29,36 +30,50 @@ export const obrasTrayectoria = [
   {
     src: inundacionI,
     nombre: 'Inundación informática I',
+    // El md añade un subtítulo ("la reproducibilidad de la imagen") antes de la
+    // técnica; se antepone en `tecnica` para mostrar la ficha completa.
+    tecnica: 'la reproducibilidad de la imagen, óleo sobre lienzo',
+    anio: 2022,
     width: 1849,
     height: 2605,
   },
   {
     src: burbujaPinchadaII,
     nombre: 'Burbuja pinchada II',
+    tecnica: 'óleo sobre lienzo',
+    anio: 2022,
     width: 4030,
     height: 5126,
   },
   {
     src: perroDefecando,
     nombre: 'Estudio de perfil de un perro defecando',
+    tecnica: 'óleo sobre lienzo',
+    anio: 2022,
     width: 6056,
     height: 4326,
   },
   {
     src: pescadoresI,
-    nombre: 'Pescadores de hombres (I)',
+    nombre: 'Pescadores de hombres I',
+    tecnica: 'óleo sobre tablero',
+    anio: 2022,
     width: 2000,
     height: 1960,
   },
   {
     src: pescadoresII,
-    nombre: 'Pescadores de hombres (II)',
+    nombre: 'Pescadores de hombres II',
+    tecnica: 'óleo sobre tablero',
+    anio: 2022,
     width: 1600,
     height: 1568,
   },
   {
     src: sanJeronimo,
-    nombre: 'San Jerónimo',
+    nombre: 'San Jerónimo penitente y los ángeles',
+    tecnica: 'óleo sobre lienzo',
+    anio: 2018,
     width: 2000,
     height: 3009,
   },

@@ -434,11 +434,11 @@
            ============================================================ -->
       <section id="trayectoria" class="trayectoria section-works" aria-labelledby="trayectoria-title" data-nav-theme="light">
         <div class="trayectoria__intro section-works__intro">
-          <h2 id="trayectoria-title" class="trayectoria__title" data-animate>
+          <h2 id="trayectoria-title" class="trayectoria__title">
             La trayectoria que antecede el fenómeno.
           </h2>
 
-          <p data-animate>
+          <p>
             Antes de Pintura dump, la práctica de Jarett Aramis ya articulaba una relación
             singular entre tradición pictórica, iconografía histórica e imaginarios
             contemporáneos. Esta selección reúne obras que permiten leer parte de ese recorrido
@@ -446,10 +446,7 @@
             dentro de la pintura contemporánea.
           </p>
 
-          <!-- Se anima el wrapper .works-carousel, NO el <ul data-obra-thumbs>:
-               el carrusel transforma el <ul> (translateX) y el `y` de GSAP
-               chocaría con su coverflow. El wrapper es padre y el JS no lo toca. -->
-          <div class="works-carousel" data-obra-selector data-animate>
+          <div class="works-carousel" data-obra-selector>
             <button
               type="button"
               class="works-selector__nav works-selector__nav--prev"
@@ -482,11 +479,11 @@
         </div>
 
         <div class="trayectoria__stage section-works__stage">
-          <!-- data-animate en el FIGURE (no en la <img>): la entrada por scroll
-               (fade-up, como los textos) anima el bloque obra+ficha, mientras el
-               cross-fade de obraCarousel.js sigue animando la <img> de adentro
-               sin chocar (son elementos distintos: opacity del figure vs de la img). -->
-          <figure class="works-selector__figure" data-obra-stage data-animate aria-live="polite">
+          <!-- Sin data-animate (estático al entrar/recargar, como Dump). La <img>
+               la hidrata obraCarousel.js; al cambiar de obra entra con fundido puro.
+               Clic en la <img> (desktop) o en la miniatura central (carrusel) → abre
+               el lightbox. -->
+          <figure class="works-selector__figure" data-obra-stage aria-live="polite">
             <!-- Imagen y ficha hidratadas por JS (obraCarousel.js). -->
             <img class="works-selector__image" alt="" loading="lazy" data-obra-image />
             <figcaption class="works-selector__caption">
