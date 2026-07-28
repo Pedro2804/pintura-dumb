@@ -58,13 +58,19 @@
    — no es un color nuevo). Comunica "esto es una previsualización, dale play para
    continuar" sin tapar del todo el video. Al pasar a PLAYING se oculta (regla de
    estado abajo) → el video se ve limpio.
-   Intensidad BAJADA un 20% (petición del cliente 2026-07-27): las 3 paradas del
-   degradado se multiplicaron por 0.8 (66/80/92 → 53/64/74) → se conserva
-   EXACTAMENTE la misma progresión, solo más transparente: se ve más video.
-   ⚠ PERILLA a prueba: se probó primero −30% (×0.7 → 46/56/64) y el dev pidió
-   devolverle 10 puntos de los 30. Si se ajusta otra vez, mover las 3 paradas
-   JUNTAS por el mismo factor. El respaldo plano lleva su propio número (ver abajo)
-   y NO lo pinta ningún navegador moderno: solo aparece si falla `color-mix()`. */
+   HISTORIAL de intensidad:
+     · original          66 / 80 / 92
+     · ×0.7 (−30%)       46 / 56 / 64   ← probado y descartado, quedó muy claro
+     · ×0.8 (−20%)       53 / 64 / 74
+     · ×0.64 (−36%)      42 / 51 / 59
+     · A MANO            30 / 40 / 50   ← ACTUAL (≈ −55/50/46% del original)
+   Hasta el paso anterior las 3 paradas se movían por un FACTOR único (así la
+   progresión no se deforma). Las actuales las fijó el dev a mano en números
+   redondos, con 10 puntos exactos entre parada y parada: ya no hay un factor
+   común (arriba bajó ~55% y abajo ~46%), la rampa es más suave y el velo arranca
+   notablemente más claro. Es una decisión de gusto, no un cálculo.
+   ⚠ PERILLA: al mover estos valores, mover con ellos el respaldo plano (abajo),
+   que va pegado a la parada del MEDIO. */
 .video-intro__veil {
   position: absolute;
   inset: 0;
@@ -77,15 +83,17 @@
      degradado y los alfas se SUMAN → el velo termina más oscuro que antes. Con el
      shorthand, el navegador moderno resetea el color a transparente y solo pinta
      el degradado.
-     Valor: 0.54 — 10 puntos POR DEBAJO de la parada del medio (0.64), a pedido del
-     dev el 2026-07-27. Al ser plano (sin el aclarado de arriba), al mismo alfa se
-     percibe más pesado que el degradado; este descuento lo compensa. */
-  background: rgba(0, 0, 51, 0.54);
+     Valor: 0.40 = EXACTAMENTE la parada del medio del degradado → ambos AL MISMO
+     TONO. Antes llevaba un descuento propio de 10 puntos (0.64 → 0.54) porque un
+     velo plano, al mismo alfa, se percibe más pesado que uno degradado; el dev
+     retiró ese descuento el 2026-07-27 para tener UNA SOLA perilla que mover.
+     ⚠ Al ajustar el degradado, mover este número con él (= parada del medio). */
+  background: rgba(0, 0, 51, 0.4);
   background: linear-gradient(
     to bottom,
-    color-mix(in srgb, var(--color-ink) 53%, transparent) 0%,
-    color-mix(in srgb, var(--color-ink) 64%, transparent) 55%,
-    color-mix(in srgb, var(--color-ink) 74%, transparent) 100%
+    color-mix(in srgb, var(--color-ink) 30%, transparent) 0%,
+    color-mix(in srgb, var(--color-ink) 40%, transparent) 55%,
+    color-mix(in srgb, var(--color-ink) 50%, transparent) 100%
   );
 }
 
