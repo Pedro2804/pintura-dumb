@@ -63,7 +63,8 @@
    EXACTAMENTE la misma progresión, solo más transparente: se ve más video.
    ⚠ PERILLA a prueba: se probó primero −30% (×0.7 → 46/56/64) y el dev pidió
    devolverle 10 puntos de los 30. Si se ajusta otra vez, mover las 3 paradas
-   JUNTAS por el mismo factor (y el respaldo plano = la parada del medio). */
+   JUNTAS por el mismo factor. El respaldo plano lleva su propio número (ver abajo)
+   y NO lo pinta ningún navegador moderno: solo aparece si falla `color-mix()`. */
 .video-intro__veil {
   position: absolute;
   inset: 0;
@@ -75,8 +76,11 @@
      `background-color`): si se declara aparte, el color plano se pinta DETRÁS del
      degradado y los alfas se SUMAN → el velo termina más oscuro que antes. Con el
      shorthand, el navegador moderno resetea el color a transparente y solo pinta
-     el degradado. */
-  background: rgba(0, 0, 51, 0.64);
+     el degradado.
+     Valor: 0.54 — 10 puntos POR DEBAJO de la parada del medio (0.64), a pedido del
+     dev el 2026-07-27. Al ser plano (sin el aclarado de arriba), al mismo alfa se
+     percibe más pesado que el degradado; este descuento lo compensa. */
+  background: rgba(0, 0, 51, 0.54);
   background: linear-gradient(
     to bottom,
     color-mix(in srgb, var(--color-ink) 53%, transparent) 0%,
