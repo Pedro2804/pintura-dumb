@@ -1,10 +1,10 @@
 /**
  * Obras de la sección «Del vertedero a la trascendencia.» (#dump).
  *
- * FUENTE DE VERDAD de la galería. El JS (`obraSelector.js`) renderiza
- * miniaturas y escenario a partir de este array — el HTML solo aporta el
- * cascarón. Crecer el catálogo = agregar un `import` + una entrada aquí;
- * la maquinaria no se toca (decisión 2026-06-16, ver memoria).
+ * FUENTE DE VERDAD de la galería. El JS (`obraCarousel.js`, el mismo motor que
+ * Trayectoria) renderiza miniaturas y escenario a partir de este array — el HTML
+ * solo aporta el cascarón. Crecer el catálogo = agregar un `import` + una entrada
+ * aquí; la maquinaria no se toca (decisión 2026-06-16, ver memoria).
  *
  * Las rutas se IMPORTAN (no se hardcodean como string): así Vite las
  * procesa, hashea y optimiza en el build (skill /vite: "preferir imports").
@@ -26,10 +26,12 @@ import fuerteConviccion from '../assets/images/dump/fuerte-conviccion-principal.
 import weekendBaby from '../assets/images/dump/weekend-baby-principal.jpg?w=1600&h=1600&fit=inside&format=webp&quality=80';
 import framesUsuarioI from '../assets/images/dump/frames-de-un-usuario-01.jpg?w=1600&h=1600&fit=inside&format=webp&quality=80';
 import framesUsuarioII from '../assets/images/dump/frames-de-un-usuario-02.jpg?w=1600&h=1600&fit=inside&format=webp&quality=80';
+import usuarioNattCalma from '../assets/images/dump/usuario-natt-calma.jpg?w=1600&h=1600&fit=inside&format=webp&quality=80';
 
 // Info entregada por MASSIMO (.ai/img_page/Info-obras/info-obras.md). El catálogo
-// CRECERÁ con más obras hasta la exposición → a futuro se migrará a un carrusel
-// (hoy el grid 2×2 muestra las que hay; decisión de layout diferida por el dev).
+// CRECERÁ con más obras hasta la exposición: desde 2026-07-27 la sección usa el
+// MISMO carrusel coverflow que Trayectoria (obraCarousel.js), así que crecer el
+// catálogo es SOLO agregar un import + una entrada aquí — el layout ya no se toca.
 export const obrasDump = [
   {
     src: fuerteConviccion,
@@ -62,5 +64,16 @@ export const obrasDump = [
     anio: 2025,
     width: 3213,
     height: 5632,
+  },
+  // Recuperada el 2026-07-27: se había quitado el 2026-07-26 porque la 5ª
+  // miniatura descuadraba el grid 2×2 (ver cambios/2026-07-26_dump-lightbox-…).
+  // Con el carrusel ese motivo desapareció → vuelve al catálogo.
+  {
+    src: usuarioNattCalma,
+    nombre: 'Usuario Natt Calma',
+    tecnica: 'óleo sobre lienzo',
+    anio: 2026,
+    width: 3746,
+    height: 4994,
   },
 ];

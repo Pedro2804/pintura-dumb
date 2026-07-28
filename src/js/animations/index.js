@@ -8,6 +8,13 @@ import { initScrollAnimations } from './scrollAnimations.js';
 const FILE = 'animations/index.js';
 
 /**
+ * Re-armado de las entradas por scroll. Se re-exporta desde aquí para que el
+ * resto de la app tenga UN solo punto de contacto con GSAP (main.js no importa
+ * submódulos de animación). Quién y por qué lo llama: ver scrollAnimations.js.
+ */
+export { rearmScrollAnimations } from './scrollAnimations.js';
+
+/**
  * Defaults editoriales del sistema de animación.
  * Empatan con los tokens de motion del CSS para mantener una sola voz:
  *   --duration-base: 300ms  ·  --duration-slow: 600ms

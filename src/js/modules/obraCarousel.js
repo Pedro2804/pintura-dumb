@@ -14,9 +14,8 @@ const FILE = 'obraCarousel.js';
 // (visualmente idéntica → sin salto).
 const COPIES = 3;
 
-// Entrada de la obra grande al cambiar de obra: FUNDIDO PURO, igual que Dump
-// (obraSelector.js) — swap del src + fade-in de opacity. Tempo local (no acoplar
-// a animations/index.js).
+// Entrada de la obra grande al cambiar de obra: FUNDIDO PURO — swap del src +
+// fade-in de opacity. Tempo local (no acoplar a animations/index.js).
 const STAGE_FADE = 0.8;
 const STAGE_EASE = 'power2.out';
 

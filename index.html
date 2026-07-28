@@ -211,7 +211,7 @@
         <div class="fenomeno__content section-split__content">
           <h2 id="fenomeno-title" class="fenomeno__title">¿Qué es pintura dump?</h2>
 
-          <p class="fenomeno__lead frase-madre">
+          <p class="fenomeno__lead frase-madre frase-madre--accent">
             El exceso digital no es basura, es una tendencia del arte en potencia
           </p>
 
@@ -373,66 +373,75 @@
       </section>
 
       <!-- ============================================================
-           5 · DEL VERTEDERO A LA TRASCENDENCIA (#dump) — selector de obra
+           5 · DEL VERTEDERO A LA TRASCENDENCIA (#dump) — carrusel de obras
            ============================================================ -->
-      <section id="dump" class="dump section-works" aria-labelledby="dump-title" data-nav-theme="light">
+      <section
+        id="dump"
+        class="dump section-works section-works--carousel"
+        aria-labelledby="dump-title"
+        data-nav-theme="light"
+      >
         <div class="dump__intro section-works__intro">
           <h2 id="dump-title" class="dump__title">Del vertedero a la trascendencia.</h2>
 
-          <ul class="works-selector__thumbs" data-obra-thumbs aria-label="Selección de obras de Pintura dump">
-            <!-- Miniaturas generadas por JS desde src/data/obras-dump.js (FASE 5-BIS). -->
-          </ul>
+          <!-- Carrusel COVERFLOW: mismo patrón y MISMO motor que Trayectoria
+               (obraCarousel.js). Migrado el 2026-07-27 desde la rejilla 2×2, que no
+               escalaba al crecer el catálogo. -->
+          <div class="works-carousel">
+            <button
+              type="button"
+              class="works-selector__nav works-selector__nav--prev"
+              data-obra-prev
+              aria-label="Obra anterior"
+            >
+              <span aria-hidden="true">&lsaquo;</span>
+            </button>
 
-          <!-- Tira coverflow con loop (solo TABLET): copias de las obras generadas
-               por JS para el loop infinito; motor por transform (obraSelector.js).
-               Oculta en teléfono (puntos) y desktop (rejilla 2×2). aria-hidden:
-               afordancia visual; la a11y la dan las flechas + la figura viva. -->
-          <div class="dump__strip" data-obra-strip-viewport aria-hidden="true">
-            <ul class="dump__strip-track" data-obra-strip></ul>
+            <div class="works-viewport" data-obra-viewport>
+              <ul
+                class="works-selector__thumbs works-selector__thumbs--carousel"
+                data-obra-thumbs
+                aria-label="Selección de obras de Pintura dump"
+              >
+                <!-- Miniaturas (×3 copias para el loop) generadas por JS desde
+                     src/data/obras-dump.js → sumar obras no toca este HTML. -->
+              </ul>
+            </div>
+
+            <button
+              type="button"
+              class="works-selector__nav works-selector__nav--next"
+              data-obra-next
+              aria-label="Obra siguiente"
+            >
+              <span aria-hidden="true">&rsaquo;</span>
+            </button>
           </div>
         </div>
 
-        <div class="dump__stage section-works__stage" data-obra-selector>
-          <button
-            type="button"
-            class="works-selector__nav works-selector__nav--prev"
-            data-obra-prev
-            aria-label="Obra anterior"
-          >
-            <span aria-hidden="true">&lsaquo;</span>
-          </button>
-
-          <figure class="works-selector__figure" data-obra-stage aria-live="polite">
-            <!-- Sin data-animate (estático al entrar/recargar, decisión del dev). El
-                 src, el alt y la ficha los hidrata JS (obraSelector.js); al cambiar
-                 de obra la <img> entra con un fundido puro. Clic en la <img> → abre el
-                 lightbox (obraSelector.js + lightbox.js). -->
-            <img class="works-selector__image" data-obra-image alt="" decoding="async" />
+        <div class="dump__stage section-works__stage">
+          <!-- Sin data-animate (estático al entrar/recargar, decisión del dev). La
+               <img> y la ficha las hidrata obraCarousel.js; al cambiar de obra entra
+               con fundido puro. Clic en la <img> (escritorio) o en la miniatura
+               central (carrusel) → abre el lightbox. -->
+          <figure class="works-selector__figure" aria-live="polite">
+            <img class="works-selector__image" data-obra-image alt="" loading="lazy" decoding="async" />
             <figcaption class="works-selector__caption">
               <span class="works-selector__name" data-obra-name></span><span class="works-selector__meta" data-obra-meta></span>
             </figcaption>
-            <ul class="works-selector__dots" data-obra-dots aria-hidden="true">
-              <!-- Puntos indicadores (móvil, sin miniaturas): generados por JS
-                   desde obraSelector.js. Afordancia de "cuántas obras y en cuál
-                   voy"; la a11y la dan la figura viva + las flechas. -->
-            </ul>
           </figure>
-
-          <button
-            type="button"
-            class="works-selector__nav works-selector__nav--next"
-            data-obra-next
-            aria-label="Obra siguiente"
-          >
-            <span aria-hidden="true">&rsaquo;</span>
-          </button>
         </div>
       </section>
 
       <!-- ============================================================
            6 · LA TRAYECTORIA QUE ANTECEDE EL FENÓMENO (#trayectoria)
            ============================================================ -->
-      <section id="trayectoria" class="trayectoria section-works" aria-labelledby="trayectoria-title" data-nav-theme="light">
+      <section
+        id="trayectoria"
+        class="trayectoria section-works section-works--carousel"
+        aria-labelledby="trayectoria-title"
+        data-nav-theme="light"
+      >
         <div class="trayectoria__intro section-works__intro">
           <h2 id="trayectoria-title" class="trayectoria__title">
             La trayectoria que antecede el fenómeno.
@@ -446,7 +455,7 @@
             dentro de la pintura contemporánea.
           </p>
 
-          <div class="works-carousel" data-obra-selector>
+          <div class="works-carousel">
             <button
               type="button"
               class="works-selector__nav works-selector__nav--prev"
@@ -483,7 +492,7 @@
                la hidrata obraCarousel.js; al cambiar de obra entra con fundido puro.
                Clic en la <img> (desktop) o en la miniatura central (carrusel) → abre
                el lightbox. -->
-          <figure class="works-selector__figure" data-obra-stage aria-live="polite">
+          <figure class="works-selector__figure" aria-live="polite">
             <!-- Imagen y ficha hidratadas por JS (obraCarousel.js). -->
             <img class="works-selector__image" alt="" loading="lazy" data-obra-image />
             <figcaption class="works-selector__caption">

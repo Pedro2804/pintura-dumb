@@ -80,10 +80,18 @@ const PRESETS = Object.freeze({
 
 const presetName = (el) => (PRESETS[el.dataset.animate] ? el.dataset.animate : 'fade-up');
 
+/**
+ * Instancias de ScrollTrigger creadas (las devuelve `ScrollTrigger.batch`).
+ * Se guardan para poder RE-ARMAR el sistema: ver `rearmScrollAnimations()`.
+ */
+let triggers = [];
+
 export function initScrollAnimations() {
   try {
     const targets = $$('[data-animate]');
     if (!targets.length) return;
+
+    triggers = [];
 
     // Estado inicial por preset (evita parpadeos al asentar la animación).
     targets.forEach((el) => gsap.set(el, PRESETS[presetName(el)].hidden));
@@ -104,7 +112,7 @@ export function initScrollAnimations() {
       // Duración/ease propios del preset (imágenes) o los de REVEAL (texto).
       const duration = preset.duration ?? REVEAL.duration;
       const ease = preset.ease ?? REVEAL.ease;
-      ScrollTrigger.batch(els, {
+      const batch = ScrollTrigger.batch(els, {
         start,
         // Bajando: entra al viewport → revela en cascada (orden del DOM).
         onEnter: (batch) =>
@@ -125,8 +133,47 @@ export function initScrollAnimations() {
             overwrite: true,
           }),
       });
+      if (Array.isArray(batch)) triggers.push(...batch);
     });
   } catch (error) {
     logError(FILE, 'initScrollAnimations', error);
+  }
+}
+
+/**
+ * RE-ARMA el sistema de entradas. Llamar cada vez que el documento vuelve a ser
+ * medible (hoy: al liberarse el bloqueo de scroll del overlay del video).
+ *
+ * EL PROBLEMA que resuelve: mientras el ritual de video está abierto, el
+ * `<html>` lleva `overflow: hidden` (bloqueo de scroll) → el documento NO tiene
+ * recorrido y ScrollTrigger mide `maxScroll = 0`. Con ese cero, TODOS los
+ * triggers colapsan al inicio del scroll y disparan su `onEnter` de una, detrás
+ * del overlay: al revelar la página los textos ya están puestos y la entrada
+ * "no se ve". Peor: cada `overflow: hidden` cambia el ancho del viewport (se va
+ * la barra de scroll) → dispara `resize` → ScrollTrigger se auto-refresca con la
+ * medición mala. No es un problema de navegador ni de SO: le pasa a cualquiera
+ * que vea el video (1ª visita); quien ya tiene el flag `INTRO_SEEN` no lo nota.
+ *
+ * QUÉ HACE: re-mide (`refresh`) y luego, trigger por trigger, deja cada elemento
+ * en el estado que le corresponde según la posición REAL del scroll — oculto si
+ * su punto de disparo aún no se alcanzó, mostrado si ya se pasó. Así la entrada
+ * vuelve a estar cargada y se anima cuando el usuario llegue.
+ */
+export function rearmScrollAnimations() {
+  try {
+    if (!triggers.length) return;
+
+    ScrollTrigger.refresh();
+
+    triggers.forEach((trigger) => {
+      const el = trigger && trigger.trigger;
+      if (!el) return;
+      const { hidden, shown } = PRESETS[presetName(el)];
+      const scroll = typeof trigger.scroll === 'function' ? trigger.scroll() : 0;
+      gsap.killTweensOf(el); // corta un tween disparado con la medición mala
+      gsap.set(el, scroll < trigger.start ? hidden : shown);
+    });
+  } catch (error) {
+    logError(FILE, 'rearmScrollAnimations', error);
   }
 }

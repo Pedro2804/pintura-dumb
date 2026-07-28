@@ -39,13 +39,27 @@ function hasPlayableSource(video) {
  *  El video termina (solo en PLAYING) → cierra. El video falla → cierra en silencio.
  *  "Repetir video" (Hero) → reabre entrando DIRECTO a PLAYING (con sonido desde 0).
  *  Persistencia: flag en localStorage (el gate se ve una vez por dispositivo).
+ *
+ * @param {Object}   [config]
+ * @param {Function} [config.onReveal]        Se llama al revelar la página (1 vez).
+ * @param {Function} [config.onScrollUnlock]  Se llama cada vez que el scroll de la
+ *   página queda LIBRE (al cerrar el overlay) o si nunca se bloqueó. Lo consume el
+ *   sistema de animaciones: con el scroll bloqueado ScrollTrigger no puede medir el
+ *   documento (ver scrollAnimations.js@rearmScrollAnimations).
  */
-export function initVideoIntro({ onReveal } = {}) {
+export function initVideoIntro({ onReveal, onScrollUnlock } = {}) {
   try {
+    // Aviso de "el scroll ya es libre": puede dispararse varias veces (cada cierre,
+    // incluidas las reaperturas de "Repetir video") — el consumidor es idempotente.
+    const notifyScrollUnlock = () => {
+      if (typeof onScrollUnlock === 'function') onScrollUnlock();
+    };
+
     const dialog = $('[data-video-intro]');
     // Sin <dialog> o sin soporte de showModal: revela la página igual (no atrapes).
     if (!dialog || typeof dialog.showModal !== 'function') {
       if (typeof onReveal === 'function') onReveal();
+      notifyScrollUnlock(); // nunca se bloqueó el scroll
       return;
     }
 
@@ -148,6 +162,9 @@ export function initVideoIntro({ onReveal } = {}) {
       if (video) video.pause();
       setFlag(STORAGE_KEYS.INTRO_SEEN, true);
       reveal();
+      // El documento vuelve a tener recorrido → avisa para que las entradas por
+      // scroll se re-midan y se re-armen (si no, ya vienen "gastadas").
+      notifyScrollUnlock();
     });
 
     // "Ver fenómeno": entra a la reproducción real (con audio).
@@ -187,10 +204,12 @@ export function initVideoIntro({ onReveal } = {}) {
       openPreview();
     } else {
       reveal();
+      notifyScrollUnlock(); // sin gate: el scroll nunca se bloqueó
     }
   } catch (error) {
     // Ante cualquier error, revela la página (no la dejes tapada/oculta).
     if (typeof onReveal === 'function') onReveal();
+    if (typeof onScrollUnlock === 'function') onScrollUnlock();
     logError(FILE, 'initVideoIntro', error);
   }
 }

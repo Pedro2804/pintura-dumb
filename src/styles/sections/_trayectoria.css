@@ -1,159 +1,19 @@
 /* ============================================================
    SECCIÓN · La trayectoria que antecede el fenómeno. (#trayectoria) — CLARA
-   Selector COVERFLOW: carrusel de miniaturas (3 visibles, la del CENTRO más
-   grande y con contorno rojo = la obra grande del contenedor derecho). Las
-   flechas viven SOLO en el carrusel (la obra grande sin flechas, más énfasis).
-   En móvil la obra grande se oculta y el carrusel muestra una sola imagen
-   grande. El layout base vive en el componente compartido _section-works.
-   ⚠ MAQUETADO (FASE 4-BIS). El centrado del activo, el loop infinito, el clic
-   y la sincronía con la obra grande son JS (FASE 5-BIS).
+   Consume DOS piezas compartidas de _section-works.css:
+     · .section-works            → layout de 2 columnas, tema claro
+     · .section-works--carousel  → el coverflow completo (miniaturas, estados,
+                                   comportamiento en tablet/móvil, ficha)
+   El motor es obraCarousel.js. Aquí solo vive lo ESPECÍFICO de la sección.
+   Hasta el 2026-07-27 este archivo era dueño del coverflow; al migrar Dump al
+   mismo patrón, esas reglas subieron al componente (una sola fuente de verdad).
    Validar contra .ai/img_page/Trayectoria.png
    ============================================================ */
 
-/* Padding vertical un poco más corto que el del componente (--section-y),
-   manteniendo el horizontal (--gutter). Afecta a los dos contenedores. */
-.trayectoria {
-  padding-block: calc(var(--section-y) * 0.65);
-}
-
 /* Cuerpo JUSTIFICADO (mismo criterio que Fenómeno/Artista/Exposición). El
-   default `hyphens: manual` no parte palabras con guion. */
+   default `hyphens: manual` no parte palabras con guion.
+   Es lo ÚNICO propio: Trayectoria es la única de las dos galerías con texto de
+   introducción — Dump lleva solo el título. */
 .trayectoria__intro > p:not([class]) {
   text-align: justify;
-}
-
-/* Afordancia del lightbox: la obra grande (desktop) y la miniatura CENTRAL
-   (carrusel) son clicables para ampliar → cursor de manita (pointer), sin lupa.
-   Las laterales conservan su cursor (pointer/grab del carrusel). */
-.trayectoria [data-obra-image],
-.trayectoria .works-thumb[aria-current='true'] {
-  cursor: pointer;
-}
-
-/* ---------- Carrusel: fila [‹] [miniaturas] [›] ---------- */
-.works-carousel {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2xs);
-}
-
-/* La SELECCIÓN de la miniatura se anima suave (coverflow). Es un cambio de
-   estado (toggle de `aria-current` desde obraCarousel.js) → CSS transition es
-   la herramienta correcta: el realce "viaja" solo entre miniaturas mientras se
-   arrastra, sin crear tweens JS (mejor en móvil). El contorno rojo lo pone el
-   componente; aquí se le suma transform + opacity al mismo tempo. */
-.trayectoria .works-thumb {
-  transition:
-    transform var(--duration-base) var(--ease-out),
-    opacity var(--duration-base) var(--ease-out),
-    border-color var(--duration-base) var(--ease-out);
-}
-
-/* El ancho entre las flechas lo absorbe el `.works-viewport` (componente);
-   esta lista es la PISTA (transform), no necesita flex:1. */
-
-/* Móvil (base): una sola imagen grande a la vez (la miniatura "se vuelve" la
-   obra grande). El JS la centra con transform. */
-.trayectoria .works-selector__thumbs--carousel > li {
-  width: 100%;
-}
-
-@media (min-width: 768px) {
-  /* Texto (izq.) y obra grande (der.) a la MITAD de la pantalla cada uno
-     (50/50), como Dump. Anula el 44/56 del componente. */
-  .trayectoria {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  }
-
-  /* La obra grande SIEMPRE centrada verticalmente en su columna (anula el
-     align-items:start del componente solo para esta celda). Se nota en
-     pantallas donde la columna izquierda (texto + carrusel) es más alta que
-     la obra: así no queda pegada arriba. */
-  .trayectoria__stage {
-    align-self: center;
-  }
-
-  /* 3 miniaturas visibles: (ancho − 2 gaps) / 3. El aire vertical para la
-     central (scale) lo pone el `.works-viewport` (padding-block). */
-  .trayectoria .works-selector__thumbs--carousel > li {
-    width: calc((100% - 2 * var(--space-2xs)) / 3);
-  }
-
-  /* Las miniaturas laterales se atenúan LIGERAMENTE para que la seleccionada
-     destaque, sin apagarlas: se lee cuál es la obra grande pero las otras
-     siguen legibles. */
-  .trayectoria .works-thumb {
-    opacity: 0.7;
-  }
-
-  /* La miniatura ACTIVA (centro): a tamaño completo, iluminada y más grande →
-     se nota el coverflow y queda claro que es la obra grande.
-     El contorno rojo ya lo pone el componente con [aria-current="true"]. */
-  .trayectoria .works-thumb[aria-current="true"] {
-    opacity: 1;
-    transform: scale(1.08);
-  }
-}
-
-/* ---------- Tablet (768–1023): el CARRUSEL es el protagonista ----------
-   Confinadas a media columna, las miniaturas se veían muy chicas. Se QUITA la
-   obra grande y el carrusel pasa a UNA columna a todo el ancho → las 3
-   miniaturas se ven mucho más grandes. El swipe muestra el coverflow (como en
-   móvil, pero manteniendo 3 visibles en vez de 1). Sin acople al viewport ni
-   snap (mismo criterio que Dump en <1024): la sección fluye con su alto
-   natural. El layout 2-col aprobado (texto + obra grande) se conserva en ≥1024. */
-@media (min-width: 768px) and (max-width: 1023px) {
-  .trayectoria {
-    grid-template-columns: minmax(0, 1fr);
-    min-height: auto; /* anula el acople 100dvh del componente: sin hueco */
-  }
-
-  .trayectoria__stage {
-    display: none;
-  }
-
-  /* Fuera del snap (como Dump): con la obra oculta la sección es más corta y el
-     snap forzado estorba. El #id iguala la especificidad de la regla base
-     `#contenido-principal > section` para ganarle. */
-  #contenido-principal > section.trayectoria {
-    scroll-snap-align: none;
-  }
-}
-
-/* ---------- Móvil: la obra grande se oculta; manda el carrusel ---------- */
-@media (max-width: 767px) {
-  .trayectoria__stage {
-    display: none;
-  }
-}
-
-/* ---------- No-escritorio (≤1023): miniaturas en su FORMA ORIGINAL ----------
-   Con la obra grande oculta, las miniaturas dejan de recortarse a CUADRADO y
-   muestran la obra completa en su proporción real (como la obra de Dump en
-   móvil). Se conserva el ANCHO fijo del slot (uniforme → el motor del coverflow,
-   que centra por posición horizontal, no se altera) y el ALTO pasa a ser natural
-   según el ratio de cada obra. Al variar los altos, las miniaturas se centran en
-   vertical dentro de la pista. En ≥1024 se conserva el cuadrado (ahí la forma
-   completa la muestra la obra grande). */
-@media (max-width: 1023px) {
-  .trayectoria .works-thumb {
-    aspect-ratio: auto; /* anula el cuadrado del componente */
-  }
-
-  .trayectoria .works-thumb img {
-    height: auto; /* alto natural (según el ancho fijo) → forma original, sin recorte */
-    object-fit: fill; /* el box ya es del ratio de la imagen; no hay nada que recortar */
-  }
-
-  .trayectoria .works-selector__thumbs--carousel {
-    align-items: center; /* altos variables → centradas en vertical */
-  }
-}
-
-/* El realce de la seleccionada se queda (es énfasis, no movimiento); solo se
-   apaga la TRANSICIÓN para quien pide movimiento reducido. */
-@media (prefers-reduced-motion: reduce) {
-  .trayectoria .works-thumb {
-    transition: none;
-  }
 }

@@ -57,17 +57,31 @@
    Cubre TODA la pantalla e intensifica hacia abajo (azul noche oficial con alfa
    — no es un color nuevo). Comunica "esto es una previsualización, dale play para
    continuar" sin tapar del todo el video. Al pasar a PLAYING se oculta (regla de
-   estado abajo) → el video se ve limpio. */
+   estado abajo) → el video se ve limpio.
+   Intensidad BAJADA un 20% (petición del cliente 2026-07-27): las 3 paradas del
+   degradado se multiplicaron por 0.8 (66/80/92 → 53/64/74) → se conserva
+   EXACTAMENTE la misma progresión, solo más transparente: se ve más video.
+   ⚠ PERILLA a prueba: se probó primero −30% (×0.7 → 46/56/64) y el dev pidió
+   devolverle 10 puntos de los 30. Si se ajusta otra vez, mover las 3 paradas
+   JUNTAS por el mismo factor (y el respaldo plano = la parada del medio). */
 .video-intro__veil {
   position: absolute;
   inset: 0;
   z-index: 1;
   pointer-events: none; /* no roba clics al video ni al CTA */
+  /* Respaldo PLANO para navegadores sin `color-mix()` (Safari <16.2, Chrome <111):
+     ahí el degradado de abajo es una declaración INVÁLIDA, el navegador la descarta
+     y se queda con esta. ⚠ Va en la MISMA propiedad (`background`, no
+     `background-color`): si se declara aparte, el color plano se pinta DETRÁS del
+     degradado y los alfas se SUMAN → el velo termina más oscuro que antes. Con el
+     shorthand, el navegador moderno resetea el color a transparente y solo pinta
+     el degradado. */
+  background: rgba(0, 0, 51, 0.64);
   background: linear-gradient(
     to bottom,
-    color-mix(in srgb, var(--color-ink) 66%, transparent) 0%,
-    color-mix(in srgb, var(--color-ink) 80%, transparent) 55%,
-    color-mix(in srgb, var(--color-ink) 92%, transparent) 100%
+    color-mix(in srgb, var(--color-ink) 53%, transparent) 0%,
+    color-mix(in srgb, var(--color-ink) 64%, transparent) 55%,
+    color-mix(in srgb, var(--color-ink) 74%, transparent) 100%
   );
 }
 

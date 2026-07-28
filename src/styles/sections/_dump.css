@@ -1,20 +1,21 @@
 /* ============================================================
    SECCIÓN · Del vertedero a la trascendencia. (#dump) — CLARA
-   Selector de obra con miniaturas en GRID 2×2 (izquierda) y
-   obra principal con flechas (derecha). El layout base vive en
-   el componente compartido _section-works. Aquí solo lo
-   ESPECÍFICO de Dump: tamaño/alineación del título y acotado
-   de la rejilla de miniaturas.
-   Referencia: .ai/img_page/Dump.png
+   Consume DOS piezas compartidas de _section-works.css:
+     · .section-works            → layout de 2 columnas, tema claro
+     · .section-works--carousel  → el coverflow completo (miniaturas, estados,
+                                   comportamiento en tablet/móvil, ficha)
+   El motor es obraCarousel.js, el MISMO de Trayectoria.
+
+   MIGRACIÓN 2026-07-27: antes esta sección tenía rejilla 2×2 + puntos de móvil +
+   una tira coverflow propia para tablet (todo en obraSelector.js, ya retirado).
+   No escalaba: cada obra nueva descuadraba la rejilla. Ahora es el mismo carrusel
+   que Trayectoria → sumar obras es solo agregar una entrada en
+   src/data/obras-dump.js. Referencia previa: .ai/img_page/Dump.png (ya no aplica
+   a las miniaturas, sí al tono general de la sección).
    ============================================================ */
 
-/* Padding vertical un poco más corto que el del componente (--section-y),
-   manteniendo el horizontal (--gutter) que viene del componente. */
-.dump {
-  padding-block: calc(var(--section-y) * 0.65);
-}
-
-/* Título display, alineado a la izquierda, en Poppins Black. */
+/* Título display, alineado a la izquierda, en Poppins Black. Es lo que distingue
+   visualmente a Dump de Trayectoria (allá el título es el h2 estándar). */
 .dump__title {
   font-family: var(--font-display);
   font-weight: var(--weight-black);
@@ -23,284 +24,38 @@
   letter-spacing: var(--tracking-display);
 }
 
-/* La obra grande es clicable → abre el lightbox (vista ampliada). Cursor de
-   manita (pointer), sin lupa. */
-.dump [data-obra-image] {
-  cursor: pointer;
+/* ---------- PERILLA · tamaño de la miniatura (≥768) ----------
+   Dump NO lleva texto de introducción (solo el título), así que en su columna
+   sobra aire: las miniaturas pueden ir MÁS GRANDES que en Trayectoria. El único
+   número que hay que mover es el DIVISOR: son las miniaturas que caben en el
+   ancho del carrusel.
+     3    → tamaño de Trayectoria (3 completas)
+     2.5  → ACTUAL: la central completa + tres cuartos de cada vecina asomando
+     2    → dos completas (máximo antes de perder la lectura de "carrusel")
+   El motor no se entera: centra por posición horizontal, con el ancho que sea. */
+@media (min-width: 768px) {
+  .dump .works-selector__thumbs--carousel > li {
+    width: calc((100% - 2 * var(--space-2xs)) / 2.5);
+  }
 }
 
-/* ============================================================
-   Grid estático + escenario con la obra COMPLETA (ajuste cliente #4/#5)
-   Las 4 miniaturas SIEMPRE visibles (la activa con marco rojo, en el
-   componente); la obra se muestra aparte en su formato original, sin
-   recorte (`object-fit: contain` del componente). Al cambiar de obra,
-   entra con una animación aleatoria (obraSelector.js). Sin viaje/Flip.
-   ============================================================ */
-
-/* DESKTOP (≥1024px): 2 columnas con la rejilla 2×2 al lado (layout aprobado).
-   Se sube el corte de 768 → 1024: en 768–1023 (tablet) Dump va en UNA columna
-   con tira de miniaturas (más abajo), no en el 2-col apretado.
-   La rejilla 2×2 no necesita ocupar todo el ancho de la columna: se acota para
-   conservar miniaturas compactas (como en la captura). */
+/* ---------- Carrusel CENTRADO en vertical (≥1024) ----------
+   Sin párrafo de introducción, el carrusel se quedaba colgado bajo el título con
+   un hueco enorme debajo. Dos piezas:
+     1. La columna izquierda deja de medir lo que mide su contenido y se ESTIRA a
+        todo el alto de la fila (anula el `align-items: start` del componente).
+     2. `margin-block: auto` en el carrusel: en un contenedor flex, los márgenes
+        automáticos se reparten el espacio LIBRE por igual arriba y abajo → queda
+        centrado en el hueco que deja el título, sin números mágicos ni posiciones
+        absolutas. Si el contenido creciera hasta llenar la columna, los `auto`
+        colapsan solos y el carrusel vuelve a caer bajo el título.
+   Trayectoria NO lo lleva: su párrafo ya ocupa ese espacio. */
 @media (min-width: 1024px) {
-  /* Dos columnas EXACTAMENTE a la mitad (50/50): texto izq. / obra der.
-     Anula el 44%/56% del componente. minmax(0,…) evita overflow. */
-  .dump {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    /* La fila se queda a la altura de su CONTENIDO (no se estira al viewport):
-       el sobrante del min-height:100dvh queda DEBAJO de la fila. Así la altura
-       la dicta la columna izquierda (título + grid de miniaturas). */
-    align-content: start;
-    /* Las columnas se igualan a la altura de la fila (= columna izq.) → la obra
-       se acota a esa altura y su base queda A LA PAR de las 2 miniaturas de
-       abajo (como en la referencia). */
-    align-items: stretch;
-  }
-
-  /* Los 2 pares verticales SEPARADOS: una columna pegada a la IZQUIERDA y la
-     otra a la DERECHA del contenedor, con el hueco en medio. El grid ocupa todo
-     el ancho de la columna; las pistas son de tamaño fijo (no 1fr, que llenaría
-     todo sin dejar hueco) y space-between empuja el sobrante al centro. */
-  .dump .works-selector__thumbs {
-    grid-template-columns: repeat(2, minmax(0, 15rem));
-    justify-content: space-between;
-  }
-
-  /* La obra rellena el alto de su celda (= alto de la columna izquierda) sin
-     imponer su altura natural (flex-basis 0). object-fit: contain (base) la
-     muestra completa al escalar. */
-  .dump .section-works__stage {
-    align-items: stretch; /* la figura llena el alto de la celda */
-    min-height: 0;
-  }
-
-  .dump .works-selector__nav {
-    align-self: center; /* las flechas no se estiran con la celda */
-  }
-
-  /* Desktop: la obra llena el alto de la columna izquierda (flex-basis 0 → no
-     impone su altura natural). `object-fit: contain` (base del componente) la
-     muestra COMPLETA sin recorte; el ancho deriva de su proporción real y, si
-     una obra horizontal excede el ancho, `max-width: 100%` la acota. */
-  .dump .works-selector__image {
-    flex: 1 1 0;
-    min-height: 0;
-    max-height: none; /* anula el 70vh base: aquí manda la columna izquierda */
-  }
-}
-
-/* ============================================================
-   Puntos indicadores (afordancia de la obra)
-   OCULTOS por defecto: en desktop/tablet las MINIATURAS ya dicen cuántas
-   obras hay y cuál está activa. Se muestran solo en móvil (abajo), donde
-   las miniaturas se ocultan. Los genera obraSelector.js.
-   ============================================================ */
-.dump .works-selector__dots {
-  display: none;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  justify-content: center;
-  gap: var(--space-2xs);
-}
-
-.dump .works-selector__dot {
-  display: block;
-  width: 0.5rem;
-  height: 0.5rem;
-  padding: 0;
-  border: none;
-  border-radius: 50%;
-  /* Inactivo: azul noche desvanecido (paleta con opacidad, sin color nuevo). */
-  background-color: color-mix(in srgb, var(--color-ink) 25%, transparent);
-  cursor: pointer;
-  transition:
-    background-color var(--duration-base) var(--ease-out),
-    transform var(--duration-base) var(--ease-out);
-}
-
-/* Obra activa: punto en ROJO (acento funcional) y un pelín más grande. */
-.dump .works-selector__dot[aria-current="true"] {
-  background-color: var(--color-accent);
-  transform: scale(1.25);
-}
-
-/* ============================================================
-   TELÉFONO Y TABLET (<1024px) · sin acople al viewport
-   La sección va en UNA columna y su contenido (obra + indicador) es difícil
-   de "cuadrar" a la pantalla en anchos chicos. Se apaga el acople
-   (min-height:auto) → scroll FLUIDO, la obra manda por su alto fijo.
-   ============================================================ */
-@media (max-width: 1023px) {
-  .dump {
-    grid-template-columns: 1fr; /* una columna (el 2-col es ≥1024) */
-    min-height: auto; /* anula el 100dvh del componente (≥768): sin acople */
-  }
-}
-
-/* Dump NO es objetivo del scroll-snap en tablet (en teléfono ya está global-
-   mente apagado). El selector lleva el #id para empatar la especificidad de la
-   regla base `#contenido-principal > section` y ganarle. */
-@media (min-width: 768px) and (max-width: 1023px) {
-  #contenido-principal > section.dump {
-    scroll-snap-align: none;
-  }
-}
-
-/* ============================================================
-   TELÉFONO (≤767px) · solo la obra grande + PUNTOS
-   En una columna, las 4 miniaturas se veían ANTES de la obra (redundante).
-   Se OCULTAN; mandan obra grande + flechas + puntos + swipe. En pantalla
-   chica se dejan PUNTOS (no miniaturas: saldrían muy chiquititas) — más
-   limpio y estético (decisión del dev).
-   ============================================================ */
-@media (max-width: 767px) {
-  .dump .works-selector__thumbs {
-    display: none;
-  }
-
-  /* Aparecen los puntos bajo la obra. */
-  .dump .works-selector__dots {
-    display: flex;
-  }
-
-  /* Gestos horizontales sobre la obra → cambian pintura (swipe en JS);
-     verticales → siguen haciendo scroll de la página. */
-  .dump .works-selector__figure {
-    touch-action: pan-y;
-  }
-
-  /* Caja de obra de tamaño FIJO (alto atado al viewport): la imagen se centra
-     (H+V) y va COMPLETA dentro (`contain`). Como las obras tienen proporciones
-     distintas, un alto fijo evita que la sección SALTE al cambiar de pintura
-     (con autoplay se notaría feo). `object-position: center` centra el recuadro
-     de la imagen dentro de la caja; el `contain` la muestra entera. Anula el
-     `width:auto`/`max-height:70vh` de base (aquí manda la caja). */
-  .dump .works-selector__image {
-    width: 100%;
-    height: 55vh;
-    max-width: none;
-    max-height: none;
-    object-fit: contain;
-    object-position: center;
-  }
-}
-
-/* La tira coverflow SOLO existe en tablet; oculta en teléfono (puntos) y
-   desktop (rejilla 2×2). */
-.dump__strip {
-  display: none;
-}
-
-/* ============================================================
-   TABLET (768–1023px) · obra grande + TIRA coverflow con LOOP al FONDO
-   Orden: título → obra → tira. La tira (`.dump__strip`, DEDICADA, separada del
-   2×2 de desktop) es un COVERFLOW con LOOP infinito: copias de las obras +
-   motor por transform (obraSelector.js). La activa va al CENTRO y un poco más
-   grande; al cambiar (autoplay/flechas) se DESLIZA al centro. Miniaturas
-   chicas. Obra en caja fija (no salta). Sin puntos.
-   ============================================================ */
-@media (min-width: 768px) and (max-width: 1023px) {
-  /* Columna con la tira al FONDO. `display: contents` disuelve .dump__intro →
-     título y tira pasan a hijos directos de .dump para intercalar la obra con
-     `order`. `align-items: stretch` ANULA el `start` del componente (≥768): sin
-     esto la tira no ocupa el ancho y el centrado se descuadra. */
-  .dump {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-md);
-    align-items: stretch;
-  }
-
   .dump__intro {
-    display: contents;
+    align-self: stretch;
   }
 
-  .dump__title {
-    order: 1;
-  }
-
-  .dump__stage {
-    order: 2;
-  }
-
-  /* El 2×2 se oculta; manda la tira coverflow. */
-  .dump .works-selector__thumbs {
-    display: none;
-  }
-
-  /* Viewport: recorta; la pista se desliza por dentro. `padding-block` da aire
-     para la miniatura central escalada.
-     Ancho acotado a EXACTAMENTE 3 miniaturas (centro + 1 a cada lado): 3 slots
-     + 2 gaps. Con solo 4 obras, una ventana de 5 dejaba ver una miniatura
-     REPETIDA (copia del loop); con 3 nunca se repite. El motor de loop/coverflow
-     NO cambia: centra con `clientWidth / 2` → sigue comportándose igual. */
-  .dump__strip {
-    display: block;
-    order: 3;
-    overflow: hidden;
-    padding-block: var(--space-md);
-    width: calc(3 * clamp(5.5rem, 16vw, 8rem) + 2 * var(--space-sm));
-    max-width: 100%;
-    margin-inline: auto;
-  }
-
-  /* La PISTA: fila de copias que se desplaza con translateX (JS). La transición
-     del transform ES el deslizamiento suave. `width: max-content` para que
-     crezca con las copias. */
-  .dump__strip-track {
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-    width: max-content;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    /* offsetParent de las miniaturas → su offsetLeft se mide contra la pista
-       (base del cálculo de centrado en JS). */
-    position: relative;
-    will-change: transform;
-    transition: transform 0.5s var(--ease-out);
-  }
-
-  .dump__strip-track > li {
-    flex: 0 0 auto;
-    width: clamp(5.5rem, 16vw, 8rem); /* tamaño chico (el "anterior") */
-  }
-
-  /* Laterales más chicas y atenuadas; la activa (centro) un poco más grande. La
-     transición hace fluido el cambio de tamaño al pasar por el centro. */
-  .dump__strip-track .works-thumb {
-    transform: scale(0.82);
-    opacity: 0.5;
-    transition:
-      transform var(--duration-base) var(--ease-out),
-      opacity var(--duration-base) var(--ease-out),
-      border-color var(--duration-base) var(--ease-out);
-  }
-
-  .dump__strip-track .works-thumb[aria-current="true"] {
-    transform: scale(1.08);
-    opacity: 1;
-  }
-
-  /* Los puntos NO se usan aquí. */
-  .dump .works-selector__dots {
-    display: none;
-  }
-
-  /* Swipe sobre la obra. */
-  .dump .works-selector__figure {
-    touch-action: pan-y;
-  }
-
-  /* Obra en caja de tamaño FIJO y centrada (no salta al cambiar). PERILLA: 60vh. */
-  .dump .works-selector__image {
-    width: 100%;
-    height: 60vh;
-    max-width: none;
-    max-height: none;
-    object-fit: contain;
-    object-position: center;
+  .dump .works-carousel {
+    margin-block: auto;
   }
 }

@@ -5,9 +5,8 @@ import { initNav } from './js/modules/nav.js';
 import { initMobileMenu } from './js/modules/mobileMenu.js';
 import { initVideoIntro } from './js/modules/videoIntro.js';
 import { initStaticImages } from './js/modules/staticImages.js';
-import { initObraSelector } from './js/modules/obraSelector.js';
 import { initObraCarousel } from './js/modules/obraCarousel.js';
-import { initAnimations } from './js/animations/index.js';
+import { initAnimations, rearmScrollAnimations } from './js/animations/index.js';
 import { playHeroIntro } from './js/animations/heroIntro.js';
 import { obrasDump } from './data/obras-dump.js';
 import { obrasTrayectoria } from './data/obras-trayectoria.js';
@@ -23,13 +22,22 @@ function init() {
   initCountdown();
   initNav();
   initMobileMenu();
-  // El Hero entra al REVELAR la página: tras cerrar el overlay del video
-  // (crossfade) o directo si el overlay no se muestra.
-  initVideoIntro({ onReveal: playHeroIntro });
-  initObraSelector({ section: '#dump', obras: obrasDump });
+  // Las DOS galerías comparten motor (carrusel coverflow): mismo comportamiento,
+  // un solo lugar que mantener. Cada llamada crea una instancia con su estado.
+  initObraCarousel({ section: '#dump', obras: obrasDump });
   initObraCarousel({ section: '#trayectoria', obras: obrasTrayectoria });
-  // GSAP al final: el resto de módulos ya montó su DOM (miniaturas, etc.).
+  // GSAP: el resto de módulos ya montó su DOM (miniaturas, etc.).
   initAnimations();
+  // El ritual de video va AL FINAL, después de GSAP: bloquea el scroll del <html>
+  // y, con el scroll bloqueado, ScrollTrigger mide un documento SIN recorrido y
+  // quema todas las entradas de golpe. Montando GSAP antes, la medición inicial es
+  // buena; y al cerrarse el overlay `onScrollUnlock` re-mide y re-arma.
+  // El Hero entra al REVELAR la página: tras cerrar el overlay (crossfade) o
+  // directo si el overlay no se muestra.
+  initVideoIntro({
+    onReveal: playHeroIntro,
+    onScrollUnlock: rearmScrollAnimations,
+  });
 }
 
 if (document.readyState === 'loading') {

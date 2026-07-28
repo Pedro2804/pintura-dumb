@@ -1,14 +1,16 @@
 /* ============================================================
-   COMPONENTE · Section Works (selector de obras)
+   COMPONENTE · Section Works (galería de obras)
    Patrón editorial COMPARTIDO por Dump y Trayectoria:
-     · Columna IZQ.: intro (título + miniaturas)
-     · Columna DER.: obra principal con flechas prev/next + ficha
+     · Columna IZQ.: intro (título + carrusel de miniaturas con flechas)
+     · Columna DER.: obra principal + ficha
    Sección CLARA (fondo blanco, texto azul noche).
-   Variantes de miniaturas:
-     · grid 2×2  → Dump (default)
-     · --carousel → Trayectoria (fila horizontal scrolleable)
-   Lo ESPECÍFICO (tamaño/alineación del título, texto de intro,
-   acotado de la rejilla) vive en _dump.css / _trayectoria.css.
+   Dos capas:
+     · .section-works            → layout, tema y piezas sueltas
+     · .section-works--carousel  → el coverflow (al final del archivo).
+       Desde el 2026-07-27 las DOS secciones lo usan; antes Dump tenía
+       rejilla 2×2 propia. No agregar variantes nuevas sin necesidad real.
+   Lo ESPECÍFICO (tamaño/alineación del título, texto de intro, ancho de
+   slot) vive en _dump.css / _trayectoria.css.
    Mobile-first: apilado → 2 columnas en tablet (≥768px).
    ============================================================ */
 
@@ -75,12 +77,10 @@
   list-style: none;
   margin: 0;
   padding: 0;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 2×2 (Dump) */
   gap: var(--space-2xs);
 }
 
-/* Variante CARRUSEL (Trayectoria): coverflow por TRANSFORM (no scroll nativo).
+/* Variante CARRUSEL (Dump y Trayectoria): coverflow por TRANSFORM (no scroll nativo).
    El `.works-viewport` recorta la ventana visible; esta lista es la PISTA que
    se desplaza con `transform: translateX` desde JS (obraCarousel.js) → loop
    infinito real y miniatura central siempre con vecinos a los lados. */
@@ -120,22 +120,26 @@
   will-change: transform;
 }
 
+/* El ANCHO del slot lo fija la variante coverflow (abajo): es lo que decide
+   cuántas miniaturas se ven a la vez. */
 .works-selector__thumbs--carousel > li {
   flex: 0 0 auto;
-  width: clamp(5.5rem, 18vw, 8rem);
 }
 
-/* ---------- Miniatura (botón) ---------- */
+/* ---------- Miniatura (botón) ----------
+   SIN borde: el marco rojo de la miniatura activa se retiró (petición del cliente
+   2026-07-27 — se veía como un margen encima de la obra). La afordancia de "cuál
+   está activa" la da el coverflow (escala + opacidad). El foco de teclado sigue
+   con su anillo (abajo). */
 .works-thumb {
   display: block;
   width: 100%;
   aspect-ratio: 1; /* cuadradas, como en la captura */
   padding: 0;
-  border: 2px solid transparent; /* el activo lo vuelve rojo */
+  border: none;
   background: none;
   cursor: pointer;
   overflow: hidden;
-  transition: border-color var(--duration-base) var(--ease-out);
 }
 
 .works-thumb img {
@@ -146,17 +150,11 @@
   transition: transform var(--duration-base) var(--ease-out);
 }
 
-/* Obra seleccionada: borde ROJO (acento funcional permitido). */
-.works-thumb[aria-current="true"] {
-  border-color: var(--color-accent);
-}
-
 /* Foco por teclado: el anillo global usa `currentColor`, que en esta sección
    CLARA es el azul-casi-negro (#000033) → se veía como un recuadro NEGRO. Aquí
-   lo pasamos al ROJO acento para que hable el mismo lenguaje que la selección.
-   No se encima con el borde: el borde va pegado a la imagen y el outline flota
-   a `outline-offset` (3px) por fuera → dos anillos distintos (marco = activa,
-   anillo exterior = foco de teclado). */
+   lo pasamos al ROJO acento (acento funcional permitido). Es el ÚNICO rojo que
+   queda en la miniatura y solo aparece al navegar con teclado: no compite con
+   nada porque flota por fuera de la imagen (`outline-offset`). */
 .works-thumb:focus-visible {
   outline-color: var(--color-accent);
 }
@@ -269,12 +267,155 @@
 }
 
 /* ============================================================
+   VARIANTE · COVERFLOW  (.section-works--carousel)
+   La usan Dump y Trayectoria: MISMO diseño, mismo motor
+   (obraCarousel.js) y mismo comportamiento en todos los tamaños.
+   Nació en Trayectoria; el 2026-07-27 Dump migró de la rejilla 2×2
+   a este patrón y las reglas subieron del archivo de sección al
+   componente (una sola fuente de verdad, sin duplicar coverflow).
+   Lo ESPECÍFICO de cada sección (título, texto de intro, ancho de
+   slot) sigue en _dump.css / _trayectoria.css.
+   ============================================================ */
+
+/* Respiro vertical un poco más corto que el de una sección normal:
+   estas dos cargan imagen grande y respiran solas. */
+.section-works--carousel {
+  padding-block: calc(var(--section-y) * 0.65);
+}
+
+/* Fila del carrusel: [‹] [ventana de miniaturas] [›] */
+.works-carousel {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+}
+
+/* Afordancia del lightbox: la obra grande (escritorio) y la miniatura CENTRAL
+   (carrusel) amplían al hacer clic → cursor de manita, sin lupa. Las laterales
+   conservan su cursor (pointer/grab del carrusel). */
+.section-works--carousel [data-obra-image],
+.section-works--carousel .works-thumb[aria-current='true'] {
+  cursor: pointer;
+}
+
+/* La SELECCIÓN se anima suave (coverflow). Es un cambio de estado (toggle de
+   `aria-current` desde obraCarousel.js) → CSS transition es la herramienta
+   correcta: el realce "viaja" solo entre miniaturas mientras se arrastra, sin
+   crear tweens JS (mejor en móvil). Realce = escala + opacidad. */
+.section-works--carousel .works-thumb {
+  transition:
+    transform var(--duration-base) var(--ease-out),
+    opacity var(--duration-base) var(--ease-out);
+}
+
+/* Móvil (base): UNA sola miniatura a la vez → "se vuelve" la obra grande.
+   El JS la centra con transform. */
+.section-works--carousel .works-selector__thumbs--carousel > li {
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  /* Texto (izq.) y obra grande (der.) a la MITAD cada uno. Anula el 44/56 base. */
+  .section-works--carousel {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  /* La obra grande SIEMPRE centrada en su columna (anula el align-items:start
+     base): se nota cuando la columna izquierda es más alta que la obra. */
+  .section-works--carousel .section-works__stage {
+    align-self: center;
+  }
+
+  /* 3 miniaturas visibles: (ancho − 2 gaps) / 3. Las secciones pueden cambiar
+     ESTE divisor para mostrar más/menos y, con ello, agrandar la miniatura. */
+  .section-works--carousel .works-selector__thumbs--carousel > li {
+    width: calc((100% - 2 * var(--space-2xs)) / 3);
+  }
+
+  /* Laterales atenuadas LIGERAMENTE: la seleccionada destaca sin apagar al resto. */
+  .section-works--carousel .works-thumb {
+    opacity: 0.7;
+  }
+
+  /* La ACTIVA (centro): a tono pleno y más grande → se lee el coverflow y queda
+     claro que es la obra grande. Única señal de "activa" (ya no hay marco rojo). */
+  .section-works--carousel .works-thumb[aria-current='true'] {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+/* ---------- Tablet (768–1023): el CARRUSEL es el protagonista ----------
+   Confinadas a media columna, las miniaturas se ven muy chicas. Se quita la obra
+   grande y el carrusel pasa a UNA columna a todo el ancho → mucho más grandes,
+   manteniendo 3 visibles. Sin acople al viewport ni snap: la sección fluye con su
+   alto natural. El layout 2-col se conserva en ≥1024. */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .section-works--carousel {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: auto; /* anula el acople 100dvh base: sin hueco */
+  }
+
+  /* Fuera del snap: con la obra oculta la sección es más corta y el snap forzado
+     estorba. El #id iguala la especificidad de la regla base
+     `#contenido-principal > section` para ganarle. */
+  #contenido-principal > section.section-works--carousel {
+    scroll-snap-align: none;
+  }
+}
+
+/* ---------- No-escritorio (≤1023): se va la obra grande, se queda la FICHA ----
+   El <figcaption> vive dentro del escenario y el JS lo hidrata siempre → se oculta
+   SOLO la <img>. Con la sección en una columna, la ficha aterriza justo debajo del
+   carrusel. Bonus: la <img> es lazy y con display:none ni se descarga. */
+@media (max-width: 1023px) {
+  .section-works--carousel .section-works__stage [data-obra-image] {
+    display: none;
+  }
+
+  /* La ficha debe leerse como PIE del carrusel, no como bloque suelto. Los únicos
+     hijos de la sección son intro y escenario → este `gap` solo afecta esa
+     separación. */
+  .section-works--carousel {
+    gap: var(--space-sm);
+  }
+}
+
+/* ---------- Solo TELÉFONO (≤767): miniatura = obra en su FORMA ORIGINAL --------
+   Con UNA miniatura por pantalla no hay vecinas con qué compararla, así que el
+   recorte cuadrado no aporta y sí mutila la obra: se muestra completa, en su
+   proporción real. Se conserva el ANCHO fijo del slot (uniforme → el motor, que
+   centra por posición horizontal, no se altera) y el ALTO pasa a natural.
+
+   ⚠ De 768 en adelante NO se aplica (decisión 2026-07-27 con la captura
+   `.ai/tablet.png` enfrente): en tablet se ven TRES a la vez y, con proporciones
+   distintas, la fila queda con alturas dispares y se lee como accidente. Ahí manda
+   el cuadrado —que es lo que hace comparable una fila— y la obra completa se ve al
+   tocar la miniatura central (lightbox). Ojo también con el tamaño: una obra de
+   3428×6002 a 1000px de ancho mediría ~1750px de alto. */
+@media (max-width: 767px) {
+  .section-works--carousel .works-thumb {
+    aspect-ratio: auto; /* anula el cuadrado base */
+  }
+
+  .section-works--carousel .works-thumb img {
+    height: auto; /* alto natural (según el ancho fijo) → forma original */
+    object-fit: fill; /* el box ya tiene el ratio de la imagen: nada que recortar */
+  }
+
+  .section-works--carousel .works-selector__thumbs--carousel {
+    align-items: center; /* altos variables → centradas en vertical */
+  }
+}
+
+/* ============================================================
    Respeto a prefers-reduced-motion: sin transformaciones.
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {
   .works-thumb img,
   .works-selector__nav,
-  .works-selector__thumbs--carousel {
+  .works-selector__thumbs--carousel,
+  .section-works--carousel .works-thumb {
     transition: none;
   }
 

@@ -45,10 +45,16 @@ export function buildStageAlt(obra) {
   return parts.join(', ');
 }
 
-/** Ficha visible junto al nombre: «, técnica, año» (vacío si no hay datos). */
+/**
+ * Ficha visible junto al nombre: «, técnica, año.» — SIEMPRE cerrada con punto
+ * (petición del cliente 2026-07-27: el pie de cada obra es una frase y se cierra).
+ * Si la obra no trae técnica ni año, devuelve solo el punto → el nombre queda
+ * igualmente cerrado. El punto vive en la ficha (no en el nombre) para que no se
+ * pinte en cursiva junto al título de la obra.
+ */
 export function buildMeta(obra) {
   const parts = [];
   if (obra.tecnica) parts.push(obra.tecnica);
   if (obra.anio) parts.push(String(obra.anio));
-  return parts.length ? `, ${parts.join(', ')}` : '';
+  return parts.length ? `, ${parts.join(', ')}.` : '.';
 }
