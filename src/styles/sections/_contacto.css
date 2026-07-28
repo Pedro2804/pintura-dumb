@@ -7,17 +7,33 @@
    Referencia: .ai/img_page/Forma-parte.png
    ============================================================ */
 
+/* SIN `overflow: hidden` a propósito. Lo único que necesita recorte es la foto
+   de fondo (va escalada 1.55 → ver .contacto__media), y ahí es donde vive ahora.
+   Al clipar en la SECCIÓN también se recortaba el TEXTO: los títulos usan
+   `--lh-display` (1.02), más apretado que la caja de glifos de Poppins (~1.4em),
+   así que sus ascendentes y acentos se pintan FUERA de la caja del elemento y el
+   clip los guillotinaba. En macOS se veía y en Windows no porque Safari lee las
+   métricas `hhea` de la fuente y Chrome/Windows las `usWinAscent` de OS/2:
+   misma fuente, ascendente distinto. Reporte del cliente (.ai/contacto.jpeg):
+   "fenómeno" salía rebanado y sin el acento de la ó. Mismo patrón que el Hero,
+   que ya recorta en `.hero__media` y no en la sección. */
 .contacto {
   position: relative;
   isolation: isolate; /* contiene z-index del fondo/scrim y el blend de los logos */
-  overflow: hidden;
   scroll-margin-top: -3rem; /* landing: el nav se sobrepone */
   background-color: var(--surface-dark); /* fallback si la foto no carga */
   min-height: 100vh;
   min-height: 100dvh; /* acople al viewport */
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  /* El centrado vertical lo dan los márgenes `auto` de .contacto__content, NO
+     `justify-content: center`. Motivo: si el contenido llega a ser MÁS ALTO que
+     la caja, `center` reparte el sobrante a los DOS lados y la parte de arriba
+     se sale por el borde superior — irrecuperable, porque hacia arriba no se
+     puede rodar. Los márgenes `auto` colapsan a cero cuando el espacio libre es
+     negativo (spec de flexbox): el contenido se ancla ARRIBA y desborda solo
+     hacia abajo, que sí se puede leer. Mismo criterio que ya se aplicó a mano en
+     `_fenomeno.css` (justify-content: flex-start en < 1280px). */
   /* Padding inferior extra: reserva el hueco para los logos sobrepuestos. */
   padding: var(--section-y) var(--gutter) calc(var(--section-y) + var(--space-2xl));
 }
@@ -28,6 +44,10 @@
   inset: 0;
   z-index: -2;
   margin: 0;
+  /* Contiene la foto escalada (`scale(1.55)` en desktop) dentro del cuadro de la
+     sección. Antes este recorte estaba en `.contacto` y se llevaba el texto
+     entre las patas; aquí solo alcanza a la imagen, que es lo que debe recortar. */
+  overflow: hidden;
 }
 
 .contacto__media img {
@@ -71,6 +91,10 @@
   flex-direction: column;
   gap: var(--space-sm);
   padding-inline: var(--space-sm); /* respiro horizontal */
+  /* Centrado vertical SEGURO (ver la nota en .contacto): centra igual que
+     `justify-content: center` cuando sobra espacio, pero si falta se ancla
+     arriba en vez de salirse por el borde superior. */
+  margin-block: auto;
 }
 
 @media (min-width: 768px) {
@@ -96,8 +120,13 @@
   }
 }
 
+/* Interlineado de ENCABEZADO (1.1), no el display (1.02): con 1.02 el
+   medio-interlineado sale negativo contra la caja de glifos de Poppins (~1.4em)
+   y el acento de la "ó" de "fenómeno" queda fuera del elemento. Segundo cinturón
+   del arreglo del recorte (el primero: el clip ya no vive en la sección). */
 .contacto__title {
   font-size: clamp(2.5rem, 1.5rem + 3.5vw, 4rem);
+  line-height: var(--lh-heading);
 }
 
 .contacto__text {
