@@ -96,7 +96,7 @@ Options -Indexes
 
   # Los íconos son PNG sin hash: no los alcanza la regla (a) y necesitan la
   # caché corta de (b) para poder reemplazarlos si el cliente cambia su marca.
-  <FilesMatch "^(favicon-96x96|apple-touch-icon|icon-192|icon-512|og-pintura-dump)\.(png|jpe?g)$">
+  <FilesMatch "^(favicon-.+|apple-touch-icon|icon-.+|og-pintura-dump)\.(png|jpe?g)$">
     Header set Cache-Control "public, max-age=86400"
   </FilesMatch>
 

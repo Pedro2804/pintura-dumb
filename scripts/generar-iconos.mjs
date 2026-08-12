@@ -139,9 +139,18 @@ async function main() {
   // apple-touch-icon.png — iOS descarta la transparencia: va con fondo sólido.
   await writeFile(`${OUT}apple-touch-icon.png`, await componer(simbolo, 180, 0.14, TINTA));
 
-  // icon-192 / icon-512 — Android los recorta (maskable), por eso el margen amplio.
-  await writeFile(`${OUT}icon-192.png`, await componer(simbolo, 192, 0.19, TINTA));
-  await writeFile(`${OUT}icon-512.png`, await componer(simbolo, 512, 0.19, TINTA));
+  // icon-192 / icon-512 — propósito "any": se muestran tal cual, margen normal.
+  await writeFile(`${OUT}icon-192.png`, await componer(simbolo, 192, 0.1, TINTA));
+  await writeFile(`${OUT}icon-512.png`, await componer(simbolo, 512, 0.1, TINTA));
+
+  // Versión "maskable": Android recorta el ícono a la forma del launcher (círculo,
+  // squircle, gota). Solo se garantiza visible el círculo central del 80%, así que
+  // el símbolo se encoge para caber ahí y el fondo llena la esquina a esquina.
+  // Deben declararse como entrada APARTE en el manifest: si se mezcla
+  // `purpose: "any maskable"`, varios launchers lo tratan como "any", encogen el
+  // ícono y le montan la plantilla blanca del sistema alrededor.
+  await writeFile(`${OUT}icon-maskable-192.png`, await componer(simbolo, 192, 0.2, TINTA));
+  await writeFile(`${OUT}icon-maskable-512.png`, await componer(simbolo, 512, 0.2, TINTA));
 
   console.log('Íconos generados en public/');
 }
