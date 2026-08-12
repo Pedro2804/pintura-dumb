@@ -78,7 +78,7 @@ Options -Indexes
 #      siempre sin riesgo: un archivo nuevo llega con nombre nuevo.
 #
 #   b) Copiados de public/ → catalogo-pintura-dump.pdf,
-#      videos/trailer-web-hd.mp4, favicon.svg, og-pintura-dump.jpg
+#      videos/trailer-web-hd.mp4, los íconos, og-pintura-dump.jpg
 #      Conservan su nombre entre versiones. Si se cachean un año y luego
 #      se reemplaza el video, NADIE vuelve a ver el nuevo. Caché corta.
 <IfModule mod_headers.c>
@@ -90,7 +90,13 @@ Options -Indexes
 
   # (b) Nombre estable: se revalida a diario. Reemplazarlos surte efecto
   #     al día siguiente como máximo, no en un año.
-  <FilesMatch "\.(pdf|mp4|ico)$">
+  <FilesMatch "\.(pdf|mp4|ico|webmanifest)$">
+    Header set Cache-Control "public, max-age=86400"
+  </FilesMatch>
+
+  # Los íconos son PNG sin hash: no los alcanza la regla (a) y necesitan la
+  # caché corta de (b) para poder reemplazarlos si el cliente cambia su marca.
+  <FilesMatch "^(favicon-96x96|apple-touch-icon|icon-192|icon-512|og-pintura-dump)\.(png|jpe?g)$">
     Header set Cache-Control "public, max-age=86400"
   </FilesMatch>
 
@@ -127,4 +133,5 @@ Options -Indexes
   AddType font/woff                   .woff
   AddType video/mp4                   .mp4
   AddType application/pdf             .pdf
+  AddType application/manifest+json   .webmanifest
 </IfModule>

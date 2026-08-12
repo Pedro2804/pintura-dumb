@@ -26,3 +26,5 @@ dist-ssr
 .ai
 .claude
 CLAUDE.md
+DEPLOY.md
+server-linux.txt
